@@ -628,11 +628,21 @@ body::before {
 }
 .hd-stat-card {
   flex: 1;
+  position: relative;
   background: #0d1a26;
   border: 1px solid #223242;
-  padding: 10px 8px;
+  padding: 12px 8px 10px;
   text-align: center;
   border-radius: 3px;
+  overflow: hidden;
+}
+.hd-stat-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(200,155,60,0.55), transparent);
+  opacity: 0.5;
 }
 .hd-stat-card .k { font-size: 10px; color: #7a8a9a; letter-spacing: 1px; }
 .hd-stat-card .v { font-size: 20px; font-weight: 700; color: #f0e6d2; margin-top: 4px; }
@@ -645,20 +655,46 @@ body::before {
   padding-bottom: 6px;
   border-bottom: 1px solid #223242;
 }
-.hd-history-row {
+#hdMatchList { display: flex; flex-direction: column; gap: 6px; }
+.hd-match {
   display: flex;
   align-items: center;
   padding: 9px 10px;
   background: #0d1a26;
   border: 1px solid #1c2c3c;
-  margin-bottom: 6px;
+  border-left: 3px solid #2c3c4c;
   border-radius: 3px;
 }
-.hd-history-row .hr-ph { width: 30px; height: 30px; background: #162636; border-radius: 3px; flex-shrink: 0; }
-.hd-history-row .hr-line { flex: 1; margin-left: 12px; }
-.hd-history-row .hr-line i { display: block; height: 8px; background: #162636; border-radius: 2px; margin: 3px 0; }
-.hd-history-row .hr-line i:nth-child(1) { width: 55%; }
-.hd-history-row .hr-line i:nth-child(2) { width: 80%; }
+.hd-match.p-win {
+  border-left-color: #c89b3c;
+  background: linear-gradient(90deg, rgba(200,155,60,0.10), #0d1a26);
+}
+.hm-place {
+  width: 36px;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+  color: #8fa0b0;
+  flex-shrink: 0;
+  letter-spacing: 1px;
+}
+.hm-place.p1 { color: #c89b3c; text-shadow: 0 0 6px rgba(200,155,60,0.4); }
+.hm-place.p2 { color: #c6cdd6; }
+.hm-place.p3 { color: #d0905b; }
+.hm-champ {
+  width: 30px; height: 30px;
+  background: #162636 no-repeat center / cover;
+  border: 1px solid #223242;
+  border-radius: 3px;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+.hm-info { flex: 1; margin-left: 10px; min-width: 0; }
+.hm-name { font-size: 12px; color: #e0d0b0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hm-meta { font-size: 10px; color: #5a6a7a; margin-top: 2px; }
+.hm-kda { font-size: 12px; color: #8fa0b0; font-family: Consolas, Menlo, monospace; white-space: nowrap; margin-left: 8px; }
+.hm-kda b { color: #f0e6d2; font-weight: 600; }
+.hm-dmg { font-size: 11px; color: #c89b3c; text-align: right; width: 60px; white-space: nowrap; margin-left: 10px; }
 .hd-empty {
   text-align: center;
   color: #5a6a7a;
@@ -776,10 +812,15 @@ body::before {
         <div class="hd-stat-card"><div class="k">平均伤害</div><div class="v empty" id="hdDmg">--</div></div>
       </div>
       <div class="hd-section-title">最近战绩</div>
-      <div class="hd-history-row"><div class="hr-ph"></div><div class="hr-line"><i></i><i></i></div></div>
-      <div class="hd-history-row"><div class="hr-ph"></div><div class="hr-line"><i></i><i></i></div></div>
-      <div class="hd-history-row"><div class="hr-ph"></div><div class="hr-line"><i></i><i></i></div></div>
-      <div class="hd-empty" id="hdEmpty">暂无更多战绩数据</div>
+      <div id="hdMatchList">
+        <div class="hd-match p-win"><div class="hm-place p1">第1</div><div class="hm-champ"></div><div class="hm-info"><div class="hm-name">—</div><div class="hm-meta">— · --:--</div></div><div class="hm-kda">-- / -- / --</div><div class="hm-dmg">--</div></div>
+        <div class="hd-match"><div class="hm-place p3">第3</div><div class="hm-champ"></div><div class="hm-info"><div class="hm-name">—</div><div class="hm-meta">— · --:--</div></div><div class="hm-kda">-- / -- / --</div><div class="hm-dmg">--</div></div>
+        <div class="hd-match"><div class="hm-place p5">第5</div><div class="hm-champ"></div><div class="hm-info"><div class="hm-name">—</div><div class="hm-meta">— · --:--</div></div><div class="hm-kda">-- / -- / --</div><div class="hm-dmg">--</div></div>
+        <div class="hd-match"><div class="hm-place p2">第2</div><div class="hm-champ"></div><div class="hm-info"><div class="hm-name">—</div><div class="hm-meta">— · --:--</div></div><div class="hm-kda">-- / -- / --</div><div class="hm-dmg">--</div></div>
+        <div class="hd-match"><div class="hm-place p6">第6</div><div class="hm-champ"></div><div class="hm-info"><div class="hm-name">—</div><div class="hm-meta">— · --:--</div></div><div class="hm-kda">-- / -- / --</div><div class="hm-dmg">--</div></div>
+        <div class="hd-match"><div class="hm-place p4">第4</div><div class="hm-champ"></div><div class="hm-info"><div class="hm-name">—</div><div class="hm-meta">— · --:--</div></div><div class="hm-kda">-- / -- / --</div><div class="hm-dmg">--</div></div>
+      </div>
+      <div class="hd-empty" id="hdEmpty">暂无更多战绩</div>
     </div>
   </div>
 
