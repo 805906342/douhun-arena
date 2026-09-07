@@ -8,6 +8,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>斗魂竞技场赛季旅程</title>
 <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.26.0/dist/index.js"></script>
+<script src="data/maps.js"></script>
 <style>
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -767,12 +768,15 @@ body.skin-holy .hd-avatar.completed { border-color: #fff8dc; animation: holyRadi
 .hd-md-row.own .md-rank { color: #c89b3c; font-weight: 700; }
 .hd-md-team { display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; gap: 6px; margin-top: 8px; }
 .hd-md-p { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; padding: 7px 9px; background: #101c28; border: 1px solid #223242; border-left: 3px solid #2c3c4c; border-radius: 3px; }
-.md-champ { width: 26px; height: 26px; background: #162636 no-repeat center / cover; border: 1px solid #223242; border-radius: 3px; -webkit-flex-shrink: 0; flex-shrink: 0; }
+.md-champ { width: 26px; height: 26px; background: #162636 no-repeat center / cover; border: 1px solid #223242; border-radius: 3px; -webkit-flex-shrink: 0; flex-shrink: 0; overflow: hidden; }
+.md-champ img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .md-id { width: 120px; margin-left: 9px; font-size: 12px; color: #e0d0b0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; -webkit-flex-shrink: 0; flex-shrink: 0; }
 .md-runes { display: -webkit-flex; display: flex; gap: 3px; margin-left: auto; }
-.md-runes i { width: 16px; height: 16px; background: #1a2a3a; border: 1px solid #223242; border-radius: 2px; }
+.md-runes i { width: 16px; height: 16px; background: #1a2a3a; border: 1px solid #223242; border-radius: 2px; overflow: hidden; }
+.md-runes i img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .md-items { display: -webkit-flex; display: flex; gap: 3px; margin-left: 12px; }
-.md-items i { width: 22px; height: 22px; background: #1a2a3a; border: 1px solid #223242; border-radius: 2px; }
+.md-items i { width: 22px; height: 22px; background: #1a2a3a; border: 1px solid #223242; border-radius: 2px; overflow: hidden; }
+.md-items i img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .md-kda { font-size: 12px; color: #8fa0b0; font-family: Consolas, Menlo, monospace; white-space: nowrap; margin-left: 12px; }
 .md-dmg { font-size: 12px; color: #c89b3c; font-family: Consolas, Menlo, monospace; white-space: nowrap; margin-left: 12px; }
 .hd-empty {
@@ -1473,40 +1477,177 @@ function leaveHeroDetail() {
   var st = document.getElementById("statsText");
   if (st) st.style.display = "";
 }
-/* 最近战绩：右侧某一局详情 —— 生成一名队友的详细数据卡（占位） */
-function makeTeammateCard() {
-  return '<div class="hd-md-p"><div class="md-champ"></div><div class="md-id">昵称#1234</div><div class="md-runes"><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="md-items"><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="md-kda">--/--/--</div><div class="md-dmg">伤害 --</div></div>';
+/* ===== 英雄战绩详情：从服务器 arena_matches 读取真实数据 ===== */
+var hdCtx = { account: "", heroEn: "", heroCn: "", matches: [], depth: 0 };
+
+function sbFetch(path) {
+  return fetch(SUPA_URL + "/rest/v1/" + path, {
+    headers: { "apikey": SUPA_KEY, "Authorization": "Bearer " + SUPA_KEY }
+  })
+  .then(function(r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); });
 }
-/* 将本局「队友详情」渲染到第 n 名的名次行，其余名次仅保留文字 */
-function renderMatchDetail(n) {
+/* 数字ID → 中文名/图标 */
+function augInfo(id) {
+  if (!id) return null;
+  var m = window.AUGMENT_MAP[id];
+  if (m) return m;
+  return { n: "符文" + id, img: "" };
+}
+function itemInfo(id) {
+  if (!id) return null;
+  var m = window.ITEM_MAP[id];
+  if (m) return m;
+  return { n: "装备" + id, img: "" };
+}
+/* 生成一名玩家的详细数据卡（真实数据） */
+function makePlayerCard(p) {
+  var icons = "";
+  var runes = [p.augment1, p.augment2, p.augment3, p.augment4, p.augment5, p.augment6];
+  for (var i = 0; i < 6; i++) {
+    var ai = augInfo(runes[i]);
+    if (runes[i] && ai && ai.img) {
+      icons += '<i class="hp-run" title="' + ai.n + '"><img src="' + ai.img + '" alt="' + ai.n + '"></i>';
+    } else {
+      icons += '<i class="hp-run empty"></i>';
+    }
+  }
+  var items = [p.item0, p.item1, p.item2, p.item3, p.item4, p.item5, p.item6];
+  var itemHtml = "";
+  for (var j = 0; j < 7; j++) {
+    var ii = itemInfo(items[j]);
+    if (items[j] && ii && ii.img) {
+      itemHtml += '<i class="hp-item" title="' + ii.n + '"><img src="' + ii.img + '" alt="' + ii.n + '"></i>';
+    } else {
+      itemHtml += '<i class="hp-item empty"></i>';
+    }
+  }
+  var champIcon = p.champion_name ? getImgByChampionName(p.champion_name) : "";
+  var champHtml = champIcon ? '<div class="md-champ"><img src="' + champIcon + '" alt=""></div>'
+                             : '<div class="md-champ"></div>';
+  return '<div class="hd-md-p">' + champHtml +
+    '<div class="md-id">' + (p.summoner_name || (p.is_self ? hdCtx.account : "未知")) + '</div>' +
+    '<div class="md-runes">' + icons + '</div>' +
+    '<div class="md-items">' + itemHtml + '</div>' +
+    '<div class="md-kda">' + (p.kills || 0) + '/' + (p.deaths || 0) + '/' + (p.assists || 0) + '</div>' +
+    '<div class="md-dmg">伤害 ' + Math.round(p.total_damage_dealt_to_champions || 0).toLocaleString() + '</div>' +
+    '</div>';
+}
+/* champion 英文名 → 头像URL（在 champions 列表里匹配英文 id） */
+function getImgByChampionName(en) {
+  for (var i = 0; i < champions.length; i++) {
+    if (champions[i].id === en) return getImg(champions[i].id);
+  }
+  return "";
+}
+/* 单局详情：按名次渲染右侧 8 行（斗魂每名次是一队） */
+function renderGameDetail(gameId) {
   var rows = document.querySelectorAll(".hd-md-row");
   for (var i = 0; i < rows.length; i++) {
     rows[i].classList.remove("own");
+    rows[i].style.display = "none";
     var tm = rows[i].querySelector(".hd-md-team");
     if (tm) tm.innerHTML = "";
+    var rk = rows[i].querySelector(".md-rank");
+    if (rk) rk.textContent = "第" + (i + 1) + "名";
   }
-  var row = document.getElementById("mdRow" + n);
-  if (row) {
-    row.classList.add("own");
-    var tt = row.querySelector(".hd-md-team");
-    if (tt) tt.innerHTML = makeTeammateCard() + makeTeammateCard() + makeTeammateCard();
-  }
-  var hp = document.getElementById("hdMdPlace");
-  if (hp) {
-    hp.textContent = "第" + n;
-    hp.className = "hm-place md-head-place" + (n <= 3 ? " p" + n : "");
-  }
+  var mdRow1 = document.querySelector("#mdRow1 .md-rank");
+  if (mdRow1) mdRow1.textContent = "…";
+  if (!gameId) return;
+  var selfRowEls = {};
+  sbFetch("arena_matches?game_id=eq." + gameId + "&select=*")
+  .then(function(parts) {
+    parts.sort(function(a, b) { return (a.placement || 8) - (b.placement || 8); });
+    var byPlc = {};
+    parts.forEach(function(p) {
+      var pl = p.placement || 8;
+      if (!byPlc[pl]) byPlc[pl] = [];
+      byPlc[pl].push(p);
+    });
+    Object.keys(byPlc).forEach(function(pl) {
+      var idx = parseInt(pl, 10);
+      var row = document.getElementById("mdRow" + idx);
+      if (!row) return;
+      row.style.display = "";
+      var tm = row.querySelector(".hd-md-team");
+      var cards = "";
+      byPlc[pl].forEach(function(p) { cards += makePlayerCard(p); if (p.is_self) selfRowEls[idx] = true; });
+      tm.innerHTML = cards;
+      if (selfRowEls[idx]) row.classList.add("own");
+    });
+    /* 高亮本人行 */
+    for (var k = 1; k <= 8; k++) {
+      if (selfRowEls[k]) {
+        var rowk = document.getElementById("mdRow" + k);
+        if (rowk) rowk.classList.add("own");
+      }
+    }
+  })
+  .catch(function() {});
 }
-/* 点击左栏某条（某名次）→ 高亮并在右侧展示该局队友详情 */
+/* 点击左栏某条 → 高亮并展示该局详情 */
 function showMatch(el) {
   var all = document.querySelectorAll("#hdMatchList .hd-match");
   for (var i = 0; i < all.length; i++) all[i].classList.remove("active");
   el.classList.add("active");
-  var ph = el.querySelector(".hm-place");
-  var t = ph ? ph.textContent : "";
-  var n = parseInt(t.replace(/\D/g, ""), 10);
-  if (!n) n = 1;
-  renderMatchDetail(n);
+  var gid = el.getAttribute("data-gid");
+  renderGameDetail(gid);
+}
+/* 从服务器加载某英雄全部本人 CHERRY 局，填充头部统计 + 左栏列表 */
+function loadHeroDetailData() {
+  if (!hdCtx.account) return;
+  var path = "arena_matches?account=eq." + encodeURIComponent(hdCtx.account) +
+    "&is_self=eq.true&game_mode=eq.CHERRY&champion_name=eq." + encodeURIComponent(hdCtx.heroEn) +
+    "&select=game_id,game_start_timestamp,placement,kills,deaths,assists,total_damage_dealt_to_champions&order=game_start_timestamp.desc";
+  sbFetch(path)
+  .then(function(rows) {
+    hdCtx.matches = rows || [];
+    var n = hdCtx.matches.length;
+    /* 头部统计 */
+    var setT = function(id, v) { var el = document.getElementById(id); if (el) el.textContent = v; };
+    setT("hdGames", n);
+    setT("hdPickRate", "--");
+    var cnt = {1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0};
+    for (var i = 0; i < n; i++) {
+      var p = hdCtx.matches[i].placement || 8;
+      if (cnt[p] !== undefined) cnt[p]++;
+    }
+    for (var k = 1; k <= 8; k++) {
+      setT("hdP" + k, cnt[k]);
+      setT("hdP" + k + "r", n > 0 ? (Math.round(cnt[k] * 1000 / n) / 10) + "%" : "0%");
+    }
+    /* 左栏最近战绩列表 */
+    var list = document.getElementById("hdMatchList");
+    if (list) list.innerHTML = "";
+    if (n === 0) {
+      var empty = document.createElement("div");
+      empty.className = "hd-match";
+      empty.innerHTML = '<div class="hm-date">暂无战绩</div>';
+      list.appendChild(empty);
+      return;
+    }
+    var maxShow = Math.min(n, 100);
+    for (var j = 0; j < maxShow; j++) {
+      var m = hdCtx.matches[j];
+      var d = new Date(m.game_start_timestamp);
+      var mm = ("0" + (d.getMonth() + 1)).slice(-2), dd = ("0" + d.getDate()).slice(-2);
+      var item = document.createElement("div");
+      item.className = "hd-match" + (j === 0 ? " active" : "");
+      item.setAttribute("data-gid", m.game_id);
+      item.onclick = function() { showMatch(this); };
+      item.innerHTML = '<div class="hm-place p' + (m.placement || 8) + '">第' + (m.placement || 8) + '</div>' +
+        '<div class="hm-date">' + mm + "-" + dd + '</div>';
+      list.appendChild(item);
+    }
+    /* 默认展示最近一局 */
+    var first = list.querySelector(".hd-match");
+    if (first) showMatch(first);
+    var hint = document.getElementById("hdHint");
+    if (hint) hint.textContent = "英雄战绩 · " + n + " 场真实数据";
+  })
+  .catch(function() {
+    var hint = document.getElementById("hdHint");
+    if (hint) hint.textContent = "英雄战绩 · 读取失败";
+  });
 }
 function openHeroDetail(id, title, name) {
   /* 未用过桌面版扫描（无 LOL ID）→ 提示 */
@@ -1514,6 +1655,20 @@ function openHeroDetail(id, title, name) {
     showHdToast("请先使用桌面版读取数据");
     return;
   }
+  hdCtx.heroEn = id; hdCtx.heroCn = name;
+  /* 从 arena_progress 取当前账号昵称作 account 关联 */
+  sbFetch("arena_progress?user_id=eq." + currentUserId + "&select=last_lol_id")
+  .then(function(rows2) {
+    hdCtx.account = (rows2 && rows2[0] && rows2[0].last_lol_id) ? rows2[0].last_lol_id : "";
+    var pid = document.getElementById("playerIdText");
+    if (!hdCtx.account && pid) hdCtx.account = pid.textContent || "";
+    loadHeroDetailData();
+  })
+  .catch(function() {
+    var pid = document.getElementById("playerIdText");
+    hdCtx.account = (pid ? pid.textContent : "") || "";
+    loadHeroDetailData();
+  });
   var hdAv = document.getElementById("hdAvatar");
   hdAv.style.backgroundImage = "url('" + getImg(id) + "')";
   var isComp = false;
@@ -1521,12 +1676,8 @@ function openHeroDetail(id, title, name) {
   hdAv.className = "hd-avatar" + (isComp ? " completed" : "");
   document.getElementById("hdTitle").textContent = title;
   document.getElementById("hdName").textContent = name;
-  /* 赛季名次数据（后续接入 SGP 战绩时替换） */
-  var emptyEls = ["hdGames", "hdPickRate", "hdP1", "hdP2", "hdP3", "hdP4", "hdP5", "hdP6", "hdP7", "hdP8", "hdP1r", "hdP2r", "hdP3r", "hdP4r", "hdP5r", "hdP6r", "hdP7r", "hdP8r"];
-  emptyEls.forEach(function(eid) {
-    var el = document.getElementById(eid);
-    if (el) el.textContent = "--";
-  });
+  var hint = document.getElementById("hdHint");
+  if (hint) hint.textContent = "英雄战绩 · 数据加载中";
   /* 整页切换：隐藏英雄网格+顶部季统计，显示战绩详情视图 */
   var g = document.getElementById("listView");
   var d = document.getElementById("detailView");
@@ -1534,9 +1685,6 @@ function openHeroDetail(id, title, name) {
   if (g) g.style.display = "none";
   if (d) { d.style.display = ""; d.classList.add("show"); }
   if (st) st.style.display = "none";
-  /* 默认选中最近一局（左栏第一条），高亮并展示该局队友详情 */
-  var firstMatch = document.querySelector("#hdMatchList .hd-match");
-  if (firstMatch) showMatch(firstMatch); else renderMatchDetail(1);
 }
 
 // ===== Init =====
