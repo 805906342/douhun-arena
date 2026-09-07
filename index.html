@@ -1061,21 +1061,24 @@ var SUPA_KEY = "sb_publishable_aIQtugb8f-rEkLGKAVp9vQ_LaIqVnOY";
 var DD_VERSION = "16.16.1";
 
 var borderSkins = [
-  { id: "gold", name: "黄金", dynamic: false, color: "#c89b3c" },
-  { id: "platinum", name: "铂金", dynamic: false, color: "#e8e8f0" },
-  { id: "obsidian", name: "黑曜", dynamic: false, color: "#6a3da0" },
-  { id: "emerald", name: "翡翠", dynamic: false, color: "#2ecc71" },
-  { id: "ruby", name: "烈焰", dynamic: false, color: "#e74c3c" },
-  { id: "sapphire", name: "深海", dynamic: false, color: "#3498db" },
-  { id: "rainbow", name: "彩虹", dynamic: true, color: "#ff66aa" },
-  { id: "electric", name: "闪电", dynamic: true, color: "#00d4ff" },
-  { id: "inferno", name: "炼狱", dynamic: true, color: "#ff4400" },
-  { id: "frost", name: "冰霜", dynamic: true, color: "#a8f0ff" },
-  { id: "void", name: "虚空", dynamic: true, color: "#9b30ff" },
-  { id: "holy", name: "神圣", dynamic: true, color: "#fff8dc" }
+  { num: 1,  id: "gold",      name: "黄金", dynamic: false, color: "#c89b3c" },
+  { num: 2,  id: "platinum",  name: "铂金", dynamic: false, color: "#e8e8f0" },
+  { num: 3,  id: "obsidian",  name: "黑曜", dynamic: false, color: "#6a3da0" },
+  { num: 4,  id: "emerald",   name: "翡翠", dynamic: false, color: "#2ecc71" },
+  { num: 5,  id: "ruby",      name: "烈焰", dynamic: false, color: "#e74c3c" },
+  { num: 6,  id: "sapphire",  name: "深海", dynamic: false, color: "#3498db" },
+  { num: 7,  id: "rainbow",   name: "彩虹", dynamic: true,  color: "#ff66aa" },
+  { num: 8,  id: "electric",  name: "闪电", dynamic: true,  color: "#00d4ff" },
+  { num: 9,  id: "inferno",   name: "炼狱", dynamic: true,  color: "#ff4400" },
+  { num: 10, id: "frost",     name: "冰霜", dynamic: true,  color: "#a8f0ff" },
+  { num: 11, id: "void",      name: "虚空", dynamic: true,  color: "#9b30ff" },
+  { num: 12, id: "holy",      name: "神圣", dynamic: true,  color: "#fff8dc" }
 ];
 
 var currentSkin = "gold";
+/* 皮肤编号 ⇄ id 互转（编号持久化到服务器 skin 列） */
+function skinIdToNum(id) { for (var i = 0; i < borderSkins.length; i++) { if (borderSkins[i].id === id) return borderSkins[i].num; } return 1; }
+function skinNumToId(num) { for (var i = 0; i < borderSkins.length; i++) { if (borderSkins[i].num === num) return borderSkins[i].id; } return "gold"; }
 var currentUserId = null;
 var saveTimer = null;
 var pinyinFn = null;
@@ -1190,6 +1193,12 @@ function loadProgress() {
       if (pid && rows[0].last_lol_id) {
         pid.textContent = rows[0].last_lol_id;
         hasScannedId = true;
+      }
+      /* 应用上次使用的边框皮肤 */
+      if (rows[0].skin) {
+        currentSkin = skinNumToId(parseInt(rows[0].skin, 10));
+        document.body.className = "skin-" + currentSkin;
+        renderSkinPanel();
       }
       if (rows[0].last_stats) {
         var ss = String(rows[0].last_stats).split("|");
@@ -1355,6 +1364,32 @@ function selectSkin(id) {
   currentSkin = id;
   document.body.className = "skin-" + id;
   renderSkinPanel();
+  saveSkin();
+}
+
+/* 将当前皮肤编号上传到服务器（独立请求，缺列时静默，不影响进度保存） */
+function saveSkin() {
+  if (!currentUserId) return;
+  var num = skinIdToNum(currentSkin);
+  var url = SUPA_URL + "/rest/v1/arena_progress?user_id=eq." + currentUserId;
+  fetch(url, { headers: { "apikey": SUPA_KEY, "Authorization": "Bearer " + SUPA_KEY } })
+  .then(function(r) { return r.json(); })
+  .then(function(rows) {
+    if (rows.length > 0) {
+      return fetch(SUPA_URL + "/rest/v1/arena_progress?user_id=eq." + currentUserId, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", "apikey": SUPA_KEY, "Authorization": "Bearer " + SUPA_KEY, "Prefer": "return=minimal" },
+        body: JSON.stringify({ skin: num, updated_at: new Date().toISOString() })
+      });
+    } else {
+      return fetch(SUPA_URL + "/rest/v1/arena_progress", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "apikey": SUPA_KEY, "Authorization": "Bearer " + SUPA_KEY, "Prefer": "return=minimal" },
+        body: JSON.stringify({ user_id: currentUserId, skin: num, updated_at: new Date().toISOString() })
+      });
+    }
+  })
+  .catch(function() {});
 }
 
 function toggleSkinPanel() {
