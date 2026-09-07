@@ -1459,7 +1459,7 @@ function leaveHeroDetail() {
   var g = document.getElementById("listView");
   var d = document.getElementById("detailView");
   if (g) g.style.display = "block";
-  if (d) d.style.display = "none";
+  if (d) { d.style.display = "none"; d.classList.remove("show"); }
   var st = document.getElementById("statsText");
   if (st) st.style.display = "";
 }
@@ -1522,7 +1522,7 @@ function openHeroDetail(id, title, name) {
   var d = document.getElementById("detailView");
   var st = document.getElementById("statsText");
   if (g) g.style.display = "none";
-  if (d) d.style.display = "block";
+  if (d) { d.style.display = ""; d.classList.add("show"); }
   if (st) st.style.display = "none";
   /* 默认选中第一局（第1名），渲染右侧队友详情 */
   renderMatchDetail(1);
