@@ -741,10 +741,11 @@ body.skin-holy .hd-avatar.completed { border-color: #fff8dc; animation: holyRadi
 /* 最近战绩：左列名次 + 右栏选中局队友详情 */
 .hd-match-layout { display: -webkit-flex; display: flex; -webkit-align-items: flex-start; align-items: flex-start; gap: 12px; }
 #hdMatchList { -webkit-flex: 0 0 94px; flex: 0 0 94px; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; gap: 6px; }
-#hdMatchList .hd-match { padding: 8px 0; justify-content: center; cursor: pointer; background: #0d1a26; border: 1px solid #1c2c3c; border-left: 3px solid #2c3c4c; border-radius: 3px; }
+#hdMatchList .hd-match { padding: 8px 0; justify-content: center; -webkit-flex-direction: column; flex-direction: column; gap: 4px; cursor: pointer; background: #0d1a26; border: 1px solid #1c2c3c; border-left: 3px solid #2c3c4c; border-radius: 3px; }
 #hdMatchList .hd-match:hover { border-color: #2c3c4c; }
 #hdMatchList .hd-match.active { border-color: #c89b3c; background: rgba(200,155,60,0.12); }
 #hdMatchList .hm-place { width: auto; }
+#hdMatchList .hm-date { font-size: 9px; color: #5a6a7a; letter-spacing: 1px; }
 #hdMatchDetail { -webkit-flex: 1 1 auto; flex: 1 1 auto; min-width: 0; background: #0d1a26; border: 1px solid #1c2c3c; border-radius: 3px; padding: 12px 14px; }
 .hd-md-head { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #223242; }
 .md-head-place { width: auto; }
@@ -892,12 +893,12 @@ body.skin-holy .hd-avatar.completed { border-color: #fff8dc; animation: holyRadi
       <div class="hd-section-title">最近战绩</div>
       <div class="hd-match-layout">
       <div id="hdMatchList">
-        <div class="hd-match active" onclick="showMatch(this)"><div class="hm-place p1">第1</div></div>
-        <div class="hd-match" onclick="showMatch(this)"><div class="hm-place p3">第3</div></div>
-        <div class="hd-match" onclick="showMatch(this)"><div class="hm-place p5">第5</div></div>
-        <div class="hd-match" onclick="showMatch(this)"><div class="hm-place p2">第2</div></div>
-        <div class="hd-match" onclick="showMatch(this)"><div class="hm-place p6">第6</div></div>
-        <div class="hd-match" onclick="showMatch(this)"><div class="hm-place p4">第4</div></div>
+        <div class="hd-match active" onclick="showMatch(this)"><div class="hm-place p1">第1</div><div class="hm-date">09-07</div></div>
+        <div class="hd-match" onclick="showMatch(this)"><div class="hm-place p3">第3</div><div class="hm-date">09-06</div></div>
+        <div class="hd-match" onclick="showMatch(this)"><div class="hm-place p5">第5</div><div class="hm-date">09-05</div></div>
+        <div class="hd-match" onclick="showMatch(this)"><div class="hm-place p2">第2</div><div class="hm-date">09-04</div></div>
+        <div class="hd-match" onclick="showMatch(this)"><div class="hm-place p6">第6</div><div class="hm-date">09-03</div></div>
+        <div class="hd-match" onclick="showMatch(this)"><div class="hm-place p4">第4</div><div class="hm-date">09-02</div></div>
       </div>
       <div id="hdMatchDetail">
         <div class="hd-md-head"><span class="hm-place md-head-place p1" id="hdMdPlace">第1</span><span class="md-head-txt">本局 · 队友详情</span></div>
