@@ -1285,11 +1285,10 @@ if (window.pinyinPro) {
   window.addEventListener("load", initApp);
 }
 
-/* 点击详情遮罩空白处关闭 */
+/* 点击详情遮罩背景本体才关闭（避免"打开弹窗的同一次点击"把它秒关） */
 document.addEventListener("click", function(e) {
-  var box = document.getElementById("heroDetailBox");
   var ov = document.getElementById("heroDetailOverlay");
-  if (box && ov && ov.className.indexOf("show") >= 0 && !box.contains(e.target)) {
+  if (ov && ov.className.indexOf("show") >= 0 && e.target === ov) {
     closeHeroDetail();
   }
 });
