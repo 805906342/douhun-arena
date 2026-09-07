@@ -570,43 +570,29 @@ body::before {
 .logout-btn:hover { border-color: #c89b3c; color: #c89b3c; }
 
 /* ===== Hero detail overlay (战绩详情界面，仅样式) ===== */
-.hero-detail-overlay {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(4, 10, 16, 0.78);
-  z-index: 200;
+/* ===== 英雄战绩详情视图（整页切换，非弹窗） ===== */
+.detail-view {
   display: none;
+  padding: 6px 24px 30px;
+}
+.detail-view.show { display: block; }
+.detail-topbar {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  backdrop-filter: blur(3px);
+  justify-content: space-between;
+  margin-bottom: 10px;
 }
-.hero-detail-overlay.show { display: flex; }
-.hero-detail-box {
-  width: 640px;
-  max-width: 92vw;
-  max-height: 88vh;
-  overflow-y: auto;
-  background: linear-gradient(180deg, #0c1a26 0%, #07111b 100%);
-  border: 1px solid #2a3d4f;
-  box-shadow: 0 0 0 1px rgba(200,155,60,0.25), 0 6px 30px rgba(0,0,0,0.6);
-  position: relative;
-  border-radius: 4px;
-}
-.hero-detail-close {
-  position: absolute;
-  top: 10px; right: 12px;
-  width: 28px; height: 28px;
+.detail-back {
   background: rgba(10,20,30,0.8);
   border: 1px solid #3a4a5a;
-  color: #a0b0c0;
-  font-size: 18px;
-  line-height: 26px;
-  text-align: center;
+  color: #c89b3c;
+  font-size: 13px;
+  padding: 7px 14px;
   cursor: pointer;
   border-radius: 3px;
-  z-index: 5;
 }
-.hero-detail-close:hover { border-color: #c89b3c; color: #c89b3c; }
+.detail-back:hover { border-color: #c89b3c; background: rgba(200,155,60,0.12); }
+.detail-top-title { font-size: 12px; color: #5a6a7a; letter-spacing: 2px; }
 .hero-detail-head {
   display: flex;
   align-items: center;
@@ -733,6 +719,7 @@ body::before {
     </div>
   </div>
 
+  <div id="listView">
   <div class="main-content">
     <div class="toolbar">
       <div class="search-box">
@@ -756,6 +743,38 @@ body::before {
   <div class="total-count">
     <span id="totalCompleted">0</span><svg viewBox="0 0 24 24" fill="none" stroke="#c89b3c" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
   </div>
+  </div><!-- /listView -->
+
+  <!-- ===== 视图2：英雄战绩详情（整页切换，仅样式，暂无数据） ===== -->
+  <div class="detail-view" id="detailView">
+    <div class="detail-topbar">
+      <button class="detail-back" type="button" onclick="leaveHeroDetail()">← 返回英雄界面</button>
+      <div class="detail-top-title">英雄战绩详情</div>
+    </div>
+    <div class="hero-detail-head">
+      <div class="hd-avatar" id="hdAvatar"></div>
+      <div class="hd-info">
+        <div class="hd-title" id="hdTitle">—</div>
+        <div class="hd-name" id="hdName"></div>
+        <div class="hd-hint" id="hdHint">英雄战绩 · 数据加载中</div>
+      </div>
+    </div>
+    <div class="hero-detail-body">
+      <div class="hd-section-title">综合数据</div>
+      <div class="hd-stats">
+        <div class="hd-stat-card"><div class="k">总场次</div><div class="v empty" id="hdTotal">--</div></div>
+        <div class="hd-stat-card"><div class="k">胜率</div><div class="v empty" id="hdWinRate">--</div></div>
+        <div class="hd-stat-card"><div class="k">KDA</div><div class="v empty" id="hdKda">--</div></div>
+        <div class="hd-stat-card"><div class="k">平均伤害</div><div class="v empty" id="hdDmg">--</div></div>
+      </div>
+      <div class="hd-section-title">最近战绩</div>
+      <div class="hd-history-row"><div class="hr-ph"></div><div class="hr-line"><i></i><i></i></div></div>
+      <div class="hd-history-row"><div class="hr-ph"></div><div class="hr-line"><i></i><i></i></div></div>
+      <div class="hd-history-row"><div class="hr-ph"></div><div class="hr-line"><i></i><i></i></div></div>
+      <div class="hd-empty" id="hdEmpty">暂无更多战绩数据</div>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -1242,9 +1261,11 @@ function showHdToast(msg) {
   if (hdToastTimer) clearTimeout(hdToastTimer);
   hdToastTimer = setTimeout(function() { t.className = "hd-toast"; }, 3000);
 }
-function closeHeroDetail() {
-  var ov = document.getElementById("heroDetailOverlay");
-  if (ov) ov.className = "hero-detail-overlay";
+function leaveHeroDetail() {
+  var g = document.getElementById("listView");
+  var d = document.getElementById("detailView");
+  if (g) g.style.display = "";
+  if (d) d.style.display = "none";
 }
 function openHeroDetail(id, title, name) {
   /* 未用过桌面版扫描（无 LOL ID）→ 提示 */
@@ -1252,8 +1273,6 @@ function openHeroDetail(id, title, name) {
     showHdToast("请先使用桌面版扫描英雄，获取 LOL ID 后再查看该英雄战绩");
     return;
   }
-  var ov = document.getElementById("heroDetailOverlay");
-  if (!ov) return;
   document.getElementById("hdAvatar").style.backgroundImage = "url('" + getImg(id) + "')";
   document.getElementById("hdTitle").textContent = title;
   document.getElementById("hdName").textContent = name;
@@ -1263,7 +1282,11 @@ function openHeroDetail(id, title, name) {
     var el = document.getElementById(eid);
     if (el) { el.textContent = "--"; el.className = "v empty"; }
   });
-  ov.className = "hero-detail-overlay show";
+  /* 整页切换：隐藏英雄网格，显示战绩详情视图 */
+  var g = document.getElementById("listView");
+  var d = document.getElementById("detailView");
+  if (g) g.style.display = "none";
+  if (d) d.style.display = "";
 }
 
 // ===== Init =====
@@ -1285,43 +1308,8 @@ if (window.pinyinPro) {
   window.addEventListener("load", initApp);
 }
 
-/* 点击详情遮罩背景本体才关闭（避免"打开弹窗的同一次点击"把它秒关） */
-document.addEventListener("click", function(e) {
-  var ov = document.getElementById("heroDetailOverlay");
-  if (ov && ov.className.indexOf("show") >= 0 && e.target === ov) {
-    closeHeroDetail();
-  }
-});
 </script>
 
-<!-- ===== 英雄战绩详情界面（仅样式，暂无数据） ===== -->
-<div class="hero-detail-overlay" id="heroDetailOverlay">
-  <div class="hero-detail-box" id="heroDetailBox">
-    <button class="hero-detail-close" type="button" onclick="closeHeroDetail()">✕</button>
-    <div class="hero-detail-head">
-      <div class="hd-avatar" id="hdAvatar"></div>
-      <div class="hd-info">
-        <div class="hd-title" id="hdTitle">—</div>
-        <div class="hd-name" id="hdName"></div>
-        <div class="hd-hint" id="hdHint">英雄战绩 · 数据加载中</div>
-      </div>
-    </div>
-    <div class="hero-detail-body">
-      <div class="hd-section-title">综合数据</div>
-      <div class="hd-stats">
-        <div class="hd-stat-card"><div class="k">总场次</div><div class="v empty" id="hdTotal">--</div></div>
-        <div class="hd-stat-card"><div class="k">胜率</div><div class="v empty" id="hdWinRate">--</div></div>
-        <div class="hd-stat-card"><div class="k">KDA</div><div class="v empty" id="hdKda">--</div></div>
-        <div class="hd-stat-card"><div class="k">平均伤害</div><div class="v empty" id="hdDmg">--</div></div>
-      </div>
-      <div class="hd-section-title">最近战绩</div>
-      <div class="hd-history-row"><div class="hr-ph"></div><div class="hr-line"><i></i><i></i></div></div>
-      <div class="hd-history-row"><div class="hr-ph"></div><div class="hr-line"><i></i><i></i></div></div>
-      <div class="hd-history-row"><div class="hr-ph"></div><div class="hr-line"><i></i><i></i></div></div>
-      <div class="hd-empty" id="hdEmpty">暂无更多战绩数据</div>
-    </div>
-  </div>
-</div>
 <div class="hd-toast" id="hdToast"></div>
 </body>
 </html>
