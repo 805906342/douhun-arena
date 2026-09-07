@@ -214,6 +214,17 @@ body::before {
   -webkit-flex-shrink: 0;
   flex-shrink: 0;
 }
+.player-id-box {
+  margin-left: 10px;
+  -webkit-flex-shrink: 0;
+  flex-shrink: 0;
+  font-size: 12px;
+  color: #c89b3c;
+  border-left: 1px solid rgba(120,90,40,0.35);
+  padding-left: 10px;
+  white-space: nowrap;
+}
+.player-id-box b { color: #f0e6d2; font-weight: 600; }
 .title-row {
   display: -webkit-flex;
   display: flex;
@@ -610,6 +621,7 @@ body::before {
   <div class="header">
     <div class="title-row">
       <h1>斗魂竞技场赛季旅程</h1>
+      <div class="player-id-box" id="playerIdBox">LOL ID：<b id="playerIdText"></b></div>
     </div>
   </div>
 
@@ -916,6 +928,8 @@ function doLogout() {
   isAdminMode = false;
   var badge = document.getElementById("adminBadge");
   if (badge) badge.className = "admin-badge";
+  var pid = document.getElementById("playerIdText");
+  if (pid) pid.textContent = "";
   champions.forEach(function(c) { c.completed = false; });
   document.getElementById("appContainer").style.display = "none";
   document.getElementById("loginOverlay").classList.remove("hidden");
@@ -932,13 +946,17 @@ function loadProgress() {
   .then(function(r) { return r.json(); })
   .then(function(rows) {
     champions.forEach(function(c) { c.completed = false; });
-    if (rows.length > 0 && rows[0].hero_ids) {
+    if (rows.length > 0) {
+      var pid = document.getElementById("playerIdText");
+      if (pid && rows[0].last_lol_id) pid.textContent = rows[0].last_lol_id;
+      if (rows[0].hero_ids) {
       var ids = rows[0].hero_ids.split(",");
       var idSet = {};
       ids.forEach(function(id) { idSet[id.trim()] = true; });
       champions.forEach(function(c) {
         if (idSet[c.id]) c.completed = true;
       });
+      }
     }
     renderGrid();
   })
