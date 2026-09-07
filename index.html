@@ -569,6 +569,126 @@ body::before {
 }
 .logout-btn:hover { border-color: #c89b3c; color: #c89b3c; }
 
+/* ===== Hero detail overlay (战绩详情界面，仅样式) ===== */
+.hero-detail-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(4, 10, 16, 0.78);
+  z-index: 200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(3px);
+}
+.hero-detail-overlay.show { display: flex; }
+.hero-detail-box {
+  width: 640px;
+  max-width: 92vw;
+  max-height: 88vh;
+  overflow-y: auto;
+  background: linear-gradient(180deg, #0c1a26 0%, #07111b 100%);
+  border: 1px solid #2a3d4f;
+  box-shadow: 0 0 0 1px rgba(200,155,60,0.25), 0 6px 30px rgba(0,0,0,0.6);
+  position: relative;
+  border-radius: 4px;
+}
+.hero-detail-close {
+  position: absolute;
+  top: 10px; right: 12px;
+  width: 28px; height: 28px;
+  background: rgba(10,20,30,0.8);
+  border: 1px solid #3a4a5a;
+  color: #a0b0c0;
+  font-size: 18px;
+  line-height: 26px;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 3px;
+  z-index: 5;
+}
+.hero-detail-close:hover { border-color: #c89b3c; color: #c89b3c; }
+.hero-detail-head {
+  display: flex;
+  align-items: center;
+  padding: 22px 20px 16px;
+  border-bottom: 1px solid #223242;
+  background: linear-gradient(180deg, rgba(200,155,60,0.08), rgba(10,20,30,0));
+}
+.hero-detail-head .hd-avatar {
+  width: 84px; height: 84px;
+  border: 2px solid #c89b3c;
+  box-shadow: 0 0 12px rgba(200,155,60,0.25);
+  background-size: cover;
+  background-position: center;
+  flex-shrink: 0;
+}
+.hero-detail-head .hd-info { margin-left: 16px; }
+.hero-detail-head .hd-title { font-size: 20px; font-weight: 700; color: #f0e6d2; }
+.hero-detail-head .hd-name { font-size: 14px; color: #8fa0b0; margin-top: 4px; }
+.hero-detail-head .hd-hint { font-size: 11px; color: #5a6a7a; margin-top: 8px; }
+.hero-detail-body { padding: 18px 20px 22px; }
+.hd-stats {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.hd-stat-card {
+  flex: 1;
+  background: #0d1a26;
+  border: 1px solid #223242;
+  padding: 10px 8px;
+  text-align: center;
+  border-radius: 3px;
+}
+.hd-stat-card .k { font-size: 10px; color: #7a8a9a; letter-spacing: 1px; }
+.hd-stat-card .v { font-size: 20px; font-weight: 700; color: #f0e6d2; margin-top: 4px; }
+.hd-stat-card .v.empty { color: #3a4a5a; }
+.hd-section-title {
+  font-size: 12px;
+  color: #c89b3c;
+  letter-spacing: 2px;
+  margin: 4px 0 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #223242;
+}
+.hd-history-row {
+  display: flex;
+  align-items: center;
+  padding: 9px 10px;
+  background: #0d1a26;
+  border: 1px solid #1c2c3c;
+  margin-bottom: 6px;
+  border-radius: 3px;
+}
+.hd-history-row .hr-ph { width: 30px; height: 30px; background: #162636; border-radius: 3px; flex-shrink: 0; }
+.hd-history-row .hr-line { flex: 1; margin-left: 12px; }
+.hd-history-row .hr-line i { display: block; height: 8px; background: #162636; border-radius: 2px; margin: 3px 0; }
+.hd-history-row .hr-line i:nth-child(1) { width: 55%; }
+.hd-history-row .hr-line i:nth-child(2) { width: 80%; }
+.hd-empty {
+  text-align: center;
+  color: #5a6a7a;
+  font-size: 12px;
+  padding: 18px 0;
+}
+/* 未扫描提示 toast */
+.hd-toast {
+  position: fixed;
+  bottom: 48px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1a1206;
+  border: 1px solid #c89b3c;
+  color: #f0e6d2;
+  padding: 12px 22px;
+  font-size: 13px;
+  z-index: 300;
+  border-radius: 3px;
+  display: none;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+}
+.hd-toast.show { display: block; }
+
 </style>
 </head>
 <body class="skin-gold">
@@ -838,6 +958,8 @@ var currentSkin = "gold";
 var currentUserId = null;
 var saveTimer = null;
 var pinyinFn = null;
+/* 是否已通过桌面版扫描获取过 LOL ID（用于网页版英雄战绩详情判断） */
+var hasScannedId = false;
 
 function getImg(id) {
   return "https://ddragon.leagueoflegends.com/cdn/" + DD_VERSION + "/img/champion/" + id + ".png";
@@ -933,9 +1055,13 @@ function loadProgress() {
   .then(function(r) { return r.json(); })
   .then(function(rows) {
     champions.forEach(function(c) { c.completed = false; });
+    hasScannedId = false;
     if (rows.length > 0) {
       var pid = document.getElementById("playerIdText");
-      if (pid && rows[0].last_lol_id) pid.textContent = rows[0].last_lol_id;
+      if (pid && rows[0].last_lol_id) {
+        pid.textContent = rows[0].last_lol_id;
+        hasScannedId = true;
+      }
       if (rows[0].last_stats) {
         var ss = String(rows[0].last_stats).split("|");
         setStatsDisplay(parseInt(ss[0], 10) || 0, parseInt(ss[1], 10) || 0);
@@ -1021,6 +1147,11 @@ function renderGrid() {
 
     card.className = cls;
     card.setAttribute("data-id", c.id);
+    /* 左键点击英雄 → 战绩详情（未扫描过则提示） */
+    card.onclick = function(ev) {
+      if (ev && ev.button === 2) return;
+      openHeroDetail(c.id, c.title, c.name);
+    };
 
     var portrait = document.createElement("div");
     portrait.className = "champion-portrait";
@@ -1101,9 +1232,44 @@ document.addEventListener("click", function(e) {
   }
 });
 
+// ===== 英雄战绩详情（仅界面，暂无真实数据） =====
+var hdToastTimer = null;
+function showHdToast(msg) {
+  var t = document.getElementById("hdToast");
+  if (!t) return;
+  t.textContent = msg;
+  t.className = "hd-toast show";
+  if (hdToastTimer) clearTimeout(hdToastTimer);
+  hdToastTimer = setTimeout(function() { t.className = "hd-toast"; }, 3000);
+}
+function closeHeroDetail() {
+  var ov = document.getElementById("heroDetailOverlay");
+  if (ov) ov.className = "hero-detail-overlay";
+}
+function openHeroDetail(id, title, name) {
+  /* 未用过桌面版扫描（无 LOL ID）→ 提示 */
+  if (!hasScannedId) {
+    showHdToast("请先使用桌面版扫描英雄，获取 LOL ID 后再查看该英雄战绩");
+    return;
+  }
+  var ov = document.getElementById("heroDetailOverlay");
+  if (!ov) return;
+  document.getElementById("hdAvatar").style.backgroundImage = "url('" + getImg(id) + "')";
+  document.getElementById("hdTitle").textContent = title;
+  document.getElementById("hdName").textContent = name;
+  /* 占位数据（后续接入 SGP 战绩时替换） */
+  var emptyEls = ["hdTotal", "hdWinRate", "hdKda", "hdDmg"];
+  emptyEls.forEach(function(eid) {
+    var el = document.getElementById(eid);
+    if (el) { el.textContent = "--"; el.className = "v empty"; }
+  });
+  ov.className = "hero-detail-overlay show";
+}
+
 // ===== Init =====
 function initApp() {
   pinyinFn = window.pinyinPro.pinyin;
+  hasScannedId = false;
   champions.forEach(function(c) {
     c._tp = toPinyin(c.title);
     c._np = toPinyin(c.name);
@@ -1118,6 +1284,45 @@ if (window.pinyinPro) {
 } else {
   window.addEventListener("load", initApp);
 }
+
+/* 点击详情遮罩空白处关闭 */
+document.addEventListener("click", function(e) {
+  var box = document.getElementById("heroDetailBox");
+  var ov = document.getElementById("heroDetailOverlay");
+  if (box && ov && ov.className.indexOf("show") >= 0 && !box.contains(e.target)) {
+    closeHeroDetail();
+  }
+});
 </script>
+
+<!-- ===== 英雄战绩详情界面（仅样式，暂无数据） ===== -->
+<div class="hero-detail-overlay" id="heroDetailOverlay">
+  <div class="hero-detail-box" id="heroDetailBox">
+    <button class="hero-detail-close" type="button" onclick="closeHeroDetail()">✕</button>
+    <div class="hero-detail-head">
+      <div class="hd-avatar" id="hdAvatar"></div>
+      <div class="hd-info">
+        <div class="hd-title" id="hdTitle">—</div>
+        <div class="hd-name" id="hdName"></div>
+        <div class="hd-hint" id="hdHint">英雄战绩 · 数据加载中</div>
+      </div>
+    </div>
+    <div class="hero-detail-body">
+      <div class="hd-section-title">综合数据</div>
+      <div class="hd-stats">
+        <div class="hd-stat-card"><div class="k">总场次</div><div class="v empty" id="hdTotal">--</div></div>
+        <div class="hd-stat-card"><div class="k">胜率</div><div class="v empty" id="hdWinRate">--</div></div>
+        <div class="hd-stat-card"><div class="k">KDA</div><div class="v empty" id="hdKda">--</div></div>
+        <div class="hd-stat-card"><div class="k">平均伤害</div><div class="v empty" id="hdDmg">--</div></div>
+      </div>
+      <div class="hd-section-title">最近战绩</div>
+      <div class="hd-history-row"><div class="hr-ph"></div><div class="hr-line"><i></i><i></i></div></div>
+      <div class="hd-history-row"><div class="hr-ph"></div><div class="hr-line"><i></i><i></i></div></div>
+      <div class="hd-history-row"><div class="hr-ph"></div><div class="hr-line"><i></i><i></i></div></div>
+      <div class="hd-empty" id="hdEmpty">暂无更多战绩数据</div>
+    </div>
+  </div>
+</div>
+<div class="hd-toast" id="hdToast"></div>
 </body>
 </html>
