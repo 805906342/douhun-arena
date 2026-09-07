@@ -1524,8 +1524,9 @@ function openHeroDetail(id, title, name) {
   if (g) g.style.display = "none";
   if (d) { d.style.display = ""; d.classList.add("show"); }
   if (st) st.style.display = "none";
-  /* 默认选中第一局（第1名），渲染右侧队友详情 */
-  renderMatchDetail(1);
+  /* 默认选中最近一局（左栏第一条），高亮并展示该局队友详情 */
+  var firstMatch = document.querySelector("#hdMatchList .hd-match");
+  if (firstMatch) showMatch(firstMatch); else renderMatchDetail(1);
 }
 
 // ===== Init =====
