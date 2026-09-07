@@ -898,8 +898,6 @@ body.skin-holy .hd-avatar.completed { border-color: #fff8dc; animation: holyRadi
         <div class="hd-place-cell p4"><div class="hp-tag">第4名</div><div class="hp-mid"><span class="hp-num" id="hdP4">--</span><span class="hp-unit">次</span></div><div class="hp-rate">第4率 <span id="hdP4r">--</span></div></div>
         <div class="hd-place-cell p5"><div class="hp-tag">第5名</div><div class="hp-mid"><span class="hp-num" id="hdP5">--</span><span class="hp-unit">次</span></div><div class="hp-rate">第5率 <span id="hdP5r">--</span></div></div>
         <div class="hd-place-cell p6"><div class="hp-tag">第6名</div><div class="hp-mid"><span class="hp-num" id="hdP6">--</span><span class="hp-unit">次</span></div><div class="hp-rate">第6率 <span id="hdP6r">--</span></div></div>
-        <div class="hd-place-cell p7"><div class="hp-tag">第7名</div><div class="hp-mid"><span class="hp-num" id="hdP7">--</span><span class="hp-unit">次</span></div><div class="hp-rate">第7率 <span id="hdP7r">--</span></div></div>
-        <div class="hd-place-cell p8"><div class="hp-tag">第8名</div><div class="hp-mid"><span class="hp-num" id="hdP8">--</span><span class="hp-unit">次</span></div><div class="hp-rate">第8率 <span id="hdP8r">--</span></div></div>
       </div>
       </div>
     </div>
@@ -916,16 +914,7 @@ body.skin-holy .hd-avatar.completed { border-color: #fff8dc; animation: holyRadi
         <div class="hd-match" onclick="showMatch(this)"><div class="hm-place p4">第4</div><div class="hm-date">09-02</div></div>
       </div>
       <div id="hdMatchDetail">
-        <div class="hd-md-list">
-        <div class="hd-md-row own" id="mdRow1"><div class="md-rank">第1名</div><div class="hd-md-team"></div></div>
-        <div class="hd-md-row" id="mdRow2"><div class="md-rank">第2名</div><div class="hd-md-team"></div></div>
-        <div class="hd-md-row" id="mdRow3"><div class="md-rank">第3名</div><div class="hd-md-team"></div></div>
-        <div class="hd-md-row" id="mdRow4"><div class="md-rank">第4名</div><div class="hd-md-team"></div></div>
-        <div class="hd-md-row" id="mdRow5"><div class="md-rank">第5名</div><div class="hd-md-team"></div></div>
-        <div class="hd-md-row" id="mdRow6"><div class="md-rank">第6名</div><div class="hd-md-team"></div></div>
-        <div class="hd-md-row" id="mdRow7"><div class="md-rank">第7名</div><div class="hd-md-team"></div></div>
-        <div class="hd-md-row" id="mdRow8"><div class="md-rank">第8名</div><div class="hd-md-team"></div></div>
-        </div>
+        <div class="hd-md-list" id="hdMdList"></div>
       </div>
       </div>
       <div class="hd-empty" id="hdEmpty">暂无更多战绩</div>
@@ -1539,47 +1528,30 @@ function getImgByChampionName(en) {
   }
   return "";
 }
-/* 单局详情：按名次渲染右侧 8 行（斗魂每名次是一队） */
+/* 单局详情：固定6队（斗魂第1~6名），每名次一队 */
 function renderGameDetail(gameId) {
-  var rows = document.querySelectorAll(".hd-md-row");
-  for (var i = 0; i < rows.length; i++) {
-    rows[i].classList.remove("own");
-    rows[i].style.display = "none";
-    var tm = rows[i].querySelector(".hd-md-team");
-    if (tm) tm.innerHTML = "";
-    var rk = rows[i].querySelector(".md-rank");
-    if (rk) rk.textContent = "第" + (i + 1) + "名";
-  }
-  var mdRow1 = document.querySelector("#mdRow1 .md-rank");
-  if (mdRow1) mdRow1.textContent = "…";
+  var list = document.getElementById("hdMdList");
+  if (!list) return;
+  list.innerHTML = "";
   if (!gameId) return;
-  var selfRowEls = {};
   sbFetch("arena_matches?game_id=eq." + gameId + "&select=*")
   .then(function(parts) {
-    parts.sort(function(a, b) { return (a.placement || 8) - (b.placement || 8); });
+    var selfPlc = -1;
+    parts.forEach(function(p) { if (p.is_self) selfPlc = p.placement; });
     var byPlc = {};
     parts.forEach(function(p) {
-      var pl = p.placement || 8;
+      var pl = p.placement || 99;
       if (!byPlc[pl]) byPlc[pl] = [];
       byPlc[pl].push(p);
     });
-    Object.keys(byPlc).forEach(function(pl) {
-      var idx = parseInt(pl, 10);
-      var row = document.getElementById("mdRow" + idx);
-      if (!row) return;
-      row.style.display = "";
-      var tm = row.querySelector(".hd-md-team");
+    for (var i = 1; i <= 6; i++) {
+      var row = document.createElement("div");
+      row.className = "hd-md-row" + (i === selfPlc ? " own" : "");
       var cards = "";
-      byPlc[pl].forEach(function(p) { cards += makePlayerCard(p); if (p.is_self) selfRowEls[idx] = true; });
-      tm.innerHTML = cards;
-      if (selfRowEls[idx]) row.classList.add("own");
-    });
-    /* 高亮本人行 */
-    for (var k = 1; k <= 8; k++) {
-      if (selfRowEls[k]) {
-        var rowk = document.getElementById("mdRow" + k);
-        if (rowk) rowk.classList.add("own");
-      }
+      var gp = byPlc[i];
+      if (gp) gp.forEach(function(p) { cards += makePlayerCard(p); });
+      row.innerHTML = '<div class="md-rank">第' + i + '名</div><div class="hd-md-team">' + cards + '</div>';
+      list.appendChild(row);
     }
   })
   .catch(function() {});
@@ -1602,20 +1574,19 @@ function loadHeroDetailData() {
   .then(function(rows) {
     hdCtx.matches = rows || [];
     var n = hdCtx.matches.length;
-    /* 头部统计 */
+    /* 头部统计：固定6队（斗魂第1~6名） */
     var setT = function(id, v) { var el = document.getElementById(id); if (el) el.textContent = v; };
     setT("hdGames", n);
-    setT("hdPickRate", "--");
-    var cnt = {1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0};
-    for (var i = 0; i < n; i++) {
-      var p = hdCtx.matches[i].placement || 8;
-      if (cnt[p] !== undefined) cnt[p]++;
+    var cnt = {1:0,2:0,3:0,4:0,5:0,6:0};
+    for (var x = 0; x < n; x++) {
+      var plc = hdCtx.matches[x].placement;
+      if (plc >= 1 && plc <= 6) cnt[plc]++;
     }
-    for (var k = 1; k <= 8; k++) {
+    for (var k = 1; k <= 6; k++) {
       setT("hdP" + k, cnt[k]);
       setT("hdP" + k + "r", n > 0 ? (Math.round(cnt[k] * 1000 / n) / 10) + "%" : "0%");
     }
-    /* 左栏最近战绩列表 */
+    /* 左栏最近战绩列表（固定名次显示） */
     var list = document.getElementById("hdMatchList");
     if (list) list.innerHTML = "";
     if (n === 0) {
@@ -1634,7 +1605,8 @@ function loadHeroDetailData() {
       item.className = "hd-match" + (j === 0 ? " active" : "");
       item.setAttribute("data-gid", m.game_id);
       item.onclick = function() { showMatch(this); };
-      item.innerHTML = '<div class="hm-place p' + (m.placement || 8) + '">第' + (m.placement || 8) + '</div>' +
+      var plc = m.placement || 6;
+      item.innerHTML = '<div class="hm-place p' + plc + '">第' + plc + '</div>' +
         '<div class="hm-date">' + mm + "-" + dd + '</div>';
       list.appendChild(item);
     }
