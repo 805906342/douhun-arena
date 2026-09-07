@@ -622,6 +622,7 @@ body::before {
     <div class="title-row">
       <h1>斗魂竞技场赛季旅程</h1>
       <div class="player-id-box" id="playerIdBox">LOL ID：<b id="playerIdText"></b></div>
+      <div class="player-id-box" id="statsText">斗魂 0 场 / 第一名 0 次</div>
     </div>
   </div>
 
@@ -930,12 +931,19 @@ function doLogout() {
   if (badge) badge.className = "admin-badge";
   var pid = document.getElementById("playerIdText");
   if (pid) pid.textContent = "";
+  setStatsDisplay(0, 0);
   champions.forEach(function(c) { c.completed = false; });
   document.getElementById("appContainer").style.display = "none";
   document.getElementById("loginOverlay").classList.remove("hidden");
   document.getElementById("loginUser").value = "";
   document.getElementById("loginPass").value = "";
   renderGrid();
+}
+
+// Show stats next to the LoL ID
+function setStatsDisplay(cherry, first) {
+  var el = document.getElementById("statsText");
+  if (el) el.textContent = "斗魂 " + (cherry || 0) + " 场 / 第一名 " + (first || 0) + " 次";
 }
 
 // ===== Supabase progress =====
@@ -949,6 +957,10 @@ function loadProgress() {
     if (rows.length > 0) {
       var pid = document.getElementById("playerIdText");
       if (pid && rows[0].last_lol_id) pid.textContent = rows[0].last_lol_id;
+      if (rows[0].last_stats) {
+        var ss = String(rows[0].last_stats).split("|");
+        setStatsDisplay(parseInt(ss[0], 10) || 0, parseInt(ss[1], 10) || 0);
+      }
       if (rows[0].hero_ids) {
       var ids = rows[0].hero_ids.split(",");
       var idSet = {};
