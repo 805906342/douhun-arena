@@ -140,6 +140,29 @@ body::before {
   margin-top: 10px;
   min-height: 16px;
 }
+.login-download {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(120,90,40,0.3);
+  text-align: center;
+}
+.download-btn {
+  display: inline-block;
+  padding: 8px 22px;
+  background: linear-gradient(180deg, #c89b3c 0%, #a87b28 100%);
+  color: #0a1a2a;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 3px;
+  text-decoration: none;
+  border: 1px solid #e0c78a;
+}
+.download-btn:hover { background: linear-gradient(180deg, #d8a84e 0%, #b88a30 100%); }
+.download-time {
+  margin-top: 8px;
+  font-size: 11px;
+  color: #5a6a7a;
+}
 .admin-row {
   display: flex;
   align-items: center;
@@ -606,6 +629,10 @@ body::before {
     </div>
     <button class="login-submit" id="loginSubmit" type="button" onclick="submitAuth()">登录</button>
     <div class="login-error" id="loginError"></div>
+    <div class="login-download">
+      <a class="download-btn" href="download/LoLArena.exe" download>下载 Windows 桌面版</a>
+      <div class="download-time">最近更新：2026-09-07</div>
+    </div>
   </div>
 </div>
 
