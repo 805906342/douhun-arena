@@ -1548,9 +1548,13 @@ function renderGameDetail(gameId) {
       var row = document.createElement("div");
       row.className = "hd-md-row" + (i === selfPlc ? " own" : "");
       var cards = "";
-      var gp = byPlc[i];
-      if (gp) gp.forEach(function(p) { cards += makePlayerCard(p); });
-      row.innerHTML = '<div class="md-rank">第' + i + '名</div><div class="hd-md-team">' + cards + '</div>';
+      var inner = '<div class="md-rank">第' + i + '名</div>';
+      if (i === selfPlc) {
+        var gp = byPlc[i];
+        if (gp) gp.forEach(function(p) { cards += makePlayerCard(p); });
+        inner += '<div class="hd-md-team">' + cards + '</div>';
+      }
+      row.innerHTML = inner;
       list.appendChild(row);
     }
   })
