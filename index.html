@@ -582,6 +582,10 @@ body::before {
 .detail-view {
   display: none;
   padding: 6px 24px 30px;
+  -webkit-flex: 1 1 auto;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
 }
 .detail-view.show { display: block; }
 .detail-topbar {
@@ -737,12 +741,12 @@ body.skin-holy .hd-avatar.completed { border-color: #fff8dc; animation: holyRadi
 .hm-dmg { font-size: 11px; color: #c89b3c; text-align: right; width: 60px; white-space: nowrap; margin-left: 10px; }
 /* 最近战绩：左列名次 + 右栏选中局队友详情 */
 .hd-match-layout { display: -webkit-flex; display: flex; -webkit-align-items: flex-start; align-items: flex-start; gap: 12px; }
-#hdMatchList { -webkit-flex: 0 0 94px; flex: 0 0 94px; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; gap: 6px; }
-#hdMatchList .hd-match { padding: 8px 0; justify-content: center; -webkit-flex-direction: column; flex-direction: column; gap: 4px; cursor: pointer; background: #0d1a26; border: 1px solid #1c2c3c; border-left: 3px solid #2c3c4c; border-radius: 3px; }
+#hdMatchList { -webkit-flex: 0 0 210px; flex: 0 0 210px; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; gap: 9px; }
+#hdMatchList .hd-match { padding: 13px 8px; justify-content: center; -webkit-flex-direction: column; flex-direction: column; gap: 6px; cursor: pointer; background: #0d1a26; border: 1px solid #1c2c3c; border-left: 3px solid #2c3c4c; border-radius: 3px; }
 #hdMatchList .hd-match:hover { border-color: #2c3c4c; }
 #hdMatchList .hd-match.active { border-color: #c89b3c; background: rgba(200,155,60,0.12); }
-#hdMatchList .hm-place { width: auto; }
-#hdMatchList .hm-date { font-size: 9px; color: #5a6a7a; letter-spacing: 1px; }
+#hdMatchList .hm-place { width: auto; font-size: 18px; }
+#hdMatchList .hm-date { font-size: 14px; color: #8fa0b0; letter-spacing: 1px; }
 #hdMatchDetail { -webkit-flex: 1 1 auto; flex: 1 1 auto; min-width: 0; background: #0d1a26; border: 1px solid #1c2c3c; border-radius: 3px; padding: 12px 14px; }
 .hd-md-head { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid #223242; }
 .md-head-place { width: auto; }
