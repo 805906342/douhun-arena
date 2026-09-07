@@ -660,6 +660,23 @@ body::before {
 .hd-place-cell.p1 { border-color: rgba(200,155,60,0.45); background: linear-gradient(180deg, rgba(200,155,60,0.12), #0d1a26); }
 .hd-place-cell.p1 .hp-tag { color: #c89b3c; }
 .hd-place-cell.p2 .hp-tag, .hd-place-cell.p3 .hp-tag { color: #c6cdd6; }
+.hd-arena {
+  margin-left: auto;
+  margin-left: 24px;
+  -webkit-flex: 1 1 auto;
+  flex: 1 1 auto;
+  min-width: 0;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+}
+.hero-detail-head .hd-season-games { margin-bottom: 7px; padding: 8px 12px; }
+.hero-detail-head .hd-season-games b { font-size: 20px; }
+.hero-detail-head .hd-place-grid { margin-bottom: 0; gap: 5px; }
+.hero-detail-head .hd-place-cell { min-width: 0; -webkit-flex: 1 1 23%; flex: 1 1 23%; padding: 6px 4px; }
+.hero-detail-head .hd-place-cell .hp-mid { margin: 3px 0 2px; }
+.hero-detail-head .hd-place-cell .hp-num { font-size: 16px; }
 .hd-section-title {
   font-size: 12px;
   color: #c89b3c;
@@ -818,9 +835,7 @@ body::before {
         <div class="hd-name" id="hdName"></div>
         <div class="hd-hint" id="hdHint">英雄战绩 · 数据加载中</div>
       </div>
-    </div>
-    <div class="hero-detail-body">
-      
+      <div class="hd-arena">
       <div class="hd-season-games">本赛季斗魂 <b id="hdGames">--</b> 场</div>
       <div class="hd-place-grid">
         <div class="hd-place-cell p1"><div class="hp-tag">第1名</div><div class="hp-mid"><span class="hp-num" id="hdP1">--</span><span class="hp-unit">次</span></div><div class="hp-rate">第1率 <span id="hdP1r">--</span></div></div>
@@ -832,6 +847,10 @@ body::before {
         <div class="hd-place-cell p7"><div class="hp-tag">第7名</div><div class="hp-mid"><span class="hp-num" id="hdP7">--</span><span class="hp-unit">次</span></div><div class="hp-rate">第7率 <span id="hdP7r">--</span></div></div>
         <div class="hd-place-cell p8"><div class="hp-tag">第8名</div><div class="hp-mid"><span class="hp-num" id="hdP8">--</span><span class="hp-unit">次</span></div><div class="hp-rate">第8率 <span id="hdP8r">--</span></div></div>
       </div>
+      </div>
+    </div>
+    <div class="hero-detail-body">
+      
       <div class="hd-section-title">最近战绩</div>
       <div id="hdMatchList">
         <div class="hd-match p-win"><div class="hm-place p1">第1</div><div class="hm-champ"></div><div class="hm-info"><div class="hm-name">—</div><div class="hm-meta">— · --:--</div></div><div class="hm-kda">-- / -- / --</div><div class="hm-dmg">--</div></div>
