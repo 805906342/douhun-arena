@@ -704,18 +704,21 @@ body::before {
 /* 未扫描提示 toast */
 .hd-toast {
   position: fixed;
-  bottom: 48px;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
   background: #1a1206;
   border: 1px solid #c89b3c;
   color: #f0e6d2;
-  padding: 12px 22px;
-  font-size: 13px;
+  padding: 20px 32px;
+  font-size: 15px;
   z-index: 300;
-  border-radius: 3px;
+  border-radius: 6px;
   display: none;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+  text-align: center;
+  max-width: 78%;
+  line-height: 1.6;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.65);
 }
 .hd-toast.show { display: block; }
 
@@ -760,7 +763,7 @@ body::before {
       <h1>斗魂竞技场赛季旅程</h1>
       <div class="player-id-box" id="playerIdBox">LOL ID：<b id="playerIdText"></b></div>
     </div>
-    <div class="placement-bar" id="statsText">本赛季斗魂 0 场：第一名 0 次，第二名 0 次，第三名 0 次，第四名 0 次，第五名 0 次，第六名 0 次，第七名 0 次，第八名 0 次</div>
+    <div class="placement-bar" id="statsText">请先使用桌面版读取数据</div>
   </div>
 
   <div id="listView">
@@ -1100,7 +1103,8 @@ function doLogout() {
   currentUserId = null;
   var pid = document.getElementById("playerIdText");
   if (pid) pid.textContent = "";
-  setStatsDisplay(0);
+  var st = document.getElementById("statsText");
+  if (st) st.textContent = "请先使用桌面版读取数据";
   champions.forEach(function(c) { c.completed = false; });
   document.getElementById("appContainer").style.display = "none";
   document.getElementById("loginOverlay").classList.remove("hidden");
@@ -1334,7 +1338,7 @@ function leaveHeroDetail() {
 function openHeroDetail(id, title, name) {
   /* 未用过桌面版扫描（无 LOL ID）→ 提示 */
   if (!hasScannedId) {
-    showHdToast("请先使用桌面版扫描英雄，获取 LOL ID 后再查看该英雄战绩");
+    showHdToast("请先使用桌面版读取数据");
     return;
   }
   document.getElementById("hdAvatar").style.backgroundImage = "url('" + getImg(id) + "')";
