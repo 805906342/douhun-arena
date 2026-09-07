@@ -849,7 +849,7 @@ body.skin-holy .hd-avatar.completed { border-color: #fff8dc; animation: holyRadi
         <div class="hd-hint" id="hdHint">英雄战绩 · 数据加载中</div>
       </div>
       <div class="hd-arena">
-      <div class="hd-season-games">本赛季斗魂 <b id="hdGames">--</b> 场</div>
+      <div class="hd-season-games">使用 <b id="hdGames">--</b> 场 · 选取率 <b id="hdPickRate">--</b>%</div>
       <div class="hd-place-grid">
         <div class="hd-place-cell p1"><div class="hp-tag">第1名</div><div class="hp-mid"><span class="hp-num" id="hdP1">--</span><span class="hp-unit">次</span></div><div class="hp-rate">第1率 <span id="hdP1r">--</span></div></div>
         <div class="hd-place-cell p2"><div class="hp-tag">第2名</div><div class="hp-mid"><span class="hp-num" id="hdP2">--</span><span class="hp-unit">次</span></div><div class="hp-rate">第2率 <span id="hdP2r">--</span></div></div>
@@ -1436,7 +1436,7 @@ function openHeroDetail(id, title, name) {
   document.getElementById("hdTitle").textContent = title;
   document.getElementById("hdName").textContent = name;
   /* 赛季名次数据（后续接入 SGP 战绩时替换） */
-  var emptyEls = ["hdGames", "hdP1", "hdP2", "hdP3", "hdP4", "hdP5", "hdP6", "hdP7", "hdP8", "hdP1r", "hdP2r", "hdP3r", "hdP4r", "hdP5r", "hdP6r", "hdP7r", "hdP8r"];
+  var emptyEls = ["hdGames", "hdPickRate", "hdP1", "hdP2", "hdP3", "hdP4", "hdP5", "hdP6", "hdP7", "hdP8", "hdP1r", "hdP2r", "hdP3r", "hdP4r", "hdP5r", "hdP6r", "hdP7r", "hdP8r"];
   emptyEls.forEach(function(eid) {
     var el = document.getElementById(eid);
     if (el) el.textContent = "--";
