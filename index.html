@@ -163,41 +163,6 @@ body::before {
   font-size: 11px;
   color: #5a6a7a;
 }
-.admin-row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 4px 0 2px;
-}
-.admin-row input[type="checkbox"] {
-  width: 14px;
-  height: 14px;
-  margin: 0 6px 0 0;
-  cursor: pointer;
-  accent-color: #c89b3c;
-}
-.admin-row label {
-  font-size: 13px;
-  color: #c8a060;
-  cursor: pointer;
-  user-select: none;
-}
-.admin-badge {
-  display: none;
-  position: fixed;
-  top: 8px;
-  right: 110px;
-  background: rgba(200,155,60,0.15);
-  border: 1px solid #c89b3c;
-  color: #c89b3c;
-  font-size: 11px;
-  padding: 2px 8px;
-  border-radius: 3px;
-  z-index: 100;
-  pointer-events: none;
-}
-.admin-badge.show { display: block; }
-
 /* App container */
 .app-container {
   position: relative;
@@ -623,10 +588,6 @@ body::before {
       <label>密码</label>
       <input type="password" id="loginPass" placeholder="请输入密码" autocomplete="current-password">
     </div>
-    <div class="admin-row">
-      <input type="checkbox" id="adminCheck">
-      <label for="adminCheck">管理员登录</label>
-    </div>
     <button class="login-submit" id="loginSubmit" type="button" onclick="submitAuth()">登录</button>
     <div class="login-error" id="loginError"></div>
     <div class="login-download">
@@ -642,7 +603,6 @@ body::before {
   <div class="corner corner-bl"></div>
   <div class="corner corner-br"></div>
 
-  <div class="admin-badge" id="adminBadge">管理员模式</div>
   <button class="logout-btn" id="logoutBtn" type="button" onclick="doLogout()">退出登录</button>
 
   <div class="header">
@@ -876,7 +836,6 @@ var borderSkins = [
 
 var currentSkin = "gold";
 var currentUserId = null;
-var isAdminMode = false;
 var saveTimer = null;
 var pinyinFn = null;
 
@@ -937,10 +896,6 @@ function submitAuth() {
       return;
     }
     currentUserId = res.data.user.id;
-    isAdminMode = document.getElementById("adminCheck").checked;
-    var badge = document.getElementById("adminBadge");
-    if (badge) { if (isAdminMode) badge.className = "admin-badge show"; else badge.className = "admin-badge"; }
-    document.getElementById("adminCheck").checked = false;
     document.getElementById("loginOverlay").classList.add("hidden");
     document.getElementById("appContainer").style.display = "";
     loadProgress();
@@ -953,9 +908,6 @@ function submitAuth() {
 
 function doLogout() {
   currentUserId = null;
-  isAdminMode = false;
-  var badge = document.getElementById("adminBadge");
-  if (badge) badge.className = "admin-badge";
   var pid = document.getElementById("playerIdText");
   if (pid) pid.textContent = "";
   setStatsDisplay(0, 0);
@@ -1069,13 +1021,6 @@ function renderGrid() {
 
     card.className = cls;
     card.setAttribute("data-id", c.id);
-    card.onclick = function() { if (!isAdminMode) return; adminUncompleteChamp(c.id); };
-    card.oncontextmenu = function(e) {
-      if (!isAdminMode) return;
-      e.preventDefault();
-      adminCompleteChamp(c.id);
-      return false;
-    };
 
     var portrait = document.createElement("div");
     portrait.className = "champion-portrait";
@@ -1096,43 +1041,6 @@ function renderGrid() {
   });
 
   updateCount();
-}
-
-function toggleChamp(id) {
-  for (var i = 0; i < champions.length; i++) {
-    if (champions[i].id === id) {
-      champions[i].completed = !champions[i].completed;
-      break;
-    }
-  }
-  renderGrid();
-  saveProgress();
-}
-
-function adminCompleteChamp(id) {
-  for (var i = 0; i < champions.length; i++) {
-    if (champions[i].id === id) {
-      if (!champions[i].completed) {
-        champions[i].completed = true;
-        renderGrid();
-        saveProgress();
-      }
-      break;
-    }
-  }
-}
-
-function adminUncompleteChamp(id) {
-  for (var i = 0; i < champions.length; i++) {
-    if (champions[i].id === id) {
-      if (champions[i].completed) {
-        champions[i].completed = false;
-        renderGrid();
-        saveProgress();
-      }
-      break;
-    }
-  }
 }
 
 function updateCount() {
