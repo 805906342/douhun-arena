@@ -1214,10 +1214,10 @@ function doLogout() {
 function setStatsDisplay(cherry, counts) {
   var el = document.getElementById("statsText");
   if (!el) return;
-  if (!counts) counts = [0, 0, 0, 0, 0, 0, 0, 0];
-  var names = ["第一名", "第二名", "第三名", "第四名", "第五名", "第六名", "第七名", "第八名"];
+  if (!counts) counts = [0, 0, 0, 0, 0, 0];
+  var names = ["第一名", "第二名", "第三名", "第四名", "第五名", "第六名"];
   var c = [];
-  for (var i = 0; i < 8; i++) {
+  for (var i = 0; i < 6; i++) {
     c.push(names[i] + " " + (counts[i] || 0) + " 次");
   }
   el.textContent = "本赛季斗魂 " + (cherry || 0) + " 场：" + c.join("，") + "。";
@@ -1248,11 +1248,11 @@ function loadProgress() {
         var ss = String(rows[0].last_stats).split("|");
         var cherry = parseInt(ss[0], 10) || 0;
         var counts = [];
-        if (ss.length >= 9) {
-          for (var i = 1; i <= 8; i++) counts.push(parseInt(ss[i], 10) || 0);
+        if (ss.length >= 7) {
+          for (var i = 1; i <= 6; i++) counts.push(parseInt(ss[i], 10) || 0);
         } else {
           // 旧格式（场数|第一名次数）：其余名次暂时记 0
-          counts = [parseInt(ss[1], 10) || 0, 0, 0, 0, 0, 0, 0, 0];
+          counts = [parseInt(ss[1], 10) || 0, 0, 0, 0, 0, 0];
         }
         setStatsDisplay(cherry, counts);
       }
