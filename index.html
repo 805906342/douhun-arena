@@ -738,6 +738,31 @@ body.skin-holy .hd-avatar.completed { border-color: #fff8dc; animation: holyRadi
 .hm-kda { font-size: 12px; color: #8fa0b0; font-family: Consolas, Menlo, monospace; white-space: nowrap; margin-left: 8px; }
 .hm-kda b { color: #f0e6d2; font-weight: 600; }
 .hm-dmg { font-size: 11px; color: #c89b3c; text-align: right; width: 60px; white-space: nowrap; margin-left: 10px; }
+/* 最近战绩：左列名次 + 右栏选中局队友详情 */
+.hd-match-layout { display: -webkit-flex; display: flex; -webkit-align-items: flex-start; align-items: flex-start; gap: 12px; }
+#hdMatchList { -webkit-flex: 0 0 94px; flex: 0 0 94px; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; gap: 6px; }
+#hdMatchList .hd-match { padding: 8px 0; justify-content: center; cursor: pointer; background: #0d1a26; border: 1px solid #1c2c3c; border-left: 3px solid #2c3c4c; border-radius: 3px; }
+#hdMatchList .hd-match:hover { border-color: #2c3c4c; }
+#hdMatchList .hd-match.active { border-color: #c89b3c; background: rgba(200,155,60,0.12); }
+#hdMatchList .hm-place { width: auto; }
+#hdMatchDetail { -webkit-flex: 1 1 auto; flex: 1 1 auto; min-width: 0; background: #0d1a26; border: 1px solid #1c2c3c; border-radius: 3px; padding: 12px 14px; }
+.hd-md-head { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #223242; }
+.md-head-place { width: auto; }
+.md-head-txt { font-size: 13px; color: #e0d0b0; letter-spacing: 1px; margin-left: 8px; }
+.hd-md-list { display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; gap: 6px; }
+.hd-md-row { background: #0a141f; border: 1px solid #1c2c3c; border-radius: 3px; padding: 7px 10px; }
+.hd-md-row .md-rank { font-size: 11px; color: #5a6a7a; letter-spacing: 1px; }
+.hd-md-row.own { border-color: rgba(200,155,60,0.45); background: linear-gradient(180deg, rgba(200,155,60,0.08), #0a141f); }
+.hd-md-row.own .md-rank { color: #c89b3c; font-weight: 700; }
+.hd-md-team { display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; gap: 6px; margin-top: 8px; }
+.hd-md-p { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; padding: 7px 9px; background: #101c28; border: 1px solid #223242; border-left: 3px solid #2c3c4c; border-radius: 3px; }
+.md-champ { width: 26px; height: 26px; background: #162636 no-repeat center / cover; border: 1px solid #223242; border-radius: 3px; -webkit-flex-shrink: 0; flex-shrink: 0; }
+.md-id { width: 120px; margin-left: 9px; font-size: 12px; color: #e0d0b0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; -webkit-flex-shrink: 0; flex-shrink: 0; }
+.md-runes { display: -webkit-flex; display: flex; gap: 3px; margin-left: auto; }
+.md-runes i { width: 16px; height: 16px; background: #1a2a3a; border: 1px solid #223242; border-radius: 2px; }
+.md-items { display: -webkit-flex; display: flex; gap: 3px; margin-left: 12px; }
+.md-items i { width: 22px; height: 22px; background: #1a2a3a; border: 1px solid #223242; border-radius: 2px; }
+.md-kda { font-size: 12px; color: #8fa0b0; font-family: Consolas, Menlo, monospace; white-space: nowrap; margin-left: 12px; }
 .hd-empty {
   text-align: center;
   color: #5a6a7a;
@@ -865,13 +890,28 @@ body.skin-holy .hd-avatar.completed { border-color: #fff8dc; animation: holyRadi
     <div class="hero-detail-body">
       
       <div class="hd-section-title">最近战绩</div>
+      <div class="hd-match-layout">
       <div id="hdMatchList">
-        <div class="hd-match p-win"><div class="hm-place p1">第1</div><div class="hm-champ"></div><div class="hm-info"><div class="hm-name">—</div><div class="hm-meta">— · --:--</div></div><div class="hm-kda">-- / -- / --</div><div class="hm-dmg">--</div></div>
-        <div class="hd-match"><div class="hm-place p3">第3</div><div class="hm-champ"></div><div class="hm-info"><div class="hm-name">—</div><div class="hm-meta">— · --:--</div></div><div class="hm-kda">-- / -- / --</div><div class="hm-dmg">--</div></div>
-        <div class="hd-match"><div class="hm-place p5">第5</div><div class="hm-champ"></div><div class="hm-info"><div class="hm-name">—</div><div class="hm-meta">— · --:--</div></div><div class="hm-kda">-- / -- / --</div><div class="hm-dmg">--</div></div>
-        <div class="hd-match"><div class="hm-place p2">第2</div><div class="hm-champ"></div><div class="hm-info"><div class="hm-name">—</div><div class="hm-meta">— · --:--</div></div><div class="hm-kda">-- / -- / --</div><div class="hm-dmg">--</div></div>
-        <div class="hd-match"><div class="hm-place p6">第6</div><div class="hm-champ"></div><div class="hm-info"><div class="hm-name">—</div><div class="hm-meta">— · --:--</div></div><div class="hm-kda">-- / -- / --</div><div class="hm-dmg">--</div></div>
-        <div class="hd-match"><div class="hm-place p4">第4</div><div class="hm-champ"></div><div class="hm-info"><div class="hm-name">—</div><div class="hm-meta">— · --:--</div></div><div class="hm-kda">-- / -- / --</div><div class="hm-dmg">--</div></div>
+        <div class="hd-match active" onclick="showMatch(this)"><div class="hm-place p1">第1</div></div>
+        <div class="hd-match" onclick="showMatch(this)"><div class="hm-place p3">第3</div></div>
+        <div class="hd-match" onclick="showMatch(this)"><div class="hm-place p5">第5</div></div>
+        <div class="hd-match" onclick="showMatch(this)"><div class="hm-place p2">第2</div></div>
+        <div class="hd-match" onclick="showMatch(this)"><div class="hm-place p6">第6</div></div>
+        <div class="hd-match" onclick="showMatch(this)"><div class="hm-place p4">第4</div></div>
+      </div>
+      <div id="hdMatchDetail">
+        <div class="hd-md-head"><span class="hm-place md-head-place p1" id="hdMdPlace">第1</span><span class="md-head-txt">本局 · 队友详情</span></div>
+        <div class="hd-md-list">
+        <div class="hd-md-row own" id="mdRow1"><div class="md-rank">第1名</div><div class="hd-md-team"></div></div>
+        <div class="hd-md-row" id="mdRow2"><div class="md-rank">第2名</div><div class="hd-md-team"></div></div>
+        <div class="hd-md-row" id="mdRow3"><div class="md-rank">第3名</div><div class="hd-md-team"></div></div>
+        <div class="hd-md-row" id="mdRow4"><div class="md-rank">第4名</div><div class="hd-md-team"></div></div>
+        <div class="hd-md-row" id="mdRow5"><div class="md-rank">第5名</div><div class="hd-md-team"></div></div>
+        <div class="hd-md-row" id="mdRow6"><div class="md-rank">第6名</div><div class="hd-md-team"></div></div>
+        <div class="hd-md-row" id="mdRow7"><div class="md-rank">第7名</div><div class="hd-md-team"></div></div>
+        <div class="hd-md-row" id="mdRow8"><div class="md-rank">第8名</div><div class="hd-md-team"></div></div>
+        </div>
+      </div>
       </div>
       <div class="hd-empty" id="hdEmpty">暂无更多战绩</div>
     </div>
@@ -1422,6 +1462,41 @@ function leaveHeroDetail() {
   var st = document.getElementById("statsText");
   if (st) st.style.display = "";
 }
+/* 最近战绩：右侧某一局详情 —— 生成一名队友的详细数据卡（占位） */
+function makeTeammateCard() {
+  return '<div class="hd-md-p"><div class="md-champ"></div><div class="md-id">昵称#1234</div><div class="md-runes"><i></i><i></i><i></i><i></i></div><div class="md-items"><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="md-kda">--/--/--</div></div>';
+}
+/* 将本局「队友详情」渲染到第 n 名的名次行，其余名次仅保留文字 */
+function renderMatchDetail(n) {
+  var rows = document.querySelectorAll(".hd-md-row");
+  for (var i = 0; i < rows.length; i++) {
+    rows[i].classList.remove("own");
+    var tm = rows[i].querySelector(".hd-md-team");
+    if (tm) tm.innerHTML = "";
+  }
+  var row = document.getElementById("mdRow" + n);
+  if (row) {
+    row.classList.add("own");
+    var tt = row.querySelector(".hd-md-team");
+    if (tt) tt.innerHTML = makeTeammateCard() + makeTeammateCard() + makeTeammateCard();
+  }
+  var hp = document.getElementById("hdMdPlace");
+  if (hp) {
+    hp.textContent = "第" + n;
+    hp.className = "hm-place md-head-place" + (n <= 3 ? " p" + n : "");
+  }
+}
+/* 点击左栏某条（某名次）→ 高亮并在右侧展示该局队友详情 */
+function showMatch(el) {
+  var all = document.querySelectorAll("#hdMatchList .hd-match");
+  for (var i = 0; i < all.length; i++) all[i].classList.remove("active");
+  el.classList.add("active");
+  var ph = el.querySelector(".hm-place");
+  var t = ph ? ph.textContent : "";
+  var n = parseInt(t.replace(/\D/g, ""), 10);
+  if (!n) n = 1;
+  renderMatchDetail(n);
+}
 function openHeroDetail(id, title, name) {
   /* 未用过桌面版扫描（无 LOL ID）→ 提示 */
   if (!hasScannedId) {
@@ -1448,6 +1523,8 @@ function openHeroDetail(id, title, name) {
   if (g) g.style.display = "none";
   if (d) d.style.display = "block";
   if (st) st.style.display = "none";
+  /* 默认选中第一局（第1名），渲染右侧队友详情 */
+  renderMatchDetail(1);
 }
 
 // ===== Init =====
