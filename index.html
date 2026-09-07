@@ -616,10 +616,19 @@ body::before {
   background-position: center;
   flex-shrink: 0;
 }
-.hero-detail-head .hd-avatar.completed {
-  border-color: #c89b3c;
-  box-shadow: 0 0 12px rgba(200,155,60,0.25);
-}
+.hero-detail-head .hd-avatar.completed { border-color: #c89b3c; }
+body.skin-gold .hd-avatar.completed { border-color: #c89b3c; box-shadow: 0 0 6px rgba(200,155,60,0.25); }
+body.skin-platinum .hd-avatar.completed { border-color: #e8e8f0; box-shadow: 0 0 6px rgba(200,210,230,0.5), inset 0 0 8px rgba(200,210,230,0.15); }
+body.skin-obsidian .hd-avatar.completed { border-color: #6a3da0; box-shadow: 0 0 6px rgba(106,61,160,0.6), inset 0 0 10px rgba(60,20,100,0.3); }
+body.skin-emerald .hd-avatar.completed { border-color: #2ecc71; box-shadow: 0 0 6px rgba(46,204,113,0.5); }
+body.skin-ruby .hd-avatar.completed { border-color: #e74c3c; box-shadow: 0 0 6px rgba(231,76,60,0.5); }
+body.skin-sapphire .hd-avatar.completed { border-color: #3498db; box-shadow: 0 0 6px rgba(52,152,219,0.5); }
+body.skin-rainbow .hd-avatar.completed { border-color: #ff0000; animation: rainbowBorder 3s linear infinite; }
+body.skin-electric .hd-avatar.completed { border-color: #00d4ff; animation: electricPulse 1.2s ease-in-out infinite; }
+body.skin-inferno .hd-avatar.completed { border-color: #ff4400; animation: infernoBurn 1.5s ease-in-out infinite; }
+body.skin-frost .hd-avatar.completed { border-color: #a8f0ff; animation: frostShimmer 2s ease-in-out infinite; }
+body.skin-void .hd-avatar.completed { border-color: #9b30ff; animation: voidSwirl 2s ease-in-out infinite; }
+body.skin-holy .hd-avatar.completed { border-color: #fff8dc; animation: holyRadiate 2s ease-in-out infinite; }
 .hero-detail-head .hd-info { margin-left: 16px; }
 .hero-detail-head .hd-title { font-size: 20px; font-weight: 700; color: #f0e6d2; }
 .hero-detail-head .hd-name { font-size: 14px; color: #8fa0b0; margin-top: 4px; }
