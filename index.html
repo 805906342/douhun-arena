@@ -7,7 +7,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>斗魂竞技场赛季旅程</title>
-<script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.26.0/dist/index.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.26.0/dist/index.js" async onload="window.__pinyinReady&&window.__pinyinReady()"></script>
 <script src="data/maps.js"></script>
 <style>
 
@@ -814,12 +814,21 @@ body.skin-holy .hd-avatar.completed { border-color: #fff8dc; animation: holyRadi
 
 </style>
 </head>
+<div id="__dbgbox" style="position:fixed;left:6px;bottom:6px;z-index:999999;max-width:65vw;max-height:55vh;overflow:auto;background:rgba(0,0,0,.92);color:#7CFC00;font:11px/1.5 Consolas,monospace;padding:6px;white-space:pre-wrap;border:1px solid #555;border-radius:4px"><b style="color:#ffd">DIAG ver:{ver}</b></div>
+<script>
+(function(){{var box=document.getElementById('__dbgbox'),L=[];function show(){{if(!box)return;var t=L.slice(-28).join(String.fromCharCode(10));box.innerHTML='<b style="color:#ffd">DIAG ver:{ver}</b>'+String.fromCharCode(10)+t;box.scrollTop=box.scrollHeight;}}
+window.__lg=function(m){{L.push(String(m));show();}};
+window.onerror=function(m,s,l){{__lg('JSERR: '+m+' @'+(l||''));return false;}};
+__lg('UA:'+navigator.userAgent.slice(0,70));
+__lg('ready='+document.readyState);
+}})();
+</script>
 <body class="skin-gold">
 
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-08 09:44:04
+    <div class="web-update-time">网页版更新时间：2026-09-08 09:52:46
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -1208,6 +1217,7 @@ function submitAuth() {
       errEl.textContent = zhAuthError(res.data.error_description || res.data.msg || "");
       return;
     }
+    __lg("A 登录成功 uid="+res.data.user.id);
     currentUserId = res.data.user.id;
     document.getElementById("loginOverlay").classList.add("hidden");
     document.getElementById("appContainer").style.display = "";
@@ -1247,7 +1257,7 @@ function setStatsDisplay(cherry, counts) {
 }
 
 // ===== Supabase progress =====
-function loadProgress() {
+function loadProgress() { __lg("B loadProgress start");
   fetch(SUPA_URL + "/rest/v1/arena_progress?user_id=eq." + currentUserId, {
     headers: { "apikey": SUPA_KEY, "Authorization": "Bearer " + SUPA_KEY }
   })
@@ -1289,7 +1299,7 @@ function loadProgress() {
 }
 
 // 冠军集合（拿过第一名的英雄）改从战绩表按名次推导，不再依赖 hero_ids 冗余字段
-function loadFirstPlaceHeroes(accountId) {
+function loadFirstPlaceHeroes(accountId) { __lg("C firstPlace aId="+accountId);
   var idSet = {};
   var applyAndRender = function() {
     champions.forEach(function(c) {
@@ -1704,11 +1714,25 @@ function initApp() {
   renderGrid();
 }
 
-// Wait for pinyin-pro to load
-if (window.pinyinPro) {
-  initApp();
+// 拼音库异步加载完成后的补填（搜索可用拼音，但不影响首屏）
+function fillPinyin() {
+  if (!window.pinyinPro) return;
+  pinyinFn = window.pinyinPro.pinyin || null;
+  champions.forEach(function(c) {
+    c._tp = toPinyin(c.title);
+    c._np = toPinyin(c.name);
+  });
+  var si = document.getElementById("searchInput");
+  if (si && si.value) renderGrid();
+}
+window.__pinyinReady = function() { fillPinyin(); };
+
+// 首屏立即渲染，不依赖境外拼音库（DOM就绪即执行）
+function boot() { initApp(); }
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", boot);
 } else {
-  window.addEventListener("load", initApp);
+  boot();
 }
 
 </script>
