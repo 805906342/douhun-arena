@@ -1232,10 +1232,12 @@ function loadProgress() {
   .then(function(rows) {
     champions.forEach(function(c) { c.completed = false; });
     hasScannedId = false;
+    var syncId = "";
     if (rows.length > 0) {
       var pid = document.getElementById("playerIdText");
       if (pid && rows[0].last_lol_id) {
-        pid.textContent = rows[0].last_lol_id;
+        syncId = String(rows[0].last_lol_id);
+        pid.textContent = syncId;
         hasScannedId = true;
       }
       /* 应用上次使用的边框皮肤 */
@@ -1256,26 +1258,41 @@ function loadProgress() {
         }
         setStatsDisplay(cherry, counts);
       }
-      if (rows[0].hero_ids) {
-      var ids = rows[0].hero_ids.split(",");
-      var idSet = {};
-      ids.forEach(function(id) { idSet[id.trim()] = true; });
-      champions.forEach(function(c) {
-        if (idSet[c.id]) c.completed = true;
-      });
-      }
     }
-    renderGrid();
+    // hero_ids 已废弃：冠军集合改从对局名次(placement==1)查询推导
+    loadFirstPlaceHeroes(syncId);
   })
   .catch(function() {});
 }
 
+// 冠军集合（拿过第一名的英雄）改从战绩表按名次推导，不再依赖 hero_ids 冗余字段
+function loadFirstPlaceHeroes(accountId) {
+  var idSet = {};
+  var applyAndRender = function() {
+    champions.forEach(function(c) {
+      c.completed = idSet[String(c.id).toLowerCase()] ? true : false;
+    });
+    renderGrid();
+  };
+  if (!accountId) { applyAndRender(); return; }
+  var q = SUPA_URL + "/rest/v1/arena_matches?select=champion_name&account=eq." + encodeURIComponent(accountId) + "&is_self=eq.true&placement=eq.1";
+  fetch(q, { headers: { "apikey": SUPA_KEY, "Authorization": "Bearer " + SUPA_KEY } })
+  .then(function(r) { return r.json(); })
+  .then(function(mats) {
+    for (var j = 0; j < mats.length; j++) {
+      var hn = String(mats[j].champion_name || "").toLowerCase();
+      if (hn) idSet[hn] = true;
+    }
+    applyAndRender();
+  })
+  .catch(function() { applyAndRender(); });
+}
+
 function saveProgress() {
+  // hero_ids 已废弃：此处仅同步进度更新时间，不再写英雄集合
   if (saveTimer) clearTimeout(saveTimer);
   saveTimer = setTimeout(function() {
-    var heroIds = champions.filter(function(c) { return c.completed; }).map(function(c) { return c.id; }).join(",");
-    var url = SUPA_URL + "/rest/v1/arena_progress?user_id=eq." + currentUserId;
-    fetch(url, {
+    fetch(SUPA_URL + "/rest/v1/arena_progress?user_id=eq." + currentUserId, {
       headers: { "apikey": SUPA_KEY, "Authorization": "Bearer " + SUPA_KEY }
     })
     .then(function(r) { return r.json(); })
@@ -1289,18 +1306,7 @@ function saveProgress() {
             "Authorization": "Bearer " + SUPA_KEY,
             "Prefer": "return=minimal"
           },
-          body: JSON.stringify({ hero_ids: heroIds, updated_at: new Date().toISOString() })
-        });
-      } else {
-        return fetch(SUPA_URL + "/rest/v1/arena_progress", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "apikey": SUPA_KEY,
-            "Authorization": "Bearer " + SUPA_KEY,
-            "Prefer": "return=minimal"
-          },
-          body: JSON.stringify({ user_id: currentUserId, hero_ids: heroIds, updated_at: new Date().toISOString() })
+          body: JSON.stringify({ updated_at: new Date().toISOString() })
         });
       }
     })
