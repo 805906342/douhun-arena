@@ -820,7 +820,7 @@ body.skin-holy .hd-avatar.completed { border-color: #fff8dc; animation: holyRadi
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-08 10:16:42</div>
+    <div class="web-update-time">网页版更新时间：2026-09-08 10:21:39</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -1601,7 +1601,7 @@ function showMatch(el) {
 function loadHeroDetailData() {
   if (!hdCtx.account) return;
   var path = "arena_matches?account=eq." + encodeURIComponent(hdCtx.account) +
-    "&is_self=eq.true&game_mode=eq.CHERRY&champion_name=eq." + encodeURIComponent(hdCtx.heroEn) +
+    "&is_self=eq.true&game_mode=eq.CHERRY&champion_name=ilike." + encodeURIComponent(hdCtx.heroEn) +
     "&select=game_id,game_start_timestamp,placement,kills,deaths,assists,total_damage_dealt_to_champions&order=game_start_timestamp.desc";
   sbFetch(path)
   .then(function(rows) {
@@ -1610,6 +1610,14 @@ function loadHeroDetailData() {
     /* 头部统计：固定6队（斗魂第1~6名） */
     var setT = function(id, v) { var el = document.getElementById(id); if (el) el.textContent = v; };
     setT("hdGames", n);
+    /* 本人全部斗魂对局总数 -> 选取率 */
+    sbFetch("arena_matches?account=eq." + encodeURIComponent(hdCtx.account) + "\u0026is_self=eq.true\u0026game_mode=eq.CHERRY\u0026select=game_id")
+      .then(function(all) {
+        var total = (all && all.length) || 0;
+        var pr = (n > 0 && total > 0) ? (Math.round(n * 1000 / total) / 10) : 0;
+        setT("hdPickRate", pr);
+      })
+      .catch(function() { setT("hdPickRate", 0); });
     var cnt = {1:0,2:0,3:0,4:0,5:0,6:0};
     for (var x = 0; x < n; x++) {
       var plc = hdCtx.matches[x].placement;
