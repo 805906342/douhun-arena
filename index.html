@@ -833,7 +833,14 @@ window.__dlgLayout=function(tag){
   r.ovHidden=ov?(ov.classList.contains('hidden')?1:0):'NA';
   r.ovD=ov?getComputedStyle(ov).display:'NA';
   r.bodyCl=document.body.className;
-  __lg('['+tag+'] appD='+r.appD+' appH='+r.appH+' appW='+r.appW+' gridKids='+r.gridKids+' ovHidden='+r.ovHidden+' ovD='+r.ovD+' body='+r.bodyCl);
+  var vh=window.innerHeight||0, vw=window.innerWidth||0;
+  var dh=document.documentElement?document.documentElement.offsetHeight:0;
+  var bh=document.body?document.body.offsetHeight:0;
+  var acH='-', acW='-', acTop='-', acBot='-';
+  if(ac){try{var b=ac.getBoundingClientRect();acH=(b.height).toFixed(0);acW=(b.width).toFixed(0);acTop=(b.top).toFixed(0);acBot=(b.bottom).toFixed(0);}catch(e){acH='E';}}
+  var st='';
+  if(ac){try{var cs=getComputedStyle(ac);st='h='+cs.height+' w='+cs.width+' pos='+cs.position+' disp='+cs.display;}catch(e){st='E';}}
+  __lg('['+tag+'] vp='+vw+'x'+vh+' docH='+dh+' bodyH='+bh+' rect='+acW+'x'+acH+' t='+acTop+' b='+acBot+' css['+st+'] gridKids='+r.gridKids+' ov='+r.ovD+' body='+r.bodyCl);
 };
 
 }})();
@@ -843,7 +850,7 @@ window.__dlgLayout=function(tag){
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-08 09:59:13
+    <div class="web-update-time">网页版更新时间：2026-09-08 10:02:47
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
