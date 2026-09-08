@@ -821,6 +821,21 @@ window.__lg=function(m){{L.push(String(m));show();}};
 window.onerror=function(m,s,l){{__lg('JSERR: '+m+' @'+(l||''));return false;}};
 __lg('UA:'+navigator.userAgent.slice(0,70));
 __lg('ready='+document.readyState);
+window.__dlgLayout=function(tag){
+  var ac=document.getElementById('appContainer');
+  var g=document.getElementById('championGrid');
+  var ov=document.getElementById('loginOverlay');
+  var r={};
+  try{r.appD=ac?getComputedStyle(ac).display:'NA';}catch(e){r.appD='E';}
+  r.appH=ac?ac.offsetHeight:'NA';
+  r.appW=ac?ac.offsetWidth:'NA';
+  r.gridKids=g?g.children.length:'NA';
+  r.ovHidden=ov?(ov.classList.contains('hidden')?1:0):'NA';
+  r.ovD=ov?getComputedStyle(ov).display:'NA';
+  r.bodyCl=document.body.className;
+  __lg('['+tag+'] appD='+r.appD+' appH='+r.appH+' appW='+r.appW+' gridKids='+r.gridKids+' ovHidden='+r.ovHidden+' ovD='+r.ovD+' body='+r.bodyCl);
+};
+
 }})();
 </script>
 <body class="skin-gold">
@@ -828,7 +843,7 @@ __lg('ready='+document.readyState);
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-08 09:52:46
+    <div class="web-update-time">网页版更新时间：2026-09-08 09:59:13
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -1221,6 +1236,13 @@ function submitAuth() {
     currentUserId = res.data.user.id;
     document.getElementById("loginOverlay").classList.add("hidden");
     document.getElementById("appContainer").style.display = "";
+    __dlgLayout('afterLogin');
+    var __dcount=0;
+    var __dt=setInterval(function(){
+      __dcount++;
+      __dlgLayout('tick'+__dcount);
+      if(__dcount>=15){clearInterval(__dt);__lg('tickLoopEnd');}
+    },1200);
     loadProgress();
   })
   .catch(function(e) {
@@ -1263,6 +1285,7 @@ function loadProgress() { __lg("B loadProgress start");
   })
   .then(function(r) { return r.json(); })
   .then(function(rows) {
+    __lg("loadProgress rows="+rows.length);
     champions.forEach(function(c) { c.completed = false; });
     hasScannedId = false;
     var syncId = "";
@@ -1310,15 +1333,17 @@ function loadFirstPlaceHeroes(accountId) { __lg("C firstPlace aId="+accountId);
   if (!accountId) { applyAndRender(); return; }
   var q = SUPA_URL + "/rest/v1/arena_matches?select=champion_name&account=eq." + encodeURIComponent(accountId) + "&is_self=eq.true&placement=eq.1";
   fetch(q, { headers: { "apikey": SUPA_KEY, "Authorization": "Bearer " + SUPA_KEY } })
-  .then(function(r) { return r.json(); })
+  .then(function(r) { __lg("firstPlace resp st="+r.status); return r.json(); })
   .then(function(mats) {
+    __lg("firstPlace mats="+mats.length);
     for (var j = 0; j < mats.length; j++) {
       var hn = String(mats[j].champion_name || "").toLowerCase();
       if (hn) idSet[hn] = true;
     }
     applyAndRender();
+    __lg("firstPlace applied rendered");
   })
-  .catch(function() { applyAndRender(); });
+  .catch(function(e) { __lg("firstPlace ERR "+(e&&e.message||e)); applyAndRender(); __lg("firstPlace applied(e)"); });
 }
 
 function saveProgress() {
@@ -1350,6 +1375,7 @@ function saveProgress() {
 // ===== Render =====
 function renderGrid() {
   var grid = document.getElementById("championGrid");
+  __lg("RG begin total="+grid.children.length);
   grid.innerHTML = "";
   var rawSearch = document.getElementById("searchInput").value.trim();
   var search = rawSearch.toLowerCase();
@@ -1399,7 +1425,7 @@ function renderGrid() {
 
     grid.appendChild(card);
   });
-
+  __lg("RG done cards="+grid.children.length+" pos0="+(grid.children[0]?grid.children[0].className:'none'));
   updateCount();
 }
 
