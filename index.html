@@ -820,7 +820,7 @@ body.skin-holy .hd-avatar.completed { border-color: #fff8dc; animation: holyRadi
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-08 10:21:39</div>
+    <div class="web-update-time">网页版更新时间：2026-09-08 10:35:41</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -1552,8 +1552,9 @@ function makePlayerCard(p) {
 }
 /* champion 英文名 → 头像URL（在 champions 列表里匹配英文 id） */
 function getImgByChampionName(en) {
+  var low = String(en || "").toLowerCase();
   for (var i = 0; i < champions.length; i++) {
-    if (champions[i].id === en) return getImg(champions[i].id);
+    if (String(champions[i].id).toLowerCase() === low) return getImg(champions[i].id);
   }
   return "";
 }
