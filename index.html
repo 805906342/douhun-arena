@@ -819,7 +819,7 @@ body.skin-holy .hd-avatar.completed { border-color: #fff8dc; animation: holyRadi
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-08 09:00:00</div>
+    <div class="web-update-time">网页版更新时间：2026-09-08 09:03:00</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -1254,31 +1254,38 @@ function loadProgress() {
   .then(function(rows) {
     champions.forEach(function(c) { c.completed = false; });
     hasScannedId = false;
-    var syncId = "";
+    var syncId = "", hasSkin = false, statsApplied = false;
     if (rows.length > 0) {
       var pid = document.getElementById("playerIdText");
-      if (pid && rows[0].last_lol_id) {
-        syncId = String(rows[0].last_lol_id);
-        pid.textContent = syncId;
-        hasScannedId = true;
-      }
-      /* 应用上次使用的边框皮肤 */
-      if (rows[0].skin) {
-        currentSkin = skinNumToId(parseInt(rows[0].skin, 10));
-        document.body.className = "skin-" + currentSkin;
-        renderSkinPanel();
-      }
-      if (rows[0].last_stats) {
-        var ss = String(rows[0].last_stats).split("|");
-        var cherry = parseInt(ss[0], 10) || 0;
-        var counts = [];
-        if (ss.length >= 7) {
-          for (var i = 1; i <= 6; i++) counts.push(parseInt(ss[i], 10) || 0);
-        } else {
-          // 旧格式（场数|第一名次数）：其余名次暂时记 0
-          counts = [parseInt(ss[1], 10) || 0, 0, 0, 0, 0, 0];
+      // 遍历取第一条有效数据（不再死取 rows[0]，兼容同一user多行/含null的残留）
+      for (var ri = 0; ri < rows.length; ri++) {
+        var rr = rows[ri];
+        if (!syncId && rr.last_lol_id) {
+          syncId = String(rr.last_lol_id);
+          if (pid) pid.textContent = syncId;
+          hasScannedId = true;
         }
-        setStatsDisplay(cherry, counts);
+        /* 应用上次使用的边框皮肤 */
+        if (!hasSkin && rr.skin) {
+          currentSkin = skinNumToId(parseInt(rr.skin, 10));
+          document.body.className = "skin-" + currentSkin;
+          renderSkinPanel();
+          hasSkin = true;
+        }
+        if (!statsApplied && rr.last_stats) {
+          var ss = String(rr.last_stats).split("|");
+          var cherry = parseInt(ss[0], 10) || 0;
+          var counts = [];
+          if (ss.length >= 7) {
+            for (var i = 1; i <= 6; i++) counts.push(parseInt(ss[i], 10) || 0);
+          } else {
+            // 旧格式（场数|第一名次数）：其余名次暂时记 0
+            counts = [parseInt(ss[1], 10) || 0, 0, 0, 0, 0, 0];
+          }
+          setStatsDisplay(cherry, counts);
+          statsApplied = true;
+        }
+        if (syncId && hasSkin && statsApplied) break;
       }
     }
     // hero_ids 已废弃：冠军集合改从对局名次(placement==1)查询推导
