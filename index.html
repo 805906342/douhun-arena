@@ -820,7 +820,7 @@ body.skin-holy .hd-avatar.completed { border-color: #fff8dc; animation: holyRadi
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-08 10:35:41</div>
+    <div class="web-update-time">网页版更新时间：2026-09-08 10:38:42</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -1212,6 +1212,7 @@ function submitAuth() {
     currentUserId = res.data.user.id;
     document.getElementById("loginOverlay").classList.add("hidden");
     document.getElementById("appContainer").style.display = "";
+    leaveHeroDetail();  /* 登录后默认显示英雄界面，复位可能残留的详情视图 */
     loadProgress();
   })
   .catch(function(e) {
@@ -1222,6 +1223,7 @@ function submitAuth() {
 
 function doLogout() {
   currentUserId = null;
+  leaveHeroDetail();  /* 退出登录时复位到英雄界面 */
   var pid = document.getElementById("playerIdText");
   if (pid) pid.textContent = "";
   var st = document.getElementById("statsText");
