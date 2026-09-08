@@ -812,6 +812,53 @@ body.skin-holy .hd-avatar.completed { border-color: #fff8dc; animation: holyRadi
 }
 .hd-toast.show { display: block; }
 
+
+.rank-btn {
+  height: 32px; padding: 0 14px;
+  background: rgba(10,20,30,0.8);
+  border: 1px solid #3a4a5a; color: #c89b3c;
+  font-size: 13px; outline: none; cursor: pointer;
+  white-space: nowrap; margin-left: 10px;
+  -webkit-flex-shrink: 0; flex-shrink: 0;
+}
+.rank-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(1,10,19,0.9);
+  display: -webkit-flex; display: flex;
+  -webkit-justify-content: center; justify-content: center;
+  -webkit-align-items: center; align-items: center;
+  z-index: 9998;
+}
+.rank-box {
+  width: 460px; max-width: 92vw; max-height: 76vh;
+  display: -webkit-flex; display: flex;
+  -webkit-flex-direction: column; flex-direction: column;
+  background: rgba(10,20,30,0.97);
+  border: 1px solid #3a4a5a;
+  box-shadow: 0 0 30px rgba(0,0,0,0.6);
+  padding: 18px 20px 20px;
+}
+.rank-head {
+  display: -webkit-flex; display: flex;
+  -webkit-align-items: center; align-items: center;
+  -webkit-justify-content: space-between; justify-content: space-between;
+  margin-bottom: 6px;
+}
+.rank-title { font-size: 16px; color: #c89b3c; font-weight: bold; }
+.rank-close { background: none; border: none; color: #8fa0b0; font-size: 20px; line-height: 1; cursor: pointer; padding: 0 4px; }
+.rank-close:hover { color: #fff; }
+.rank-sub { font-size: 12px; color: #8fa0b0; margin-bottom: 12px; }
+.rank-list { overflow-y: auto; border: 1px solid #2a3a4a; background: rgba(4,12,20,0.5); min-height: 120px; }
+.rank-row {
+  display: -webkit-flex; display: flex;
+  -webkit-align-items: center; align-items: center;
+  padding: 8px 12px; border-bottom: 1px solid #22303e; font-size: 13px;
+}
+.rank-rank { width: 40px; color: #8fa0b0; -webkit-flex-shrink: 0; flex-shrink: 0; }
+.rank-id { -webkit-flex: 1; flex: 1; color: #e0d0b0; word-break: break-all; }
+.rank-count { color: #c89b3c; -webkit-flex-shrink: 0; flex-shrink: 0; white-space: nowrap; }
+.rank-top1 .rank-rank, .rank-top2 .rank-rank, .rank-top3 .rank-rank { color: #c89b3c; font-weight: bold; }
+.rank-empty { padding: 20px; text-align: center; color: #5a6a7a; font-size: 13px; }
 </style>
 </head>
 
@@ -820,7 +867,7 @@ body.skin-holy .hd-avatar.completed { border-color: #fff8dc; animation: holyRadi
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-08 12:52:00</div>
+    <div class="web-update-time">网页版更新时间：2026-09-08 13:00:00</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -868,6 +915,7 @@ body.skin-holy .hd-avatar.completed { border-color: #fff8dc; animation: holyRadi
         </svg>
         <input type="text" id="searchInput" placeholder="搜索称号或名字（支持拼音/同音字）" oninput="onSearch()">
       </div>
+      <button class="rank-btn" id="rankBtn" type="button" onclick="openLeaderboard()">排行榜</button>
       <div class="skin-panel-wrap">
         <button class="skin-btn" id="skinBtn" type="button" onclick="toggleSkinPanel()">边框皮肤</button>
         <div class="skin-panel" id="skinPanel">
@@ -883,6 +931,17 @@ body.skin-holy .hd-avatar.completed { border-color: #fff8dc; animation: holyRadi
     <span id="totalCompleted">0</span><svg viewBox="0 0 24 24" fill="none" stroke="#c89b3c" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
   </div>
   </div><!-- /listView -->
+
+  <div class="rank-overlay" id="rankOverlay" style="display:none;">
+    <div class="rank-box">
+      <div class="rank-head">
+        <div class="rank-title">第一名英雄排行榜</div>
+        <button class="rank-close" type="button" onclick="closeLeaderboard()">×</button>
+      </div>
+      <div class="rank-sub">已完成扫描的用户 · 按获得第一名的英雄数量排名</div>
+      <div class="rank-list" id="rankList"><div class="rank-empty">加载中…</div></div>
+    </div>
+  </div>
 
   <!-- ===== 视图2：英雄战绩详情（整页切换，仅样式，暂无数据） ===== -->
   <div class="detail-view" id="detailView">
@@ -1511,6 +1570,63 @@ function sbFetch(path) {
     headers: { "apikey": SUPA_KEY, "Authorization": "Bearer " + SUPA_KEY }
   })
   .then(function(r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); });
+}
+
+function openLeaderboard() {
+  var ov = document.getElementById("rankOverlay");
+  var list = document.getElementById("rankList");
+  if (ov) ov.style.display = "-webkit-flex";
+  if (list) list.innerHTML = '<div class="rank-empty">加载中…</div>';
+  sbFetch("arena_progress?select=user_id,last_lol_id&last_lol_id=not.is.null")
+  .then(function(rows) {
+    var users = [], seen = {};
+    for (var i = 0; i < rows.length; i++) {
+      var r = rows[i];
+      if (!r || !r.last_lol_id) continue;
+      if (seen[r.user_id]) continue;
+      seen[r.user_id] = true;
+      users.push({ id: String(r.last_lol_id) });
+    }
+    return sbFetch("arena_matches?select=account,champion_name&is_self=eq.true&placement=eq.1")
+    .then(function(mats) {
+      var cc = {};
+      for (var j = 0; j < mats.length; j++) {
+        var x = mats[j], acc = String(x.account || "");
+        var hn = String(x.champion_name || "").toLowerCase();
+        if (!acc || !hn) continue;
+        if (!cc[acc]) cc[acc] = {};
+        cc[acc][hn] = true;
+      }
+      for (var k = 0; k < users.length; k++) {
+        var c = cc[users[k].id];
+        users[k].count = c ? Object.keys(c).length : 0;
+      }
+      users.sort(function(a, b) { return b.count - a.count; });
+      renderLeaderboard(users);
+      return null;
+    });
+  })
+  .catch(function() { if (list) list.innerHTML = '<div class="rank-empty">读取失败</div>'; });
+}
+function renderLeaderboard(users) {
+  var list = document.getElementById("rankList");
+  if (!list) return;
+  if (!users || !users.length) { list.innerHTML = '<div class="rank-empty">暂无已完成扫描的用户</div>'; return; }
+  var html = "";
+  for (var i = 0; i < users.length; i++) {
+    var u = users[i], rank = i + 1;
+    var cls = rank === 1 ? " rank-top1" : (rank === 2 ? " rank-top2" : (rank === 3 ? " rank-top3" : ""));
+    html += '<div class="rank-row' + cls + '">'
+      + '<div class="rank-rank">' + rank + '</div>'
+      + '<div class="rank-id">' + u.id + '</div>'
+      + '<div class="rank-count">' + u.count + ' 个</div>'
+      + '</div>';
+  }
+  list.innerHTML = html;
+}
+function closeLeaderboard() {
+  var ov = document.getElementById("rankOverlay");
+  if (ov) ov.style.display = "none";
 }
 /* 数字ID → 中文名/图标 */
 function augInfo(id) {
