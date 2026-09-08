@@ -652,7 +652,6 @@ body.skin-holy .hd-avatar.completed { border-color: #fff8dc; animation: holyRadi
 .hero-detail-head .hd-info { margin-left: 16px; }
 .hero-detail-head .hd-title { font-size: 20px; font-weight: 700; color: #f0e6d2; }
 .hero-detail-head .hd-name { font-size: 14px; color: #8fa0b0; margin-top: 4px; }
-.hero-detail-head .hd-hint { font-size: 11px; color: #5a6a7a; margin-top: 8px; }
 .hero-detail-body { padding: 14px 20px 14px; -webkit-flex: 1 1 auto; flex: 1 1 auto; min-height: 0; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; }
 .hd-season-games {
   display: flex;
@@ -785,12 +784,6 @@ body.skin-holy .hd-avatar.completed { border-color: #fff8dc; animation: holyRadi
 .md-items i img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .md-kda { font-size: 12px; color: #8fa0b0; font-family: Consolas, Menlo, monospace; white-space: nowrap; margin-left: 12px; }
 .md-dmg { font-size: 12px; color: #c89b3c; font-family: Consolas, Menlo, monospace; white-space: nowrap; margin-left: 12px; }
-.hd-empty {
-  text-align: center;
-  color: #5a6a7a;
-  font-size: 12px;
-  padding: 18px 0;
-}
 /* 未扫描提示 toast */
 .hd-toast {
   position: fixed;
@@ -819,7 +812,7 @@ body.skin-holy .hd-avatar.completed { border-color: #fff8dc; animation: holyRadi
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-08 09:12:00</div>
+    <div class="web-update-time">网页版更新时间：2026-09-08 09:17:49
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -894,7 +887,6 @@ body.skin-holy .hd-avatar.completed { border-color: #fff8dc; animation: holyRadi
       <div class="hd-info">
         <div class="hd-title" id="hdTitle">—</div>
         <div class="hd-name" id="hdName"></div>
-        <div class="hd-hint" id="hdHint">英雄战绩 · 数据加载中</div>
       </div>
       <div class="hd-arena">
       <div class="hd-season-games">使用 <b id="hdGames">--</b> 场 · 选取率 <b id="hdPickRate">--</b>%</div>
@@ -924,7 +916,6 @@ body.skin-holy .hd-avatar.completed { border-color: #fff8dc; animation: holyRadi
         <div class="hd-md-list" id="hdMdList"></div>
       </div>
       </div>
-      <div class="hd-empty" id="hdEmpty">暂无更多战绩</div>
     </div>
   </div>
 
@@ -1637,8 +1628,6 @@ function loadHeroDetailData() {
       /* 同时清空右栏详情，避免残留上一个英雄的详情 */
       var md = document.getElementById("hdMdList");
       if (md) md.innerHTML = '';
-      var mdHint = document.getElementById("hdHint");
-      if (mdHint) mdHint.textContent = "英雄战绩 · 0 场真实数据";
       return;
     }
     var maxShow = Math.min(n, 100);
@@ -1659,12 +1648,8 @@ function loadHeroDetailData() {
     /* 默认展示最近一局 */
     var first = list.querySelector(".hd-match");
     if (first) showMatch(first);
-    var hint = document.getElementById("hdHint");
-    if (hint) hint.textContent = "英雄战绩 · " + n + " 场真实数据";
   })
   .catch(function() {
-    var hint = document.getElementById("hdHint");
-    if (hint) hint.textContent = "英雄战绩 · 读取失败";
   });
 }
 function openHeroDetail(id, title, name) {
@@ -1694,8 +1679,6 @@ function openHeroDetail(id, title, name) {
   hdAv.className = "hd-avatar" + (isComp ? " completed" : "");
   document.getElementById("hdTitle").textContent = title;
   document.getElementById("hdName").textContent = name;
-  var hint = document.getElementById("hdHint");
-  if (hint) hint.textContent = "英雄战绩 · 数据加载中";
   /* 整页切换：隐藏英雄网格+顶部季统计，显示战绩详情视图 */
   var g = document.getElementById("listView");
   var d = document.getElementById("detailView");
