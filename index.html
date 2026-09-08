@@ -819,7 +819,7 @@ body.skin-holy .hd-avatar.completed { border-color: #fff8dc; animation: holyRadi
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-08 08:45:06</div>
+    <div class="web-update-time">网页版更新时间：2026-09-08 08:46:44</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -854,7 +854,7 @@ body.skin-holy .hd-avatar.completed { border-color: #fff8dc; animation: holyRadi
       <h1>斗魂竞技场赛季旅程</h1>
       <div class="player-id-box" id="playerIdBox">LOL ID：<b id="playerIdText"></b></div>
     </div>
-    <div class="placement-bar" id="statsText">本赛季斗魂 0 场：第一名 0 次，第二名 0 次，第三名 0 次，第四名 0 次，第五名 0 次，第六名 0 次。</div>
+    <div class="placement-bar" id="statsText">请先使用桌面版读取数据</div>
   </div>
 
   <div id="listView">
@@ -1224,7 +1224,7 @@ function doLogout() {
   var pid = document.getElementById("playerIdText");
   if (pid) pid.textContent = "";
   var st = document.getElementById("statsText");
-  setStatsDisplay(0);
+  if (st) st.textContent = "请先使用桌面版读取数据";
   champions.forEach(function(c) { c.completed = false; });
   document.getElementById("appContainer").style.display = "none";
   document.getElementById("loginOverlay").classList.remove("hidden");
@@ -1237,7 +1237,6 @@ function doLogout() {
 function setStatsDisplay(cherry, counts) {
   var el = document.getElementById("statsText");
   if (!el) return;
-  if (!counts) counts = [0, 0, 0, 0, 0, 0];
   var names = ["第一名", "第二名", "第三名", "第四名", "第五名", "第六名"];
   var c = [];
   for (var i = 0; i < 6; i++) {
