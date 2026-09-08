@@ -821,6 +821,30 @@ window.__lg=function(m){{L.push(String(m));show();}};
 window.onerror=function(m,s,l){{__lg('JSERR: '+m+' @'+(l||''));return false;}};
 __lg('UA:'+navigator.userAgent.slice(0,70));
 __lg('ready='+document.readyState);
+window.__dlgEnv=function(){
+  var out='ENV topSelf='+(window.top===window.self?1:0);
+  try{out+=' name='+String(window.name||'').slice(0,20);}catch(e){}
+  try{out+=' selfLoc='+String(window.location.href).slice(0,70);}catch(e){}
+  try{out+=' frames='+window.frames.length;}catch(e){}
+  var kids='BODYKIDS:';
+  try{
+    for(var i=0;i<document.body.children.length;i++){
+      var el=document.body.children[i];
+      var cb=el.getBoundingClientRect();
+      var cl=(el.className&&typeof el.className==='string')?('.'+el.className.split(' ')[0]):'';
+      kids+=' #'+i+el.tagName.toLowerCase()+cl+'['+Math.round(cb.width)+'x'+Math.round(cb.height)+','+getComputedStyle(el).display+']';
+    }
+  }catch(e){kids+='ERR';}
+  __lg(out);
+  __lg(kids);
+};
+window.__dlgAppHTML=function(){
+  var ac=document.getElementById('appContainer');
+  if(!ac){__lg('APPHTML null');return;}
+  __lg('APPHTML strt='+ac.outerHTML.slice(0,110).replace(/\n/g,' '));
+  __lg('APPHTML len='+ac.outerHTML.length+' kids='+ac.children.length);
+  __lg('appContainerCount='+document.querySelectorAll('#appContainer').length);
+};
 window.__dlgLayout=function(tag){
   var ac=document.getElementById('appContainer');
   var g=document.getElementById('championGrid');
@@ -839,8 +863,11 @@ window.__dlgLayout=function(tag){
   var acH='-', acW='-', acTop='-', acBot='-';
   if(ac){try{var b=ac.getBoundingClientRect();acH=(b.height).toFixed(0);acW=(b.width).toFixed(0);acTop=(b.top).toFixed(0);acBot=(b.bottom).toFixed(0);}catch(e){acH='E';}}
   var st='';
-  if(ac){try{var cs=getComputedStyle(ac);st='h='+cs.height+' w='+cs.width+' pos='+cs.position+' disp='+cs.display;}catch(e){st='E';}}
-  __lg('['+tag+'] vp='+vw+'x'+vh+' docH='+dh+' bodyH='+bh+' rect='+acW+'x'+acH+' t='+acTop+' b='+acBot+' css['+st+'] gridKids='+r.gridKids+' ov='+r.ovD+' body='+r.bodyCl);
+  if(ac){try{var cs=getComputedStyle(ac);st='h='+cs.height+' w='+cs.width+' pos='+cs.position+' disp='+cs.display+' vis='+cs.visibility+' zoom='+cs.zoom+' contVis='+cs.contentVisibility+' trans='+cs.transform;}catch(e){st='E';}}
+  var chain='';
+  if(ac){var el=ac,steps=0;while(el&&steps<8){var cs2=null,d='?',vis='?',rc='?';try{cs2=getComputedStyle(el);d=cs2.display;vis=cs2.visibility;var rb=el.getBoundingClientRect();rc=Math.round(rb.width)+'x'+Math.round(rb.height);}catch(e){}chain=(el.id||el.tagName.toLowerCase()||'x')+':'+d+'/'+vis+'/'+rc+' <- '+chain;el=el.parentElement;steps++;}}
+  var htmlCH='-';try{htmlCH=document.documentElement.clientHeight;}catch(e){}
+  __lg('['+tag+'] vp='+vw+'x'+vh+' docH='+dh+' bodyH='+bh+' htmlCH='+htmlCH+' rect='+acW+'x'+acH+' css['+st+'] chain['+chain+'] gridKids='+r.gridKids+' ov='+r.ovD+' body='+r.bodyCl);
 };
 
 }})();
@@ -850,7 +877,7 @@ window.__dlgLayout=function(tag){
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-08 10:02:47
+    <div class="web-update-time">网页版更新时间：2026-09-08 10:07:02
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -1244,6 +1271,7 @@ function submitAuth() {
     document.getElementById("loginOverlay").classList.add("hidden");
     document.getElementById("appContainer").style.display = "";
     __dlgLayout('afterLogin');
+    try{window.__dlgEnv();window.__dlgAppHTML();}catch(e){__lg('envErr');}
     var __dcount=0;
     var __dt=setInterval(function(){
       __dcount++;
@@ -1761,7 +1789,7 @@ function fillPinyin() {
 window.__pinyinReady = function() { fillPinyin(); };
 
 // 首屏立即渲染，不依赖境外拼音库（DOM就绪即执行）
-function boot() { initApp(); }
+function boot() { try{window.__dlgEnv();}catch(e){} initApp(); }
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", boot);
 } else {
