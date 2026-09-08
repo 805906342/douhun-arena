@@ -812,7 +812,7 @@ body.skin-holy .hd-avatar.completed { border-color: #fff8dc; animation: holyRadi
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-08 09:21:26
+    <div class="web-update-time">网页版更新时间：2026-09-08 09:30:22
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -887,6 +887,7 @@ body.skin-holy .hd-avatar.completed { border-color: #fff8dc; animation: holyRadi
       <div class="hd-info">
         <div class="hd-title" id="hdTitle">—</div>
         <div class="hd-name" id="hdName"></div>
+        
       </div>
       <div class="hd-arena">
       <div class="hd-season-games">使用 <b id="hdGames">--</b> 场 · 选取率 <b id="hdPickRate">--</b>%</div>
@@ -1701,4 +1702,22 @@ function initApp() {
   pinyinFn = window.pinyinPro.pinyin;
   hasScannedId = false;
   champions.forEach(function(c) {
-    c._t
+    c._tp = toPinyin(c.title);
+    c._np = toPinyin(c.name);
+  });
+  renderSkinPanel();
+  renderGrid();
+}
+
+// Wait for pinyin-pro to load
+if (window.pinyinPro) {
+  initApp();
+} else {
+  window.addEventListener("load", initApp);
+}
+
+</script>
+
+<div class="hd-toast" id="hdToast"></div>
+</body>
+</html>
