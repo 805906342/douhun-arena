@@ -814,70 +814,13 @@ body.skin-holy .hd-avatar.completed { border-color: #fff8dc; animation: holyRadi
 
 </style>
 </head>
-<div id="__dbgbox" style="position:fixed;left:6px;bottom:6px;z-index:999999;max-width:65vw;max-height:55vh;overflow:auto;background:rgba(0,0,0,.92);color:#7CFC00;font:11px/1.5 Consolas,monospace;padding:6px;white-space:pre-wrap;border:1px solid #555;border-radius:4px"><b style="color:#ffd">DIAG ver:{ver}</b></div>
-<script>
-(function(){{var box=document.getElementById('__dbgbox'),L=[];function show(){{if(!box)return;var t=L.slice(-28).join(String.fromCharCode(10));box.innerHTML='<b style="color:#ffd">DIAG ver:{ver}</b>'+String.fromCharCode(10)+t;box.scrollTop=box.scrollHeight;}}
-window.__lg=function(m){{L.push(String(m));show();}};
-window.onerror=function(m,s,l){{__lg('JSERR: '+m+' @'+(l||''));return false;}};
-__lg('UA:'+navigator.userAgent.slice(0,70));
-__lg('ready='+document.readyState);
-window.__dlgEnv=function(){
-  var out='ENV topSelf='+(window.top===window.self?1:0);
-  try{out+=' name='+String(window.name||'').slice(0,20);}catch(e){}
-  try{out+=' selfLoc='+String(window.location.href).slice(0,70);}catch(e){}
-  try{out+=' frames='+window.frames.length;}catch(e){}
-  var kids='BODYKIDS:';
-  try{
-    for(var i=0;i<document.body.children.length;i++){
-      var el=document.body.children[i];
-      var cb=el.getBoundingClientRect();
-      var cl=(el.className&&typeof el.className==='string')?('.'+el.className.split(' ')[0]):'';
-      kids+=' #'+i+el.tagName.toLowerCase()+cl+'['+Math.round(cb.width)+'x'+Math.round(cb.height)+','+getComputedStyle(el).display+']';
-    }
-  }catch(e){kids+='ERR';}
-  __lg(out);
-  __lg(kids);
-};
-window.__dlgAppHTML=function(){
-  var ac=document.getElementById('appContainer');
-  if(!ac){__lg('APPHTML null');return;}
-  __lg('APPHTML strt='+ac.outerHTML.slice(0,110).replace(/\n/g,' '));
-  __lg('APPHTML len='+ac.outerHTML.length+' kids='+ac.children.length);
-  __lg('appContainerCount='+document.querySelectorAll('#appContainer').length);
-};
-window.__dlgLayout=function(tag){
-  var ac=document.getElementById('appContainer');
-  var g=document.getElementById('championGrid');
-  var ov=document.getElementById('loginOverlay');
-  var r={};
-  try{r.appD=ac?getComputedStyle(ac).display:'NA';}catch(e){r.appD='E';}
-  r.appH=ac?ac.offsetHeight:'NA';
-  r.appW=ac?ac.offsetWidth:'NA';
-  r.gridKids=g?g.children.length:'NA';
-  r.ovHidden=ov?(ov.classList.contains('hidden')?1:0):'NA';
-  r.ovD=ov?getComputedStyle(ov).display:'NA';
-  r.bodyCl=document.body.className;
-  var vh=window.innerHeight||0, vw=window.innerWidth||0;
-  var dh=document.documentElement?document.documentElement.offsetHeight:0;
-  var bh=document.body?document.body.offsetHeight:0;
-  var acH='-', acW='-', acTop='-', acBot='-';
-  if(ac){try{var b=ac.getBoundingClientRect();acH=(b.height).toFixed(0);acW=(b.width).toFixed(0);acTop=(b.top).toFixed(0);acBot=(b.bottom).toFixed(0);}catch(e){acH='E';}}
-  var st='';
-  if(ac){try{var cs=getComputedStyle(ac);st='h='+cs.height+' w='+cs.width+' pos='+cs.position+' disp='+cs.display+' vis='+cs.visibility+' zoom='+cs.zoom+' contVis='+cs.contentVisibility+' trans='+cs.transform;}catch(e){st='E';}}
-  var chain='';
-  if(ac){var el=ac,steps=0;while(el&&steps<8){var cs2=null,d='?',vis='?',rc='?';try{cs2=getComputedStyle(el);d=cs2.display;vis=cs2.visibility;var rb=el.getBoundingClientRect();rc=Math.round(rb.width)+'x'+Math.round(rb.height);}catch(e){}chain=(el.id||el.tagName.toLowerCase()||'x')+':'+d+'/'+vis+'/'+rc+' <- '+chain;el=el.parentElement;steps++;}}
-  var htmlCH='-';try{htmlCH=document.documentElement.clientHeight;}catch(e){}
-  __lg('['+tag+'] vp='+vw+'x'+vh+' docH='+dh+' bodyH='+bh+' htmlCH='+htmlCH+' rect='+acW+'x'+acH+' css['+st+'] chain['+chain+'] gridKids='+r.gridKids+' ov='+r.ovD+' body='+r.bodyCl);
-};
 
-}})();
-</script>
 <body class="skin-gold">
 
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-08 10:12:59</div>
+    <div class="web-update-time">网页版更新时间：2026-09-08 10:16:42</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -1266,18 +1209,9 @@ function submitAuth() {
       errEl.textContent = zhAuthError(res.data.error_description || res.data.msg || "");
       return;
     }
-    __lg("A 登录成功 uid="+res.data.user.id);
     currentUserId = res.data.user.id;
     document.getElementById("loginOverlay").classList.add("hidden");
     document.getElementById("appContainer").style.display = "";
-    __dlgLayout('afterLogin');
-    try{window.__dlgEnv();window.__dlgAppHTML();}catch(e){__lg('envErr');}
-    var __dcount=0;
-    var __dt=setInterval(function(){
-      __dcount++;
-      __dlgLayout('tick'+__dcount);
-      if(__dcount>=15){clearInterval(__dt);__lg('tickLoopEnd');}
-    },1200);
     loadProgress();
   })
   .catch(function(e) {
@@ -1314,13 +1248,12 @@ function setStatsDisplay(cherry, counts) {
 }
 
 // ===== Supabase progress =====
-function loadProgress() { __lg("B loadProgress start");
+function loadProgress() {
   fetch(SUPA_URL + "/rest/v1/arena_progress?user_id=eq." + currentUserId, {
     headers: { "apikey": SUPA_KEY, "Authorization": "Bearer " + SUPA_KEY }
   })
   .then(function(r) { return r.json(); })
   .then(function(rows) {
-    __lg("loadProgress rows="+rows.length);
     champions.forEach(function(c) { c.completed = false; });
     hasScannedId = false;
     var syncId = "";
@@ -1357,7 +1290,7 @@ function loadProgress() { __lg("B loadProgress start");
 }
 
 // 冠军集合（拿过第一名的英雄）改从战绩表按名次推导，不再依赖 hero_ids 冗余字段
-function loadFirstPlaceHeroes(accountId) { __lg("C firstPlace aId="+accountId);
+function loadFirstPlaceHeroes(accountId) {
   var idSet = {};
   var applyAndRender = function() {
     champions.forEach(function(c) {
@@ -1368,17 +1301,15 @@ function loadFirstPlaceHeroes(accountId) { __lg("C firstPlace aId="+accountId);
   if (!accountId) { applyAndRender(); return; }
   var q = SUPA_URL + "/rest/v1/arena_matches?select=champion_name&account=eq." + encodeURIComponent(accountId) + "&is_self=eq.true&placement=eq.1";
   fetch(q, { headers: { "apikey": SUPA_KEY, "Authorization": "Bearer " + SUPA_KEY } })
-  .then(function(r) { __lg("firstPlace resp st="+r.status); return r.json(); })
+  .then(function(r) { return r.json(); })
   .then(function(mats) {
-    __lg("firstPlace mats="+mats.length);
     for (var j = 0; j < mats.length; j++) {
       var hn = String(mats[j].champion_name || "").toLowerCase();
       if (hn) idSet[hn] = true;
     }
     applyAndRender();
-    __lg("firstPlace applied rendered");
   })
-  .catch(function(e) { __lg("firstPlace ERR "+(e&&e.message||e)); applyAndRender(); __lg("firstPlace applied(e)"); });
+  .catch(function() { applyAndRender(); });
 }
 
 function saveProgress() {
@@ -1410,7 +1341,6 @@ function saveProgress() {
 // ===== Render =====
 function renderGrid() {
   var grid = document.getElementById("championGrid");
-  __lg("RG begin total="+grid.children.length);
   grid.innerHTML = "";
   var rawSearch = document.getElementById("searchInput").value.trim();
   var search = rawSearch.toLowerCase();
@@ -1460,7 +1390,6 @@ function renderGrid() {
 
     grid.appendChild(card);
   });
-  __lg("RG done cards="+grid.children.length+" pos0="+(grid.children[0]?grid.children[0].className:'none'));
   updateCount();
 }
 
@@ -1789,7 +1718,7 @@ function fillPinyin() {
 window.__pinyinReady = function() { fillPinyin(); };
 
 // 首屏立即渲染，不依赖境外拼音库（DOM就绪即执行）
-function boot() { try{window.__dlgEnv();}catch(e){} initApp(); }
+function boot() { initApp(); }
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", boot);
 } else {
