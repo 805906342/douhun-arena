@@ -820,7 +820,7 @@ body.skin-holy .hd-avatar.completed { border-color: #fff8dc; animation: holyRadi
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-08 12:45:01</div>
+    <div class="web-update-time">网页版更新时间：2026-09-08 12:52:00</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -1258,22 +1258,26 @@ function loadProgress() {
   .then(function(rows) {
     champions.forEach(function(c) { c.completed = false; });
     hasScannedId = false;
-    var syncId = "";
-    if (rows.length > 0) {
-      var pid = document.getElementById("playerIdText");
-      if (pid && rows[0].last_lol_id) {
-        syncId = String(rows[0].last_lol_id);
-        pid.textContent = syncId;
+    var syncId = "", statsApplied = false, skinApplied = false;
+    var pid = document.getElementById("playerIdText");
+    /* 遍历取第一条有效数据（不再死取 rows[0]，兼容同一 user 多行/含 null 的残留，与桌面版对齐） */
+    for (var ri = 0; ri < rows.length; ri++) {
+      var rr = rows[ri];
+      if (!rr) continue;
+      if (!syncId && rr.last_lol_id) {
+        syncId = String(rr.last_lol_id);
+        if (pid) pid.textContent = syncId;
         hasScannedId = true;
       }
       /* 应用上次使用的边框皮肤 */
-      if (rows[0].skin) {
-        currentSkin = skinNumToId(parseInt(rows[0].skin, 10));
+      if (!skinApplied && rr.skin) {
+        currentSkin = skinNumToId(parseInt(rr.skin, 10));
         document.body.className = "skin-" + currentSkin;
         renderSkinPanel();
+        skinApplied = true;
       }
-      if (rows[0].last_stats) {
-        var ss = String(rows[0].last_stats).split("|");
+      if (!statsApplied && rr.last_stats) {
+        var ss = String(rr.last_stats).split("|");
         var cherry = parseInt(ss[0], 10) || 0;
         var counts = [];
         if (ss.length >= 7) {
@@ -1283,7 +1287,9 @@ function loadProgress() {
           counts = [parseInt(ss[1], 10) || 0, 0, 0, 0, 0, 0];
         }
         setStatsDisplay(cherry, counts);
+        statsApplied = true;
       }
+      if (syncId && statsApplied && skinApplied) break;
     }
     // hero_ids 已废弃：冠军集合改从对局名次(placement==1)查询推导
     loadFirstPlaceHeroes(syncId);
