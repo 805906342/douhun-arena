@@ -859,6 +859,13 @@ body.skin-holy .hd-avatar.completed { border-color: #fff8dc; animation: holyRadi
 .rank-count { color: #c89b3c; -webkit-flex-shrink: 0; flex-shrink: 0; white-space: nowrap; }
 .rank-top1 .rank-rank, .rank-top2 .rank-rank, .rank-top3 .rank-rank { color: #c89b3c; font-weight: bold; }
 .rank-empty { padding: 20px; text-align: center; color: #5a6a7a; font-size: 13px; }
+
+.sort-wrap { position: relative; display: inline-block; margin-left: 10px; -webkit-flex-shrink: 0; flex-shrink: 0; }
+.sort-btn { height: 32px; padding: 0 14px; background: rgba(10,20,30,0.8); border: 1px solid #3a4a5a; color: #c89b3c; font-size: 13px; outline: none; cursor: pointer; white-space: nowrap; }
+.sort-menu { position: absolute; top: 36px; left: 0; min-width: 126px; background: rgba(10,20,30,0.97); border: 1px solid #3a4a5a; box-shadow: 0 8px 24px rgba(0,0,0,0.5); z-index: 1500; }
+.sort-opt { padding: 8px 12px; font-size: 13px; color: #e0d0b0; cursor: pointer; white-space: nowrap; }
+.sort-opt:hover { background: rgba(200,155,60,0.15); color: #fff; }
+.sort-opt.active { color: #c89b3c; }
 </style>
 </head>
 
@@ -867,7 +874,7 @@ body.skin-holy .hd-avatar.completed { border-color: #fff8dc; animation: holyRadi
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-08 13:00:00</div>
+    <div class="web-update-time">网页版更新时间：2026-09-08 13:20:00</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -916,6 +923,14 @@ body.skin-holy .hd-avatar.completed { border-color: #fff8dc; animation: holyRadi
         <input type="text" id="searchInput" placeholder="搜索称号或名字（支持拼音/同音字）" oninput="onSearch()">
       </div>
       <button class="rank-btn" id="rankBtn" type="button" onclick="openLeaderboard()">排行榜</button>
+      <div class="sort-wrap">
+        <button class="sort-btn" id="sortBtn" type="button" onclick="toggleSortMenu(event)">默认排序</button>
+        <div class="sort-menu" id="sortMenu" style="display:none;">
+          <div class="sort-opt" data-v="1" onclick="setSortMode(1)">默认排序</div>
+          <div class="sort-opt" data-v="2" onclick="setSortMode(2)">第一名排序</div>
+          <div class="sort-opt" data-v="3" onclick="setSortMode(3)">使用场次</div>
+        </div>
+      </div>
       <div class="skin-panel-wrap">
         <button class="skin-btn" id="skinBtn" type="button" onclick="toggleSkinPanel()">边框皮肤</button>
         <div class="skin-panel" id="skinPanel">
@@ -1195,6 +1210,10 @@ var saveTimer = null;
 var pinyinFn = null;
 /* 是否已通过桌面版扫描获取过 LOL ID（用于网页版英雄战绩详情判断） */
 var hasScannedId = false;
+/* 英雄网格排序模式：1=默认排序 2=第一名排序 3=使用场次 */
+var currentSortMode = 1;
+/* 各英雄使用场次映射（champion_name小写 -> 场次数），从 arena_matches 统计 */
+var usageCount = {};
 
 function getImg(id) {
   return "https://ddragon.leagueoflegends.com/cdn/" + DD_VERSION + "/img/champion/" + id + ".png";
@@ -1282,6 +1301,7 @@ function submitAuth() {
 
 function doLogout() {
   currentUserId = null;
+  currentSortMode = 1;
   leaveHeroDetail();  /* 退出登录时复位到英雄界面 */
   var pid = document.getElementById("playerIdText");
   if (pid) pid.textContent = "";
@@ -1317,7 +1337,7 @@ function loadProgress() {
   .then(function(rows) {
     champions.forEach(function(c) { c.completed = false; });
     hasScannedId = false;
-    var syncId = "", statsApplied = false, skinApplied = false;
+    var syncId = "", statsApplied = false, skinApplied = false, sortApplied = false;
     var pid = document.getElementById("playerIdText");
     /* 遍历取第一条有效数据（不再死取 rows[0]，兼容同一 user 多行/含 null 的残留，与桌面版对齐） */
     for (var ri = 0; ri < rows.length; ri++) {
@@ -1335,6 +1355,10 @@ function loadProgress() {
         renderSkinPanel();
         skinApplied = true;
       }
+      if (!sortApplied && rr.sort_mode !== null && rr.sort_mode !== undefined) {
+        currentSortMode = parseInt(rr.sort_mode, 10) || 1;
+        sortApplied = true;
+      }
       if (!statsApplied && rr.last_stats) {
         var ss = String(rr.last_stats).split("|");
         var cherry = parseInt(ss[0], 10) || 0;
@@ -1348,10 +1372,12 @@ function loadProgress() {
         setStatsDisplay(cherry, counts);
         statsApplied = true;
       }
-      if (syncId && statsApplied && skinApplied) break;
+      if (syncId && statsApplied && skinApplied && sortApplied) break;
     }
     // hero_ids 已废弃：冠军集合改从对局名次(placement==1)查询推导
     loadFirstPlaceHeroes(syncId);
+    loadUsageCount(syncId);
+    updateSortBtn();
   })
   .catch(function() {});
 }
@@ -1412,8 +1438,9 @@ function renderGrid() {
   var rawSearch = document.getElementById("searchInput").value.trim();
   var search = rawSearch.toLowerCase();
   var searchPy = rawSearch ? toPinyin(rawSearch) : "";
+  var ordered = sortedChampions();
 
-  champions.forEach(function(c) {
+  ordered.forEach(function(c) {
     var card = document.createElement("div");
     var cls = "champion-card";
     if (c.completed) cls += " completed";
@@ -1564,6 +1591,104 @@ function leaveHeroDetail() {
 }
 /* ===== 英雄战绩详情：从服务器 arena_matches 读取真实数据 ===== */
 var hdCtx = { account: "", heroEn: "", heroCn: "", matches: [], depth: 0 };
+
+/* ===== 英雄网格排序（默认/第一名/使用场次）===== */
+function sortedChampions() {
+  var list = champions.slice();
+  if (currentSortMode === 2) {
+    // 第一名排序：completed 前置，组内保持默认相对顺序（稳定排序）
+    var idx = {};
+    for (var si = 0; si < list.length; si++) idx[list[si].id] = si;
+    list.sort(function(a, b) {
+      var ac = a.completed ? 1 : 0, bc = b.completed ? 1 : 0;
+      if (ac !== bc) return bc - ac;
+      return idx[a.id] - idx[b.id];
+    });
+  } else if (currentSortMode === 3) {
+    // 使用场次：按 usageCount 降序，场次相同保持默认相对顺序
+    var idx2 = {};
+    for (var sj = 0; sj < list.length; sj++) idx2[list[sj].id] = sj;
+    list.sort(function(a, b) {
+      var ac = usageCount[String(a.id).toLowerCase()] || 0;
+      var bc = usageCount[String(b.id).toLowerCase()] || 0;
+      if (ac !== bc) return bc - ac;
+      return idx2[a.id] - idx2[b.id];
+    });
+  }
+  return list;
+}
+
+/* 使用场次统计：从 arena_matches 按当前账号统计各英雄出场次数 */
+function loadUsageCount(accountId) {
+  usageCount = {};
+  if (!accountId) { renderGrid(); return; }
+  sbFetch("arena_matches?select=champion_name&account=eq." + encodeURIComponent(accountId) + "&is_self=eq.true")
+  .then(function(mats) {
+    for (var j = 0; j < mats.length; j++) {
+      var hn = String(mats[j].champion_name || "").toLowerCase();
+      if (hn) usageCount[hn] = (usageCount[hn] || 0) + 1;
+    }
+    renderGrid();
+  })
+  .catch(function() { renderGrid(); });
+}
+
+function updateSortBtn() {
+  var btn = document.getElementById("sortBtn");
+  if (!btn) return;
+  var text = "默认排序";
+  if (currentSortMode === 2) text = "第一名排序";
+  else if (currentSortMode === 3) text = "使用场次";
+  btn.textContent = text;
+  var opts = document.querySelectorAll("#sortMenu .sort-opt");
+  for (var i = 0; i < opts.length; i++) opts[i].classList.toggle("active", parseInt(opts[i].getAttribute("data-v"), 10) === currentSortMode);
+}
+
+function toggleSortMenu(ev) {
+  if (ev) ev.stopPropagation();
+  var m = document.getElementById("sortMenu");
+  var isOpen = m.style.display !== "none";
+  m.style.display = isOpen ? "none" : "";
+}
+
+function setSortMode(mode) {
+  currentSortMode = mode;
+  var m = document.getElementById("sortMenu");
+  if (m) m.style.display = "none";
+  updateSortBtn();
+  renderGrid();
+  saveSortMode(mode);
+}
+
+function saveSortMode(mode) {
+  if (!currentUserId) return;
+  var url = SUPA_URL + "/rest/v1/arena_progress?user_id=eq." + currentUserId;
+  fetch(url, { headers: { "apikey": SUPA_KEY, "Authorization": "Bearer " + SUPA_KEY } })
+  .then(function(r) { return r.json(); })
+  .then(function(rows) {
+    if (rows.length > 0) {
+      return fetch(SUPA_URL + "/rest/v1/arena_progress?user_id=eq." + currentUserId, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", "apikey": SUPA_KEY, "Authorization": "Bearer " + SUPA_KEY, "Prefer": "return=minimal" },
+        body: JSON.stringify({ sort_mode: mode, updated_at: new Date().toISOString() })
+      });
+    } else {
+      return fetch(SUPA_URL + "/rest/v1/arena_progress", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "apikey": SUPA_KEY, "Authorization": "Bearer " + SUPA_KEY, "Prefer": "return=minimal" },
+        body: JSON.stringify({ user_id: currentUserId, sort_mode: mode, updated_at: new Date().toISOString() })
+      });
+    }
+  })
+  .catch(function() {});
+}
+
+document.addEventListener("click", function(e) {
+  var m = document.getElementById("sortMenu");
+  if (m && m.style.display !== "none" && !m.contains(e.target) && e.target.id !== "sortBtn") {
+    m.style.display = "none";
+  }
+});
 
 function sbFetch(path) {
   return fetch(SUPA_URL + "/rest/v1/" + path, {
