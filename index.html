@@ -874,7 +874,7 @@ body.skin-holy .hd-avatar.completed { border-color: #fff8dc; animation: holyRadi
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-09 10:25:00</div>
+    <div class="web-update-time">网页版更新时间：2026-09-09 10:40:00</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -969,7 +969,6 @@ body.skin-holy .hd-avatar.completed { border-color: #fff8dc; animation: holyRadi
       <div class="hd-info">
         <div class="hd-title" id="hdTitle">—</div>
         <div class="hd-name" id="hdName"></div>
-        <div class="hd-hint" id="hdHint">英雄战绩 · 数据加载中</div>
       </div>
       <div class="hd-arena">
       <div class="hd-season-games">使用 <b id="hdGames">--</b> 场 · 选取率 <b id="hdPickRate">--</b>%</div>
@@ -999,7 +998,6 @@ body.skin-holy .hd-avatar.completed { border-color: #fff8dc; animation: holyRadi
         <div class="hd-md-list" id="hdMdList"></div>
       </div>
       </div>
-      <div class="hd-empty" id="hdEmpty">暂无更多战绩</div>
     </div>
   </div>
 
@@ -1952,13 +1950,9 @@ function loadHeroDetailData() {
     /* 默认展示最近一局 */
     var first = list.querySelector(".hd-match");
     if (first) showMatch(first);
-    var hint = document.getElementById("hdHint");
-    if (hint) hint.textContent = "英雄战绩 · " + n + " 场真实数据";
   })
   .catch(function() {
     if (hdCtx.heroEn !== myHero) return;
-    var hint = document.getElementById("hdHint");
-    if (hint) hint.textContent = "英雄战绩 · 读取失败";
     var list = document.getElementById("hdMatchList");
     if (list) list.innerHTML = '<div class="hd-match"><div class="hm-date">加载失败，请重试</div></div>';
     var md = document.getElementById("hdMdList");
@@ -1992,8 +1986,6 @@ function openHeroDetail(id, title, name) {
   hdAv.className = "hd-avatar" + (isComp ? " completed" : "");
   document.getElementById("hdTitle").textContent = title;
   document.getElementById("hdName").textContent = name;
-  var hint = document.getElementById("hdHint");
-  if (hint) hint.textContent = "英雄战绩 · 数据加载中";
   /* 整页切换：隐藏英雄网格+顶部季统计，显示战绩详情视图 */
   var g = document.getElementById("listView");
   var d = document.getElementById("detailView");
