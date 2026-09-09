@@ -1000,7 +1000,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-09 15:52:00</div>
+    <div class="web-update-time">网页版更新时间：2026-09-09 17:04:00</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -1352,6 +1352,31 @@ var usageCount = {};
 function getImg(id) {
   return "https://ddragon.leagueoflegends.com/cdn/" + DD_VERSION + "/img/champion/" + id + ".png";
 }
+/* ===== 图片异步懒加载：先渲染登录/界面，头像/符文/装备等图标按批慢慢补（英雄头像走腾讯快源→ddragon兜底）===== */
+var __avaQ = [], __avaBusy = 0;
+function __avaCN(id){ return "https://game.gtimg.cn/images/lol/act/img/champion/" + id + ".png"; }
+function __lazyApply(el,url){ if(!el) return; if(el.tagName === "IMG"){ el.setAttribute("src", url); } else { el.style.backgroundImage = "url('" + url + "')"; } }
+function __avaLoad(el,id,url){
+  if(!el) return;
+  if(url){ __lazyApply(el, url); return; }
+  if(el.__avaMark === id) return; el.__avaMark = id;
+  var im = new Image();
+  im.onload = function(){ __lazyApply(el, __avaCN(id)); };
+  im.onerror = function(){ var im2 = new Image(); im2.onload = function(){ __lazyApply(el, getImg(id)); }; im2.src = getImg(id); };
+  im.src = __avaCN(id);
+}
+function pushAva(el,id){ __avaQ.push([el,id,null]); }
+function pushImg(el,url){ if(el) __avaQ.push([el,null,url]); }
+function lazyBindImgs(scope){ var s = scope || document; var a = s.querySelectorAll("img[data-src]"); for(var k=0;k<a.length;k++) pushImg(a[k], a[k].getAttribute("data-src")); }
+function startAvaCycle(){
+  if(__avaBusy) return; __avaBusy = 1;
+  (function pump(){
+    var n = 5, i = 0;
+    while(i < n && __avaQ.length){ var it = __avaQ.shift(); __avaLoad(it[0], it[1], it[2]); i++; }
+    if(__avaQ.length){ setTimeout(pump, 40); } else { __avaBusy = 0; }
+  })();
+}
+
 
 function toPinyin(str) {
   if (!pinyinFn) return "";
@@ -1595,7 +1620,7 @@ function renderGrid() {
     portrait.className = "champion-portrait";
     var ava = document.createElement("span");
     ava.className = "cp-ava";
-    ava.style.backgroundImage = "url('" + getImg(c.id) + "')";
+    pushAva(ava, c.id);
     portrait.appendChild(ava);
     var ov = document.createElement("span");
     ov.className = "cp-ov";
@@ -1617,6 +1642,7 @@ function renderGrid() {
 
   grid.innerHTML = "";
   grid.appendChild(frag);
+  startAvaCycle();
 
   var totalEl = document.getElementById("totalCompleted");
   if (totalEl) totalEl.textContent = count;
@@ -1643,7 +1669,7 @@ function renderSkinPanel() {
     if (!locked) {
       var face = document.createElement("span");
       face.className = "preview-face";
-      face.style.backgroundImage = "url('" + getImg("Jinx") + "')";
+      pushAva(face, "Jinx");
       preview.appendChild(face);
     }
 
@@ -2005,7 +2031,7 @@ function makePlayerCard(p) {
   for (var i = 0; i < 6; i++) {
     var ai = augInfo(runes[i]);
     if (runes[i] && ai && ai.img) {
-      icons += '<i class="hp-run rar-' + ai.rar + '" title="' + ai.n + '"><img src="' + ai.img + '" alt="' + ai.n + '"></i>';
+      icons += '<i class="hp-run rar-' + ai.rar + '" title="' + ai.n + '"><img data-src="' + ai.img + '" alt="' + ai.n + '"></i>';
     } else {
       icons += '<i class="hp-run empty"></i>';
     }
@@ -2015,13 +2041,13 @@ function makePlayerCard(p) {
   for (var j = 0; j < 7; j++) {
     var ii = itemInfo(items[j]);
     if (items[j] && ii && ii.img) {
-      itemHtml += '<i class="hp-item" title="' + ii.n + '"><img src="' + ii.img + '" alt="' + ii.n + '"></i>';
+      itemHtml += '<i class="hp-item" title="' + ii.n + '"><img data-src="' + ii.img + '" alt="' + ii.n + '"></i>';
     } else {
       itemHtml += '<i class="hp-item empty"></i>';
     }
   }
   var champIcon = p.champion_name ? getImgByChampionName(p.champion_name) : "";
-  var champHtml = champIcon ? '<div class="md-champ"><img src="' + champIcon + '" alt=""></div>'
+  var champHtml = champIcon ? '<div class="md-champ"><img data-src="' + champIcon + '" alt=""></div>'
                              : '<div class="md-champ"></div>';
   return '<div class="hd-md-p">' + champHtml +
     '<div class="md-id">' + (p.summoner_name || (p.is_self ? hdCtx.account : "未知")) + '</div>' +
@@ -2067,6 +2093,7 @@ function renderGameDetail(gameId) {
       }
       row.innerHTML = inner;
       list.appendChild(row);
+      lazyBindImgs(row);
     }
   })
   .catch(function() {
@@ -2177,7 +2204,7 @@ function openHeroDetail(id, title, name) {
   hdAv.innerHTML = "";
   var hdAva = document.createElement("span");
   hdAva.className = "cp-ava";
-  hdAva.style.backgroundImage = "url('" + getImg(id) + "')";
+  pushAva(hdAva, id);
   hdAv.appendChild(hdAva);
   var hdOv = document.createElement("span");
   hdOv.className = "cp-ov";
