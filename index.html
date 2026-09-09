@@ -514,6 +514,18 @@ body::before {
   z-index: 6; pointer-events: none; overflow: hidden; display: none;
 }
 .skin-default .champion-card.completed .champion-portrait { border-color: #c89b3c; box-shadow: 0 0 6px rgba(200,155,60,0.3); }
+/* 动态皮肤：元素自身边框底色贴合主色（消浅色基础框，逻辑同默认皮肤改border-color） */
+.skin-iron .champion-card.completed .champion-portrait { border-color: #33363c; }
+.skin-bronze .champion-card.completed .champion-portrait { border-color: #7a4213; }
+.skin-silver .champion-card.completed .champion-portrait { border-color: #555e68; }
+.skin-gold .champion-card.completed .champion-portrait { border-color: #7a5c17; }
+.skin-platinum .champion-card.completed .champion-portrait { border-color: #2f6d7a; }
+.skin-emerald .champion-card.completed .champion-portrait { border-color: #0f6b43; }
+.skin-diamond .champion-card.completed .champion-portrait { border-color: #12597a; }
+.skin-master .champion-card.completed .champion-portrait { border-color: #6e2350; }
+.skin-grand .champion-card.completed .champion-portrait { border-color: #70380f; }
+.skin-king .champion-card.completed .champion-portrait { border-color: #825a00; }
+
 .skin-iron .champion-card.completed .champion-portrait::before,
 .skin-bronze .champion-card.completed .champion-portrait::before,
 .skin-silver .champion-card.completed .champion-portrait::before,
@@ -936,7 +948,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-09 12:31:00</div>
+    <div class="web-update-time">网页版更新时间：2026-09-09 11:05:00</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
