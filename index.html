@@ -515,16 +515,16 @@ body::before {
 }
 .skin-default .champion-card.completed .champion-portrait { border-color: #c89b3c; box-shadow: 0 0 6px rgba(200,155,60,0.3); }
 /* 动态皮肤：元素自身边框底色贴合主色（消浅色基础框，逻辑同默认皮肤改border-color） */
-.skin-iron .champion-card.completed .champion-portrait { border-color: #33363c; }
-.skin-bronze .champion-card.completed .champion-portrait { border-color: #7a4213; }
-.skin-silver .champion-card.completed .champion-portrait { border-color: #555e68; }
-.skin-gold .champion-card.completed .champion-portrait { border-color: #7a5c17; }
-.skin-platinum .champion-card.completed .champion-portrait { border-color: #2f6d7a; }
-.skin-emerald .champion-card.completed .champion-portrait { border-color: #0f6b43; }
-.skin-diamond .champion-card.completed .champion-portrait { border-color: #12597a; }
-.skin-master .champion-card.completed .champion-portrait { border-color: #6e2350; }
-.skin-grand .champion-card.completed .champion-portrait { border-color: #70380f; }
-.skin-king .champion-card.completed .champion-portrait { border-color: #825a00; }
+.skin-iron .champion-card.completed .champion-portrait { border: 0; }
+.skin-bronze .champion-card.completed .champion-portrait { border: 0; }
+.skin-silver .champion-card.completed .champion-portrait { border: 0; }
+.skin-gold .champion-card.completed .champion-portrait { border: 0; }
+.skin-platinum .champion-card.completed .champion-portrait { border: 0; }
+.skin-emerald .champion-card.completed .champion-portrait { border: 0; }
+.skin-diamond .champion-card.completed .champion-portrait { border: 0; }
+.skin-master .champion-card.completed .champion-portrait { border: 0; }
+.skin-grand .champion-card.completed .champion-portrait { border: 0; }
+.skin-king .champion-card.completed .champion-portrait { border: 0; }
 
 .skin-iron .champion-card.completed .champion-portrait::before,
 .skin-bronze .champion-card.completed .champion-portrait::before,
@@ -537,24 +537,24 @@ body::before {
 .skin-grand .champion-card.completed .champion-portrait::before,
 .skin-king .champion-card.completed .champion-portrait::before {
   content: ""; position: absolute; left: 0; top: 0; right: 0; bottom: 0; z-index: 4;
-  border: 2px solid transparent; pointer-events: none;
-  background-clip: padding-box, border-box; background-origin: border-box, border-box;
-  background-size: auto, 44px 100%;
+  pointer-events: none;
+  background-clip: border-box; background-origin: border-box;
+  background-size: 44px 100%;
   animation: skScroll 2.0s linear infinite; -webkit-animation: skScroll 2.0s linear infinite;
 }
-.skin-iron .champion-card.completed .champion-portrait::before    { background-image: linear-gradient(#0d151d,#0d151d), repeating-linear-gradient(100deg,#33363c 0,#33363c 15px,#cfd6e0 23px,#6b7280 27px,#fff 29px,#6b7280 31px,#cfd6e0 37px,#33363c 44px); }
-.skin-bronze .champion-card.completed .champion-portrait::before    { background-image: linear-gradient(#0d151d,#0d151d), repeating-linear-gradient(100deg,#7a4213 0,#7a4213 15px,#f0c08a 23px,#cd7f32 27px,#fff 29px,#cd7f32 31px,#f0c08a 37px,#7a4213 44px); }
-.skin-silver .champion-card.completed .champion-portrait::before    { background-image: linear-gradient(#0d151d,#0d151d), repeating-linear-gradient(100deg,#8a94a3 0,#8a94a3 15px,#ffffff 23px,#d2d9e4 27px,#fff 29px,#d2d9e4 31px,#ffffff 37px,#8a94a3 44px); }
-.skin-gold .champion-card.completed .champion-portrait::before    { background-image: linear-gradient(#0d151d,#0d151d), repeating-linear-gradient(100deg,#8a6a1e 0,#8a6a1e 15px,#f7e39b 23px,#e5c15c 27px,#fff 29px,#e5c15c 31px,#f7e39b 37px,#8a6a1e 44px); }
-.skin-platinum .champion-card.completed .champion-portrait::before    { background-image: linear-gradient(#0d151d,#0d151d), repeating-linear-gradient(100deg,#3f96a8 0,#3f96a8 15px,#e3f9ff 23px,#8ce0f0 27px,#fff 29px,#8ce0f0 31px,#e3f9ff 37px,#3f96a8 44px); }
-.skin-emerald .champion-card.completed .champion-portrait::before    { background-image: linear-gradient(#0d151d,#0d151d), repeating-linear-gradient(100deg,#118a5a 0,#118a5a 15px,#9af0ce 23px,#23c483 27px,#fff 29px,#23c483 31px,#9af0ce 37px,#118a5a 44px); }
-.skin-diamond .champion-card.completed .champion-portrait::before    { background-image: linear-gradient(#0d151d,#0d151d), repeating-linear-gradient(100deg,#17779c 0,#17779c 15px,#bdf0ff 23px,#35c5f2 27px,#fff 29px,#35c5f2 31px,#bdf0ff 37px,#17779c 44px); }
-.skin-master .champion-card.completed .champion-portrait::before    { background-image: linear-gradient(#0d151d,#0d151d), repeating-linear-gradient(100deg,#96305a 0,#96305a 15px,#f9b2cd 23px,#e0457b 27px,#fff 29px,#e0457b 31px,#f9b2cd 37px,#96305a 44px); }
-.skin-grand .champion-card.completed .champion-portrait::before    { background-image: linear-gradient(#0d151d,#0d151d), repeating-linear-gradient(100deg,#9c4f14 0,#9c4f14 15px,#f5c9a2 23px,#e07e3f 27px,#fff 29px,#e07e3f 31px,#f5c9a2 37px,#9c4f14 44px); }
-.skin-king .champion-card.completed .champion-portrait::before    { background-image: linear-gradient(#0d151d,#0d151d), repeating-linear-gradient(100deg,#8a5f00 0,#8a5f00 15px,#ffe399 23px,#f0a201 27px,#fff 29px,#f0a201 31px,#ffe399 37px,#8a5f00 44px); }
+.skin-iron .champion-card.completed .champion-portrait::before    { background-image: repeating-linear-gradient(100deg,#33363c 0,#33363c 15px,#cfd6e0 23px,#6b7280 27px,#fff 29px,#6b7280 31px,#cfd6e0 37px,#33363c 44px); }
+.skin-bronze .champion-card.completed .champion-portrait::before    { background-image: repeating-linear-gradient(100deg,#7a4213 0,#7a4213 15px,#f0c08a 23px,#cd7f32 27px,#fff 29px,#cd7f32 31px,#f0c08a 37px,#7a4213 44px); }
+.skin-silver .champion-card.completed .champion-portrait::before    { background-image: repeating-linear-gradient(100deg,#8a94a3 0,#8a94a3 15px,#ffffff 23px,#d2d9e4 27px,#fff 29px,#d2d9e4 31px,#ffffff 37px,#8a94a3 44px); }
+.skin-gold .champion-card.completed .champion-portrait::before    { background-image: repeating-linear-gradient(100deg,#8a6a1e 0,#8a6a1e 15px,#f7e39b 23px,#e5c15c 27px,#fff 29px,#e5c15c 31px,#f7e39b 37px,#8a6a1e 44px); }
+.skin-platinum .champion-card.completed .champion-portrait::before    { background-image: repeating-linear-gradient(100deg,#3f96a8 0,#3f96a8 15px,#e3f9ff 23px,#8ce0f0 27px,#fff 29px,#8ce0f0 31px,#e3f9ff 37px,#3f96a8 44px); }
+.skin-emerald .champion-card.completed .champion-portrait::before    { background-image: repeating-linear-gradient(100deg,#118a5a 0,#118a5a 15px,#9af0ce 23px,#23c483 27px,#fff 29px,#23c483 31px,#9af0ce 37px,#118a5a 44px); }
+.skin-diamond .champion-card.completed .champion-portrait::before    { background-image: repeating-linear-gradient(100deg,#17779c 0,#17779c 15px,#bdf0ff 23px,#35c5f2 27px,#fff 29px,#35c5f2 31px,#bdf0ff 37px,#17779c 44px); }
+.skin-master .champion-card.completed .champion-portrait::before    { background-image: repeating-linear-gradient(100deg,#96305a 0,#96305a 15px,#f9b2cd 23px,#e0457b 27px,#fff 29px,#e0457b 31px,#f9b2cd 37px,#96305a 44px); }
+.skin-grand .champion-card.completed .champion-portrait::before    { background-image: repeating-linear-gradient(100deg,#9c4f14 0,#9c4f14 15px,#f5c9a2 23px,#e07e3f 27px,#fff 29px,#e07e3f 31px,#f5c9a2 37px,#9c4f14 44px); }
+.skin-king .champion-card.completed .champion-portrait::before    { background-image: repeating-linear-gradient(100deg,#8a5f00 0,#8a5f00 15px,#ffe399 23px,#f0a201 27px,#fff 29px,#f0a201 31px,#ffe399 37px,#8a5f00 44px); }
 
-@keyframes skScroll { from { background-position: 0 0, 0 0; } to { background-position: 0 0, 44px 0; } }
-@-webkit-keyframes skScroll { from { background-position: 0 0, 0 0; } to { background-position: 0 0, 44px 0; } }
+@keyframes skScroll { from { background-position: 0 0; } to { background-position: 44px 0; } }
+@-webkit-keyframes skScroll { from { background-position: 0 0; } to { background-position: 44px 0; } }
 .skin-master .champion-card.completed .champion-portrait .cp-ov,
 .skin-grand  .champion-card.completed .champion-portrait .cp-ov,
 .skin-king   .champion-card.completed .champion-portrait .cp-ov { display: block; }
@@ -681,6 +681,17 @@ body::before {
   z-index: 6; pointer-events: none; overflow: hidden; display: none;
 }
 body.skin-default .hd-avatar.completed { border-color: #c89b3c; box-shadow: 0 0 6px rgba(200,155,60,0.25); }
+/* 动态皮肤取消 hd-avatar 基础框（v27c） */
+body.skin-iron .hd-avatar.completed,
+body.skin-bronze .hd-avatar.completed,
+body.skin-silver .hd-avatar.completed,
+body.skin-gold .hd-avatar.completed,
+body.skin-platinum .hd-avatar.completed,
+body.skin-emerald .hd-avatar.completed,
+body.skin-diamond .hd-avatar.completed,
+body.skin-master .hd-avatar.completed,
+body.skin-grand .hd-avatar.completed,
+body.skin-king .hd-avatar.completed { border: 0; }
 body.skin-iron .hd-avatar.completed::before,
 body.skin-bronze .hd-avatar.completed::before,
 body.skin-silver .hd-avatar.completed::before,
@@ -692,21 +703,21 @@ body.skin-master .hd-avatar.completed::before,
 body.skin-grand .hd-avatar.completed::before,
 body.skin-king .hd-avatar.completed::before {
   content: ""; position: absolute; left: 0; top: 0; right: 0; bottom: 0; z-index: 4;
-  border: 2px solid transparent; pointer-events: none;
-  background-clip: padding-box, border-box; background-origin: border-box, border-box;
-  background-size: auto, 44px 100%;
+  pointer-events: none;
+  background-clip: border-box; background-origin: border-box;
+  background-size: 44px 100%;
   animation: skScroll 2.0s linear infinite; -webkit-animation: skScroll 2.0s linear infinite;
 }
-body.skin-iron .hd-avatar.completed::before    { background-image: linear-gradient(#0d151d,#0d151d), repeating-linear-gradient(100deg,#33363c 0,#33363c 15px,#cfd6e0 23px,#6b7280 27px,#fff 29px,#6b7280 31px,#cfd6e0 37px,#33363c 44px); }
-body.skin-bronze .hd-avatar.completed::before    { background-image: linear-gradient(#0d151d,#0d151d), repeating-linear-gradient(100deg,#7a4213 0,#7a4213 15px,#f0c08a 23px,#cd7f32 27px,#fff 29px,#cd7f32 31px,#f0c08a 37px,#7a4213 44px); }
-body.skin-silver .hd-avatar.completed::before    { background-image: linear-gradient(#0d151d,#0d151d), repeating-linear-gradient(100deg,#8a94a3 0,#8a94a3 15px,#ffffff 23px,#d2d9e4 27px,#fff 29px,#d2d9e4 31px,#ffffff 37px,#8a94a3 44px); }
-body.skin-gold .hd-avatar.completed::before    { background-image: linear-gradient(#0d151d,#0d151d), repeating-linear-gradient(100deg,#8a6a1e 0,#8a6a1e 15px,#f7e39b 23px,#e5c15c 27px,#fff 29px,#e5c15c 31px,#f7e39b 37px,#8a6a1e 44px); }
-body.skin-platinum .hd-avatar.completed::before    { background-image: linear-gradient(#0d151d,#0d151d), repeating-linear-gradient(100deg,#3f96a8 0,#3f96a8 15px,#e3f9ff 23px,#8ce0f0 27px,#fff 29px,#8ce0f0 31px,#e3f9ff 37px,#3f96a8 44px); }
-body.skin-emerald .hd-avatar.completed::before    { background-image: linear-gradient(#0d151d,#0d151d), repeating-linear-gradient(100deg,#118a5a 0,#118a5a 15px,#9af0ce 23px,#23c483 27px,#fff 29px,#23c483 31px,#9af0ce 37px,#118a5a 44px); }
-body.skin-diamond .hd-avatar.completed::before    { background-image: linear-gradient(#0d151d,#0d151d), repeating-linear-gradient(100deg,#17779c 0,#17779c 15px,#bdf0ff 23px,#35c5f2 27px,#fff 29px,#35c5f2 31px,#bdf0ff 37px,#17779c 44px); }
-body.skin-master .hd-avatar.completed::before    { background-image: linear-gradient(#0d151d,#0d151d), repeating-linear-gradient(100deg,#96305a 0,#96305a 15px,#f9b2cd 23px,#e0457b 27px,#fff 29px,#e0457b 31px,#f9b2cd 37px,#96305a 44px); }
-body.skin-grand .hd-avatar.completed::before    { background-image: linear-gradient(#0d151d,#0d151d), repeating-linear-gradient(100deg,#9c4f14 0,#9c4f14 15px,#f5c9a2 23px,#e07e3f 27px,#fff 29px,#e07e3f 31px,#f5c9a2 37px,#9c4f14 44px); }
-body.skin-king .hd-avatar.completed::before    { background-image: linear-gradient(#0d151d,#0d151d), repeating-linear-gradient(100deg,#8a5f00 0,#8a5f00 15px,#ffe399 23px,#f0a201 27px,#fff 29px,#f0a201 31px,#ffe399 37px,#8a5f00 44px); }
+body.skin-iron .hd-avatar.completed::before    { background-image: repeating-linear-gradient(100deg,#33363c 0,#33363c 15px,#cfd6e0 23px,#6b7280 27px,#fff 29px,#6b7280 31px,#cfd6e0 37px,#33363c 44px); }
+body.skin-bronze .hd-avatar.completed::before    { background-image: repeating-linear-gradient(100deg,#7a4213 0,#7a4213 15px,#f0c08a 23px,#cd7f32 27px,#fff 29px,#cd7f32 31px,#f0c08a 37px,#7a4213 44px); }
+body.skin-silver .hd-avatar.completed::before    { background-image: repeating-linear-gradient(100deg,#8a94a3 0,#8a94a3 15px,#ffffff 23px,#d2d9e4 27px,#fff 29px,#d2d9e4 31px,#ffffff 37px,#8a94a3 44px); }
+body.skin-gold .hd-avatar.completed::before    { background-image: repeating-linear-gradient(100deg,#8a6a1e 0,#8a6a1e 15px,#f7e39b 23px,#e5c15c 27px,#fff 29px,#e5c15c 31px,#f7e39b 37px,#8a6a1e 44px); }
+body.skin-platinum .hd-avatar.completed::before    { background-image: repeating-linear-gradient(100deg,#3f96a8 0,#3f96a8 15px,#e3f9ff 23px,#8ce0f0 27px,#fff 29px,#8ce0f0 31px,#e3f9ff 37px,#3f96a8 44px); }
+body.skin-emerald .hd-avatar.completed::before    { background-image: repeating-linear-gradient(100deg,#118a5a 0,#118a5a 15px,#9af0ce 23px,#23c483 27px,#fff 29px,#23c483 31px,#9af0ce 37px,#118a5a 44px); }
+body.skin-diamond .hd-avatar.completed::before    { background-image: repeating-linear-gradient(100deg,#17779c 0,#17779c 15px,#bdf0ff 23px,#35c5f2 27px,#fff 29px,#35c5f2 31px,#bdf0ff 37px,#17779c 44px); }
+body.skin-master .hd-avatar.completed::before    { background-image: repeating-linear-gradient(100deg,#96305a 0,#96305a 15px,#f9b2cd 23px,#e0457b 27px,#fff 29px,#e0457b 31px,#f9b2cd 37px,#96305a 44px); }
+body.skin-grand .hd-avatar.completed::before    { background-image: repeating-linear-gradient(100deg,#9c4f14 0,#9c4f14 15px,#f5c9a2 23px,#e07e3f 27px,#fff 29px,#e07e3f 31px,#f5c9a2 37px,#9c4f14 44px); }
+body.skin-king .hd-avatar.completed::before    { background-image: repeating-linear-gradient(100deg,#8a5f00 0,#8a5f00 15px,#ffe399 23px,#f0a201 27px,#fff 29px,#f0a201 31px,#ffe399 37px,#8a5f00 44px); }
 body.skin-master .hd-avatar.completed .cp-ov,
 body.skin-grand  .hd-avatar.completed .cp-ov,
 body.skin-king   .hd-avatar.completed .cp-ov { display: block; }
@@ -948,7 +959,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-09 12:50:00</div>
+    <div class="web-update-time">网页版更新时间：2026-09-09 13:00:00</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
