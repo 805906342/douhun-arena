@@ -8,7 +8,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>斗魂竞技场赛季旅程</title>
 <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.26.0/dist/index.js" async onload="window.__pinyinReady&&window.__pinyinReady()"></script>
-<script src="data/maps.js" defer></script>
+<script src="data/maps.js"></script>
 <style>
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -316,16 +316,6 @@ body::before {
   flex-shrink: 0;
 }
 .skin-btn:hover { border-color: #c89b3c; }
-.avatar-btn {
-  margin-left: 10px; height: 32px; padding: 0 14px; background: rgba(10,20,30,0.8);
-  border: 1px solid #3a4a5a; color: #c89b3c; font-size: 13px; outline: none; cursor: pointer;
-  white-space: nowrap; -webkit-flex-shrink: 0; flex-shrink: 0;
-}
-.avatar-btn:hover { border-color: #c89b3c; }
-/* 大头像：仅影响首页 champion-portrait 尺寸 */
-body.av-large .champion-portrait { width: 88px; height: 88px; }
-body.av-large .champion-portrait .cp-ava, body.av-large .champion-portrait .cp-ov { left: 2px; top: 2px; width: 84px; height: 84px; }
-body.av-large .champion-card { width: 88px; }
 
 /* Scan button (desktop only) */
 .scan-wrap {
@@ -597,30 +587,16 @@ body.av-large .champion-card { width: 88px; }
 @keyframes ovDrift { 0%,100% { background-position: 0 0, 0 0; opacity: .92; } 50% { background-position: 18% 6%, 100% -40%; opacity: 1; } }
 @-webkit-keyframes ovDrift { 0%,100% { background-position: 0 0, 0 0; opacity: .92; } 50% { background-position: 18% 6%, 100% -40%; opacity: 1; } }
 
-.skin-preview { position: relative; padding: 3px; box-sizing: border-box; overflow: hidden; }
-.skin-preview .preview-face { display: block; width: 100%; height: 100%; background-size: cover; background-position: center; background-color: #0d1622; }
-/* 默认：静态金框 */
-.preview-default { background: linear-gradient(135deg,#e0c78a 0%,#c89b3c 40%,#8a6a1e 100%); }
-.preview-default .preview-face { box-shadow: inset 0 0 4px rgba(200,155,60,.5); }
-/* 段位：渐变环（复用各皮肤主色） */
-.preview-iron { background: repeating-linear-gradient(100deg,#33363c 0,#cfd6e0 6px,#6b7280 8px,#cfd6e0 10px,#33363c 16px); }
-.preview-bronze { background: repeating-linear-gradient(100deg,#7a4213 0,#f0c08a 6px,#cd7f32 8px,#f0c08a 10px,#7a4213 16px); }
-.preview-silver { background: repeating-linear-gradient(100deg,#8a94a3 0,#ffffff 6px,#d2d9e4 8px,#ffffff 10px,#8a94a3 16px); }
-.preview-gold { background: repeating-linear-gradient(100deg,#8a6a1e 0,#f7e39b 6px,#e5c15c 8px,#f7e39b 10px,#8a6a1e 16px); }
-.preview-platinum { background: repeating-linear-gradient(100deg,#3f96a8 0,#e3f9ff 6px,#8ce0f0 8px,#e3f9ff 10px,#3f96a8 16px); }
-.preview-emerald { background: repeating-linear-gradient(100deg,#118a5a 0,#9af0ce 6px,#23c483 8px,#9af0ce 10px,#118a5a 16px); }
-.preview-diamond { background: repeating-linear-gradient(100deg,#17779c 0,#bdf0ff 6px,#35c5f2 8px,#bdf0ff 10px,#17779c 16px); }
-.preview-master { background: repeating-linear-gradient(100deg,#96305a 0,#f9b2cd 6px,#e0457b 8px,#f9b2cd 10px,#96305a 16px); }
-.preview-grand { background: repeating-linear-gradient(100deg,#9c4f14 0,#f5c9a2 6px,#e07e3f 8px,#f5c9a2 10px,#9c4f14 16px); }
-.preview-king { background: repeating-linear-gradient(100deg,#8a5f00 0,#ffe399 6px,#f0a201 8px,#ffe399 10px,#8a5f00 16px); box-shadow: 0 0 8px rgba(240,162,1,.7); }
-/* 解锁锁定 */
-.skin-option-inner.locked { cursor: not-allowed; opacity: .55; }
-.skin-option-inner.locked .skin-preview::after { content: "🔒"; position: absolute; left: 0; top: 0; right: 0; bottom: 0; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: center; justify-content: center; background: rgba(0,0,0,.35); font-size: 14px; z-index: 3; }
-.skin-option-inner.locked .skin-option-name { color: #5a6a7a; }
-/* 皮肤规则问号 */
-.skin-panel-title { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; }
-.skin-rule-q { display: inline-block; margin-left: 6px; width: 15px; height: 15px; line-height: 15px; text-align: center; border: 1px solid rgba(200,155,60,.6); color: #c89b3c; border-radius: 50%; font-size: 11px; cursor: pointer; -webkit-flex-shrink: 0; flex-shrink: 0; }
-.skin-rule-tip { position: fixed; display: none; width: 260px; font-size: 11px; line-height: 1.5; color: #c8a87a; background: rgba(4,12,20,.97); border: 1px solid #785a28; border-radius: 3px; padding: 8px 10px; z-index: 9999; box-shadow: 0 2px 8px rgba(0,0,0,.5); }
+.preview-iron { border: 2px solid #6b7280; }
+.preview-bronze { border: 2px solid #cd7f32; }
+.preview-silver { border: 2px solid #d2d9e4; }
+.preview-gold { border: 2px solid #c8a340; }
+.preview-platinum { border: 2px solid #8ce0f0; }
+.preview-emerald { border: 2px solid #23c483; }
+.preview-diamond { border: 2px solid #35c5f2; }
+.preview-master { border: 2px solid #e0457b; }
+.preview-grand { border: 2px solid #e07e3f; }
+.preview-king { border: 2px solid #f0a201; box-shadow: 0 0 6px rgba(240,162,1,.6); }
 
 .total-count {
   position: absolute;
@@ -898,13 +874,6 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
 .md-runes { display: -webkit-flex; display: flex; gap: 3px; margin-left: auto; }
 .md-runes i { width: 16px; height: 16px; background: #1a2a3a; border: 1px solid #223242; border-radius: 2px; overflow: hidden; }
 .md-runes i img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  /* 强化符文图标：按稀有度渲染本来的颜色（素材为灰度图，注入稀有度色调+光晕） */
-  .md-runes i.hp-run img { filter: saturate(2.6) contrast(1.25); }
-  .md-runes i.hp-run.rar-kBronze { box-shadow: inset 0 0 0 1px #cd7f32; background: rgba(205,127,50,.18); }
-  .md-runes i.hp-run.rar-kSilver { box-shadow: inset 0 0 0 1px #aeb9c4; background: rgba(174,185,196,.18); }
-  .md-runes i.hp-run.rar-kGold { box-shadow: inset 0 0 0 1px #c8a340; background: rgba(200,163,64,.20); }
-  .md-runes i.hp-run.rar-kPrismatic { box-shadow: inset 0 0 0 1px #b98ee0, 0 0 4px rgba(185,142,224,.7); background: rgba(185,142,224,.22); }
-  .md-runes i.hp-run.rar-kEventChoice { box-shadow: inset 0 0 0 1px #e07e3f; background: rgba(224,126,63,.18); }
 .md-items { display: -webkit-flex; display: flex; gap: 3px; margin-left: 12px; }
 .md-items i { width: 22px; height: 22px; background: #1a2a3a; border: 1px solid #223242; border-radius: 2px; overflow: hidden; }
 .md-items i img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -949,7 +918,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
   z-index: 9998;
 }
 .rank-box {
-  width: 640px; max-width: 94vw; max-height: 86vh;
+  width: 460px; max-width: 92vw; max-height: 76vh;
   display: -webkit-flex; display: flex;
   -webkit-flex-direction: column; flex-direction: column;
   background: rgba(10,20,30,0.97);
@@ -993,7 +962,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-09 17:58:00</div>
+    <div class="web-update-time">网页版更新时间：2026-09-09 13:10:00</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -1010,7 +979,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
     <div class="login-error" id="loginError"></div>
     <div class="login-download">
       <a class="download-btn" href="download/LoLArena.exe" download>下载 Windows 桌面版</a>
-      <div class="download-time">桌面版更新时间：2026-09-09 20:05:00</div>
+      <div class="download-time">桌面版更新时间：2026-09-09 13:20:00</div>
     </div>
   </div>
 </div>
@@ -1046,19 +1015,17 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
         <button class="sort-btn" id="sortBtn" type="button" onclick="toggleSortMenu(event)">默认排序</button>
         <div class="sort-menu" id="sortMenu" style="display:none;">
           <div class="sort-opt" data-v="1" onclick="setSortMode(1)">默认排序</div>
-          <div class="sort-opt" data-v="2" onclick="setSortMode(2)">第一排序</div>
+          <div class="sort-opt" data-v="2" onclick="setSortMode(2)">第一名排序</div>
           <div class="sort-opt" data-v="3" onclick="setSortMode(3)">使用场次</div>
         </div>
       </div>
       <div class="skin-panel-wrap">
         <button class="skin-btn" id="skinBtn" type="button" onclick="toggleSkinPanel()">边框皮肤</button>
         <div class="skin-panel" id="skinPanel">
-          <div class="skin-panel-title">选择边框皮肤<span class="skin-rule-q" id="skinRuleQ" onmouseover="showSkinRule(1)" onmouseout="showSkinRule(0)">?</span></div>
-          <div class="skin-rule-tip" id="skinRuleTip" style="display:none;">每获得10个第一名英雄解锁1款皮肤，按段位顺序依次解锁（黑铁→青铜→白银→黄金→铂金→翡翠→钻石→大师→宗师→王者）。默认皮肤永久开放。注：本规则仅适用当前10款段位皮肤，后续新增皮肤可能有独立解锁方式。</div>
+          <div class="skin-panel-title">选择边框皮肤</div>
           <div class="skin-grid" id="skinGrid"></div>
         </div>
       </div>
-      <button class="avatar-btn" id="avatarBtn" type="button" onclick="toggleAvatarSize()" title="切换首页英雄头像大小">头像</button>
     </div>
     <div class="champion-grid" id="championGrid"></div>
   </div>
@@ -1320,16 +1287,6 @@ var borderSkins = [
 ];
 
 var currentSkin = "default";
-/* 皮肤解锁：默认皮肤始终可用；其余10款（黑铁~王者）按段位顺序，每累计10个第一名英雄解锁1款 */
-var firstPlaceHeroCount = 0;   // 当前账号获得过第一名(placement=1)的去重英雄数
-function unlockedSkinCount() {  // 当前可解锁的段位皮肤款数(0~10)
-  var n = firstPlaceHeroCount || 0;
-  return Math.min(10, Math.floor(n / 10));
-}
-function isSkinUnlocked(num) {  // num1=default 始终解锁；其余需 unlockedSkinCount()>=num-1
-  if (!num || num <= 1) return true;
-  return unlockedSkinCount() >= (num - 1);
-}
 /* 皮肤编号 ⇄ id 互转（编号持久化到服务器 skin 列） */
 function skinIdToNum(id) { for (var i = 0; i < borderSkins.length; i++) { if (borderSkins[i].id === id) return borderSkins[i].num; } return 1; }
 function skinNumToId(num) { for (var i = 0; i < borderSkins.length; i++) { if (borderSkins[i].num === num) return borderSkins[i].id; } return "default"; }
@@ -1337,7 +1294,7 @@ var currentUserId = null;
 var pinyinFn = null;
 /* 是否已通过桌面版扫描获取过 LOL ID（用于网页版英雄战绩详情判断） */
 var hasScannedId = false;
-/* 英雄网格排序模式：1=默认排序 2=第一排序 3=使用场次 */
+/* 英雄网格排序模式：1=默认排序 2=第一名排序 3=使用场次 */
 var currentSortMode = 1;
 /* 各英雄使用场次映射（champion_name小写 -> 场次数），从 arena_matches 统计 */
 var usageCount = {};
@@ -1418,7 +1375,6 @@ function submitAuth() {
     document.getElementById("loginOverlay").classList.add("hidden");
     document.getElementById("appContainer").style.display = "";
     leaveHeroDetail();  /* 登录后默认显示英雄界面，复位可能残留的详情视图 */
-    restoreAvatarSize();  /* 登录后应用到上次选择的头像大小 */
     loadProgress();
   })
   .catch(function(e) {
@@ -1430,7 +1386,6 @@ function submitAuth() {
 function doLogout() {
   currentUserId = null;
   currentSortMode = 1;
-  restoreAvatarSize();
   leaveHeroDetail();  /* 退出登录时复位到英雄界面 */
   var pid = document.getElementById("playerIdText");
   if (pid) pid.textContent = "";
@@ -1477,7 +1432,7 @@ function loadProgress() {
         if (pid) pid.textContent = syncId;
         hasScannedId = true;
       }
-      /* 应用上次使用的边框皮肤（只应用不作解锁校验；校验延迟到 loadFirstPlaceHeroes 的 applyAndRender，firstPlaceHeroCount 此时才确定，避免误判未解锁回退默认） */
+      /* 应用上次使用的边框皮肤 */
       if (!skinApplied && rr.skin) {
         currentSkin = skinNumToId(parseInt(rr.skin, 10));
         document.body.className = "skin-" + currentSkin;
@@ -1515,19 +1470,10 @@ function loadProgress() {
 function loadFirstPlaceHeroes(accountId) {
   var idSet = {};
   var applyAndRender = function() {
-    var cnt = 0; for (var sk in idSet) { if (Object.prototype.hasOwnProperty.call(idSet, sk)) cnt++; }
-    firstPlaceHeroCount = cnt;
     champions.forEach(function(c) {
       c.completed = idSet[String(c.id).toLowerCase()] ? true : false;
     });
-    /* 解锁校验延迟到此处（firstPlaceHeroCount 已确定）：上次皮肤未解锁才回退默认并同步服务器 */
-    if (currentSkin !== "default" && !isSkinUnlocked(skinIdToNum(currentSkin))) {
-      currentSkin = "default";
-      document.body.className = "skin-default";
-      saveSkin();
-    }
     renderGrid();
-    refreshSkinUnlock();  // 扫描/登录后依最新第一名数刷新解锁状态
   };
   if (!accountId) { applyAndRender(); return; }
   var q = SUPA_URL + "/rest/v1/arena_matches?select=champion_name&account=eq." + encodeURIComponent(accountId) + "&is_self=eq.true&placement=eq.1";
@@ -1623,26 +1569,25 @@ function renderSkinPanel() {
   var grid = document.getElementById("skinGrid");
   grid.innerHTML = "";
   borderSkins.forEach(function(skin) {
-    var locked = !isSkinUnlocked(skin.num);
     var wrap = document.createElement("div");
     wrap.className = "skin-option";
 
     var inner = document.createElement("div");
-    inner.className = "skin-option-inner" + (skin.id === currentSkin ? " active" : "") + (locked ? " locked" : "");
-    if (!locked) inner.onclick = function() { selectSkin(skin.id); };
+    inner.className = "skin-option-inner" + (skin.id === currentSkin ? " active" : "");
+    inner.onclick = function() { selectSkin(skin.id); };
 
     var preview = document.createElement("div");
-    preview.className = "skin-preview preview-" + skin.id;
-    if (!locked) {
-      var face = document.createElement("span");
-      face.className = "preview-face";
-      face.style.backgroundImage = "url('" + getImg("Jinx") + "')";
-      preview.appendChild(face);
+    preview.className = "skin-preview";
+    if (skin.dynamic) {
+      preview.classList.add("preview-" + skin.id);
+    } else {
+      preview.style.border = "2px solid " + skin.color;
+      preview.style.boxShadow = "0 0 6px " + skin.color + "80";
     }
 
     var name = document.createElement("div");
     name.className = "skin-option-name";
-    name.textContent = locked ? skin.name + "（未解锁）" : skin.name;
+    name.textContent = skin.name;
 
     inner.appendChild(preview);
     inner.appendChild(name);
@@ -1652,49 +1597,10 @@ function renderSkinPanel() {
 }
 
 function selectSkin(id) {
-  if (!isSkinUnlocked(skinIdToNum(id))) {
-    showSkinLockMsg(id);
-    return;
-  }
   currentSkin = id;
   document.body.className = "skin-" + id;
   renderSkinPanel();
   saveSkin();
-}
-
-/* 刷新皮肤解锁状态 */
-function refreshSkinUnlock() {
-  renderSkinPanel();
-}
-
-/* 解锁进度提示 */
-function showSkinLockMsg(id) {
-  var num = skinIdToNum(id);
-  var need = (num - 1) * 10;
-  showHdToast("该皮肤未解锁：需获得 " + need + " 个第一名英雄才能解锁。");
-}
-
-/* 皮肤解锁规则悬浮框开关 */
-function showSkinRule(show) {
-  var tip = document.getElementById("skinRuleTip");
-  var q = document.getElementById("skinRuleQ");
-  if (!tip || !q) return;
-  if (show) {
-    var r = q.getBoundingClientRect();
-    tip.style.display = "block";
-    var w = tip.offsetWidth || 260;
-    var h = tip.offsetHeight || 100;
-    var vw = window.innerWidth || document.documentElement.clientWidth;
-    var vh = window.innerHeight || document.documentElement.clientHeight;
-    var x = r.left + 18;
-    var y = r.top + r.height + 6;
-    if (x + w > vw - 8) x = r.left - w - 12;
-    if (y + h > vh - 8) y = r.top - h - 8;
-    tip.style.left = x + "px";
-    tip.style.top = y + "px";
-  } else {
-    tip.style.display = "none";
-  }
 }
 
 /* 将当前皮肤编号上传到服务器（独立请求，缺列时静默，不影响进度保存） */
@@ -1734,38 +1640,6 @@ document.addEventListener("click", function(e) {
   }
 });
 
-/* 首页英雄头像大小切换：小(默认,66px,适合1080p) / 大(88px,适合高分辨率) */
-var AVATAR_SMALL = "small";
-var AVATAR_LARGE = "large";
-var currentAvatarSize = AVATAR_SMALL;
-function avatarSizeKey() { return "lolArenaAvatarSize_" + (currentUserId || "guest"); }
-function setAvatarSize() {
-  var btn = document.getElementById("avatarBtn");
-  if (btn) btn.textContent = (currentAvatarSize === AVATAR_LARGE) ? "大头像" : "小头像";
-}
-function applyAvatarSize() {
-  var body = document.body;
-  if (currentAvatarSize === AVATAR_LARGE) {
-    body.className = (body.className.replace(/\bav-small\b|\bav-large\b/g, "") + " av-large").replace(/^\s+|\s+$/g, "");
-  } else {
-    body.className = (body.className.replace(/\bav-small\b|\bav-large\b/g, "") + " av-small").replace(/^\s+|\s+$/g, "");
-  }
-  try { window.localStorage.setItem(avatarSizeKey(), currentAvatarSize); } catch (e) {}
-  setAvatarSize();
-}
-function toggleAvatarSize() {
-  currentAvatarSize = (currentAvatarSize === AVATAR_LARGE) ? AVATAR_SMALL : AVATAR_LARGE;
-  applyAvatarSize();
-  renderGrid();
-}
-/* 登录后应用上次的头像大小选择 */
-function restoreAvatarSize() {
-  var v = AVATAR_SMALL;
-  try { var ls = window.localStorage.getItem(avatarSizeKey()); if (ls === AVATAR_LARGE || ls === AVATAR_SMALL) v = ls; } catch (e) {}
-  currentAvatarSize = v;
-  applyAvatarSize();
-}
-
 // ===== 英雄战绩详情（仅界面，暂无真实数据） =====
 var hdToastTimer = null;
 function showHdToast(msg) {
@@ -1801,7 +1675,7 @@ function resetHeroDetailData() {
 function sortedChampions() {
   var list = champions.slice();
   if (currentSortMode === 2) {
-    // 第一排序：completed 前置，组内保持默认相对顺序（稳定排序）
+    // 第一名排序：completed 前置，组内保持默认相对顺序（稳定排序）
     var idx = {};
     for (var si = 0; si < list.length; si++) idx[list[si].id] = si;
     list.sort(function(a, b) {
@@ -1842,7 +1716,7 @@ function updateSortBtn() {
   var btn = document.getElementById("sortBtn");
   if (!btn) return;
   var text = "默认排序";
-  if (currentSortMode === 2) text = "第一排序";
+  if (currentSortMode === 2) text = "第一名排序";
   else if (currentSortMode === 3) text = "使用场次";
   btn.textContent = text;
   var opts = document.querySelectorAll("#sortMenu .sort-opt");
@@ -1998,7 +1872,7 @@ function makePlayerCard(p) {
   for (var i = 0; i < 6; i++) {
     var ai = augInfo(runes[i]);
     if (runes[i] && ai && ai.img) {
-      icons += '<i class="hp-run rar-' + ai.rar + '" title="' + ai.n + '"><img src="' + ai.img + '" alt="' + ai.n + '"></i>';
+      icons += '<i class="hp-run" title="' + ai.n + '"><img src="' + ai.img + '" alt="' + ai.n + '"></i>';
     } else {
       icons += '<i class="hp-run empty"></i>';
     }

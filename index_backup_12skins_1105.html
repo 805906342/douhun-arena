@@ -8,7 +8,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>斗魂竞技场赛季旅程</title>
 <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.26.0/dist/index.js" async onload="window.__pinyinReady&&window.__pinyinReady()"></script>
-<script src="data/maps.js" defer></script>
+<script src="data/maps.js"></script>
 <style>
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -316,16 +316,6 @@ body::before {
   flex-shrink: 0;
 }
 .skin-btn:hover { border-color: #c89b3c; }
-.avatar-btn {
-  margin-left: 10px; height: 32px; padding: 0 14px; background: rgba(10,20,30,0.8);
-  border: 1px solid #3a4a5a; color: #c89b3c; font-size: 13px; outline: none; cursor: pointer;
-  white-space: nowrap; -webkit-flex-shrink: 0; flex-shrink: 0;
-}
-.avatar-btn:hover { border-color: #c89b3c; }
-/* 大头像：仅影响首页 champion-portrait 尺寸 */
-body.av-large .champion-portrait { width: 88px; height: 88px; }
-body.av-large .champion-portrait .cp-ava, body.av-large .champion-portrait .cp-ov { left: 2px; top: 2px; width: 84px; height: 84px; }
-body.av-large .champion-card { width: 88px; }
 
 /* Scan button (desktop only) */
 .scan-wrap {
@@ -485,7 +475,7 @@ body.av-large .champion-card { width: 88px; }
   background-position: center;
   position: relative;
   overflow: hidden;
-  border: 0;
+  border: 2px solid #1a2a3a;
 }
 .champion-title {
   text-align: center;
@@ -514,113 +504,60 @@ body.av-large .champion-card { width: 88px; }
   filter: grayscale(0.7);
 }
 
-/* ===== Border skins v27 段位皮肤 ===== */
-.champion-portrait .cp-ava {
-  position: absolute; left: 2px; top: 2px; width: 62px; height: 62px;
-  background-size: cover; background-position: center; z-index: 5;
-}
-.champion-portrait .cp-ov {
-  position: absolute; left: 2px; top: 2px; width: 62px; height: 62px;
-  z-index: 6; pointer-events: none; overflow: hidden; display: none;
-}
-.skin-default .champion-card.completed .champion-portrait { box-shadow: 0 0 6px rgba(200,155,60,0.3); }
-.skin-default .champion-card.completed .champion-portrait::before {
-  content: ""; position: absolute; left: 0; top: 0; right: 0; bottom: 0; z-index: 4; pointer-events: none;
-  background-clip: border-box; background-origin: border-box; background-size: 100% 100%;
-  background-image: linear-gradient(#c89b3c,#c89b3c);
-}
-/* 动态皮肤：元素自身边框底色贴合主色（消浅色基础框，逻辑同默认皮肤改border-color） */
-.skin-iron .champion-card.completed .champion-portrait { border: 0; }
-.skin-bronze .champion-card.completed .champion-portrait { border: 0; }
-.skin-silver .champion-card.completed .champion-portrait { border: 0; }
-.skin-gold .champion-card.completed .champion-portrait { border: 0; }
-.skin-platinum .champion-card.completed .champion-portrait { border: 0; }
-.skin-emerald .champion-card.completed .champion-portrait { border: 0; }
-.skin-diamond .champion-card.completed .champion-portrait { border: 0; }
-.skin-master .champion-card.completed .champion-portrait { border: 0; }
-.skin-grand .champion-card.completed .champion-portrait { border: 0; }
-.skin-king .champion-card.completed .champion-portrait { border: 0; }
+/* Border skins */
+.skin-gold .champion-card.completed .champion-portrait { border-color: #c89b3c; }
+.skin-platinum .champion-card.completed .champion-portrait { border-color: #e8e8f0; box-shadow: 0 0 6px rgba(200,210,230,0.5), inset 0 0 8px rgba(200,210,230,0.15); }
+.skin-obsidian .champion-card.completed .champion-portrait { border-color: #6a3da0; box-shadow: 0 0 6px rgba(106,61,160,0.6), inset 0 0 10px rgba(60,20,100,0.3); }
+.skin-emerald .champion-card.completed .champion-portrait { border-color: #2ecc71; box-shadow: 0 0 6px rgba(46,204,113,0.5); }
+.skin-ruby .champion-card.completed .champion-portrait { border-color: #e74c3c; box-shadow: 0 0 6px rgba(231,76,60,0.5); }
+.skin-sapphire .champion-card.completed .champion-portrait { border-color: #3498db; box-shadow: 0 0 6px rgba(52,152,219,0.5); }
 
-.skin-iron .champion-card.completed .champion-portrait::before,
-.skin-bronze .champion-card.completed .champion-portrait::before,
-.skin-silver .champion-card.completed .champion-portrait::before,
-.skin-gold .champion-card.completed .champion-portrait::before,
-.skin-platinum .champion-card.completed .champion-portrait::before,
-.skin-emerald .champion-card.completed .champion-portrait::before,
-.skin-diamond .champion-card.completed .champion-portrait::before,
-.skin-master .champion-card.completed .champion-portrait::before,
-.skin-grand .champion-card.completed .champion-portrait::before,
-.skin-king .champion-card.completed .champion-portrait::before {
-  content: ""; position: absolute; left: 0; top: 0; right: 0; bottom: 0; z-index: 4;
-  pointer-events: none;
-  background-clip: border-box; background-origin: border-box;
-  background-size: 44px 100%;
-  animation: skScroll 2.0s linear infinite; -webkit-animation: skScroll 2.0s linear infinite;
-}
-.skin-iron .champion-card.completed .champion-portrait::before    { background-image: repeating-linear-gradient(100deg,#33363c 0,#33363c 15px,#cfd6e0 23px,#6b7280 27px,#fff 29px,#6b7280 31px,#cfd6e0 37px,#33363c 44px); }
-.skin-bronze .champion-card.completed .champion-portrait::before    { background-image: repeating-linear-gradient(100deg,#7a4213 0,#7a4213 15px,#f0c08a 23px,#cd7f32 27px,#fff 29px,#cd7f32 31px,#f0c08a 37px,#7a4213 44px); }
-.skin-silver .champion-card.completed .champion-portrait::before    { background-image: repeating-linear-gradient(100deg,#8a94a3 0,#8a94a3 15px,#ffffff 23px,#d2d9e4 27px,#fff 29px,#d2d9e4 31px,#ffffff 37px,#8a94a3 44px); }
-.skin-gold .champion-card.completed .champion-portrait::before    { background-image: repeating-linear-gradient(100deg,#8a6a1e 0,#8a6a1e 15px,#f7e39b 23px,#e5c15c 27px,#fff 29px,#e5c15c 31px,#f7e39b 37px,#8a6a1e 44px); }
-.skin-platinum .champion-card.completed .champion-portrait::before    { background-image: repeating-linear-gradient(100deg,#3f96a8 0,#3f96a8 15px,#e3f9ff 23px,#8ce0f0 27px,#fff 29px,#8ce0f0 31px,#e3f9ff 37px,#3f96a8 44px); }
-.skin-emerald .champion-card.completed .champion-portrait::before    { background-image: repeating-linear-gradient(100deg,#118a5a 0,#118a5a 15px,#9af0ce 23px,#23c483 27px,#fff 29px,#23c483 31px,#9af0ce 37px,#118a5a 44px); }
-.skin-diamond .champion-card.completed .champion-portrait::before    { background-image: repeating-linear-gradient(100deg,#17779c 0,#17779c 15px,#bdf0ff 23px,#35c5f2 27px,#fff 29px,#35c5f2 31px,#bdf0ff 37px,#17779c 44px); }
-.skin-master .champion-card.completed .champion-portrait::before    { background-image: repeating-linear-gradient(100deg,#96305a 0,#96305a 15px,#f9b2cd 23px,#e0457b 27px,#fff 29px,#e0457b 31px,#f9b2cd 37px,#96305a 44px); }
-.skin-grand .champion-card.completed .champion-portrait::before    { background-image: repeating-linear-gradient(100deg,#9c4f14 0,#9c4f14 15px,#f5c9a2 23px,#e07e3f 27px,#fff 29px,#e07e3f 31px,#f5c9a2 37px,#9c4f14 44px); }
-.skin-king .champion-card.completed .champion-portrait::before    { background-image: repeating-linear-gradient(100deg,#8a5f00 0,#8a5f00 15px,#ffe399 23px,#f0a201 27px,#fff 29px,#f0a201 31px,#ffe399 37px,#8a5f00 44px); }
+.skin-rainbow .champion-card.completed .champion-portrait { border-color: #ff0000; animation: rainbowBorder 3s linear infinite; }
+.skin-electric .champion-card.completed .champion-portrait { border-color: #00d4ff; animation: electricPulse 1.2s ease-in-out infinite; }
+.skin-inferno .champion-card.completed .champion-portrait { border-color: #ff4400; animation: infernoBurn 1.5s ease-in-out infinite; }
+.skin-frost .champion-card.completed .champion-portrait { border-color: #a8f0ff; animation: frostShimmer 2s ease-in-out infinite; }
+.skin-void .champion-card.completed .champion-portrait { border-color: #9b30ff; animation: voidSwirl 2s ease-in-out infinite; }
+.skin-holy .champion-card.completed .champion-portrait { border-color: #fff8dc; animation: holyRadiate 2s ease-in-out infinite; }
 
-@keyframes skScroll { from { background-position: 0 0; } to { background-position: 44px 0; } }
-@-webkit-keyframes skScroll { from { background-position: 0 0; } to { background-position: 44px 0; } }
-.skin-master .champion-card.completed .champion-portrait .cp-ov,
-.skin-grand  .champion-card.completed .champion-portrait .cp-ov,
-.skin-king   .champion-card.completed .champion-portrait .cp-ov { display: block; }
-.skin-master .champion-portrait .cp-ov::before,
-.skin-grand  .champion-portrait .cp-ov::before,
-.skin-king   .champion-portrait .cp-ov::before {
-  content: ""; position: absolute; left: 0; top: 0; width: 100%; height: 100%; background-repeat: repeat;
-  animation: ovRise 4.5s linear infinite; -webkit-animation: ovRise 4.5s linear infinite;
+@keyframes rainbowBorder {
+  0%{border-color:#ff0000;box-shadow:0 0 8px rgba(255,0,0,0.6)}
+  16%{border-color:#ff8800;box-shadow:0 0 8px rgba(255,136,0,0.6)}
+  33%{border-color:#ffff00;box-shadow:0 0 8px rgba(255,255,0,0.6)}
+  50%{border-color:#00ff00;box-shadow:0 0 8px rgba(0,255,0,0.6)}
+  66%{border-color:#0088ff;box-shadow:0 0 8px rgba(0,136,255,0.6)}
+  83%{border-color:#8800ff;box-shadow:0 0 8px rgba(136,0,255,0.6)}
+  100%{border-color:#ff0000;box-shadow:0 0 8px rgba(255,0,0,0.6)}
 }
-.skin-master .champion-portrait .cp-ov::before { background-image: radial-gradient(3px 3px at 20% 70%, rgba(240,109,157,.85), transparent 70%), radial-gradient(2px 2px at 82% 30%, rgba(255,255,255,.8), transparent 70%); background-size: 62px 62px; }
-.skin-grand  .champion-portrait .cp-ov::before { background-image: radial-gradient(3px 3px at 24% 72%, rgba(239,164,104,.85), transparent 70%), radial-gradient(2px 2px at 80% 30%, rgba(255,255,255,.8), transparent 70%); background-size: 60px 60px; }
-.skin-king   .champion-portrait .cp-ov::before { background-image: radial-gradient(4px 4px at 22% 74%, rgba(255,204,85,.9), transparent 70%), radial-gradient(3px 3px at 78% 28%, rgba(255,255,255,.85), transparent 70%), radial-gradient(3px 3px at 58% 88%, rgba(255,215,120,.8), transparent 70%); background-size: 58px 58px; }
-.skin-master .champion-portrait .cp-ov::after,
-.skin-grand  .champion-portrait .cp-ov::after,
-.skin-king   .champion-portrait .cp-ov::after {
-  content: ""; position: absolute; left: 0; top: 0; width: 100%; height: 100%;
-  background-position: 0 0, 0 0; background-size: 130% 130%, 260% 260%;
-  animation: ovDrift 6s ease-in-out infinite; -webkit-animation: ovDrift 6s ease-in-out infinite;
+@keyframes electricPulse {
+  0%,100%{border-color:#00d4ff;box-shadow:0 0 5px rgba(0,212,255,0.4),0 0 10px rgba(0,212,255,0.2)}
+  50%{border-color:#fff;box-shadow:0 0 12px rgba(0,212,255,0.9),0 0 24px rgba(0,212,255,0.5),inset 0 0 8px rgba(0,212,255,0.3)}
 }
-.skin-master .champion-portrait .cp-ov::after { background-image: radial-gradient(ellipse at 42% 22%, rgba(224,69,123,.36), transparent 60%), linear-gradient(115deg, transparent 40%, rgba(255,255,255,.32) 50%, transparent 60%); }
-.skin-grand  .champion-portrait .cp-ov::after { background-image: radial-gradient(ellipse at 42% 22%, rgba(224,126,63,.34), transparent 60%), linear-gradient(115deg, transparent 40%, rgba(255,255,255,.3) 50%, transparent 60%); }
-.skin-king   .champion-portrait .cp-ov::after { background-image: radial-gradient(ellipse at 42% 22%, rgba(255,204,85,.38), transparent 60%), linear-gradient(115deg, transparent 40%, rgba(255,255,255,.34) 50%, transparent 60%); }
-@keyframes ovRise { from { background-position: 0 0, 0 0; } to { background-position: 0 -88px, 0 -88px; } }
-@-webkit-keyframes ovRise { from { background-position: 0 0, 0 0; } to { background-position: 0 -88px, 0 -88px; } }
-@keyframes ovDrift { 0%,100% { background-position: 0 0, 0 0; opacity: .92; } 50% { background-position: 18% 6%, 100% -40%; opacity: 1; } }
-@-webkit-keyframes ovDrift { 0%,100% { background-position: 0 0, 0 0; opacity: .92; } 50% { background-position: 18% 6%, 100% -40%; opacity: 1; } }
+@keyframes infernoBurn {
+  0%,100%{border-color:#ff4400;box-shadow:0 0 6px rgba(255,68,0,0.5),0 0 12px rgba(255,100,0,0.3)}
+  25%{border-color:#ffaa00;box-shadow:0 0 10px rgba(255,170,0,0.7),0 0 20px rgba(255,68,0,0.4)}
+  50%{border-color:#ff2200;box-shadow:0 0 14px rgba(255,34,0,0.8),0 0 28px rgba(255,68,0,0.5),inset 0 0 10px rgba(255,100,0,0.2)}
+  75%{border-color:#ffcc00;box-shadow:0 0 10px rgba(255,204,0,0.7),0 0 20px rgba(255,68,0,0.4)}
+}
+@keyframes frostShimmer {
+  0%,100%{border-color:#a8f0ff;box-shadow:0 0 5px rgba(168,240,255,0.4),inset 0 0 6px rgba(168,240,255,0.1)}
+  50%{border-color:#fff;box-shadow:0 0 12px rgba(168,240,255,0.8),0 0 24px rgba(120,200,255,0.4),inset 0 0 10px rgba(200,240,255,0.2)}
+}
+@keyframes voidSwirl {
+  0%,100%{border-color:#9b30ff;box-shadow:0 0 6px rgba(155,48,255,0.5),0 0 12px rgba(120,0,200,0.3)}
+  33%{border-color:#ff00ff;box-shadow:0 0 10px rgba(255,0,255,0.6),0 0 20px rgba(155,48,255,0.4)}
+  66%{border-color:#6600cc;box-shadow:0 0 14px rgba(102,0,204,0.7),0 0 28px rgba(155,48,255,0.5),inset 0 0 8px rgba(120,0,200,0.2)}
+}
+@keyframes holyRadiate {
+  0%,100%{border-color:#fff8dc;box-shadow:0 0 5px rgba(255,248,220,0.4),0 0 10px rgba(255,220,100,0.2)}
+  50%{border-color:#fff;box-shadow:0 0 14px rgba(255,248,220,0.9),0 0 28px rgba(255,220,100,0.5),0 0 42px rgba(255,200,50,0.3),inset 0 0 10px rgba(255,248,220,0.2)}
+}
 
-.skin-preview { position: relative; padding: 3px; box-sizing: border-box; overflow: hidden; }
-.skin-preview .preview-face { display: block; width: 100%; height: 100%; background-size: cover; background-position: center; background-color: #0d1622; }
-/* 默认：静态金框 */
-.preview-default { background: linear-gradient(135deg,#e0c78a 0%,#c89b3c 40%,#8a6a1e 100%); }
-.preview-default .preview-face { box-shadow: inset 0 0 4px rgba(200,155,60,.5); }
-/* 段位：渐变环（复用各皮肤主色） */
-.preview-iron { background: repeating-linear-gradient(100deg,#33363c 0,#cfd6e0 6px,#6b7280 8px,#cfd6e0 10px,#33363c 16px); }
-.preview-bronze { background: repeating-linear-gradient(100deg,#7a4213 0,#f0c08a 6px,#cd7f32 8px,#f0c08a 10px,#7a4213 16px); }
-.preview-silver { background: repeating-linear-gradient(100deg,#8a94a3 0,#ffffff 6px,#d2d9e4 8px,#ffffff 10px,#8a94a3 16px); }
-.preview-gold { background: repeating-linear-gradient(100deg,#8a6a1e 0,#f7e39b 6px,#e5c15c 8px,#f7e39b 10px,#8a6a1e 16px); }
-.preview-platinum { background: repeating-linear-gradient(100deg,#3f96a8 0,#e3f9ff 6px,#8ce0f0 8px,#e3f9ff 10px,#3f96a8 16px); }
-.preview-emerald { background: repeating-linear-gradient(100deg,#118a5a 0,#9af0ce 6px,#23c483 8px,#9af0ce 10px,#118a5a 16px); }
-.preview-diamond { background: repeating-linear-gradient(100deg,#17779c 0,#bdf0ff 6px,#35c5f2 8px,#bdf0ff 10px,#17779c 16px); }
-.preview-master { background: repeating-linear-gradient(100deg,#96305a 0,#f9b2cd 6px,#e0457b 8px,#f9b2cd 10px,#96305a 16px); }
-.preview-grand { background: repeating-linear-gradient(100deg,#9c4f14 0,#f5c9a2 6px,#e07e3f 8px,#f5c9a2 10px,#9c4f14 16px); }
-.preview-king { background: repeating-linear-gradient(100deg,#8a5f00 0,#ffe399 6px,#f0a201 8px,#ffe399 10px,#8a5f00 16px); box-shadow: 0 0 8px rgba(240,162,1,.7); }
-/* 解锁锁定 */
-.skin-option-inner.locked { cursor: not-allowed; opacity: .55; }
-.skin-option-inner.locked .skin-preview::after { content: "🔒"; position: absolute; left: 0; top: 0; right: 0; bottom: 0; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: center; justify-content: center; background: rgba(0,0,0,.35); font-size: 14px; z-index: 3; }
-.skin-option-inner.locked .skin-option-name { color: #5a6a7a; }
-/* 皮肤规则问号 */
-.skin-panel-title { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; }
-.skin-rule-q { display: inline-block; margin-left: 6px; width: 15px; height: 15px; line-height: 15px; text-align: center; border: 1px solid rgba(200,155,60,.6); color: #c89b3c; border-radius: 50%; font-size: 11px; cursor: pointer; -webkit-flex-shrink: 0; flex-shrink: 0; }
-.skin-rule-tip { position: fixed; display: none; width: 260px; font-size: 11px; line-height: 1.5; color: #c8a87a; background: rgba(4,12,20,.97); border: 1px solid #785a28; border-radius: 3px; padding: 8px 10px; z-index: 9999; box-shadow: 0 2px 8px rgba(0,0,0,.5); }
+.preview-rainbow { animation: rainbowBorder 2s linear infinite; border: 2px solid #ff0000; }
+.preview-electric { animation: electricPulse 1.2s ease-in-out infinite; border: 2px solid #00d4ff; }
+.preview-inferno { animation: infernoBurn 1.5s ease-in-out infinite; border: 2px solid #ff4400; }
+.preview-frost { animation: frostShimmer 2s ease-in-out infinite; border: 2px solid #a8f0ff; }
+.preview-void { animation: voidSwirl 2s ease-in-out infinite; border: 2px solid #9b30ff; }
+.preview-holy { animation: holyRadiate 2s ease-in-out infinite; border: 2px solid #fff8dc; }
 
 .total-count {
   position: absolute;
@@ -691,83 +628,27 @@ body.av-large .champion-card { width: 88px; }
   border-bottom: 1px solid #223242;
   background: linear-gradient(180deg, rgba(200,155,60,0.08), rgba(10,20,30,0));
 }
-.hero-detail-head .hd-avatar { width: 84px; height: 84px; border: 0; box-shadow: none; background-size: cover; background-position: center; -webkit-flex-shrink: 0; flex-shrink: 0; position: relative; overflow: hidden; }
-/* 已完成 hd 金框改由 body.skin-* ::before 提供 (v27d) */
-/* hd-avatar 内层头像/覆盖层（v27 段位皮肤） */
-.hero-detail-head .hd-avatar .cp-ava {
-  position: absolute; left: 2px; top: 2px; width: 80px; height: 80px;
-  background-size: cover; background-position: center; z-index: 5;
+.hero-detail-head .hd-avatar {
+  width: 84px; height: 84px;
+  border: 2px solid #2c3c4c;
+  box-shadow: none;
+  background-size: cover;
+  background-position: center;
+  flex-shrink: 0;
 }
-.hero-detail-head .hd-avatar .cp-ov {
-  position: absolute; left: 2px; top: 2px; width: 80px; height: 80px;
-  z-index: 6; pointer-events: none; overflow: hidden; display: none;
-}
-body.skin-default .hd-avatar.completed { box-shadow: 0 0 6px rgba(200,155,60,0.25); }
-body.skin-default .hd-avatar.completed::before {
-  content: ""; position: absolute; left: 0; top: 0; right: 0; bottom: 0; z-index: 4; pointer-events: none;
-  background-clip: border-box; background-origin: border-box; background-size: 100% 100%;
-  background-image: linear-gradient(#c89b3c,#c89b3c);
-}
-/* 动态皮肤取消 hd-avatar 基础框（v27c） */
-body.skin-iron .hd-avatar.completed,
-body.skin-bronze .hd-avatar.completed,
-body.skin-silver .hd-avatar.completed,
-body.skin-gold .hd-avatar.completed,
-body.skin-platinum .hd-avatar.completed,
-body.skin-emerald .hd-avatar.completed,
-body.skin-diamond .hd-avatar.completed,
-body.skin-master .hd-avatar.completed,
-body.skin-grand .hd-avatar.completed,
-body.skin-king .hd-avatar.completed { border: 0; }
-body.skin-iron .hd-avatar.completed::before,
-body.skin-bronze .hd-avatar.completed::before,
-body.skin-silver .hd-avatar.completed::before,
-body.skin-gold .hd-avatar.completed::before,
-body.skin-platinum .hd-avatar.completed::before,
-body.skin-emerald .hd-avatar.completed::before,
-body.skin-diamond .hd-avatar.completed::before,
-body.skin-master .hd-avatar.completed::before,
-body.skin-grand .hd-avatar.completed::before,
-body.skin-king .hd-avatar.completed::before {
-  content: ""; position: absolute; left: 0; top: 0; right: 0; bottom: 0; z-index: 4;
-  pointer-events: none;
-  background-clip: border-box; background-origin: border-box;
-  background-size: 44px 100%;
-  animation: skScroll 2.0s linear infinite; -webkit-animation: skScroll 2.0s linear infinite;
-}
-body.skin-iron .hd-avatar.completed::before    { background-image: repeating-linear-gradient(100deg,#33363c 0,#33363c 15px,#cfd6e0 23px,#6b7280 27px,#fff 29px,#6b7280 31px,#cfd6e0 37px,#33363c 44px); }
-body.skin-bronze .hd-avatar.completed::before    { background-image: repeating-linear-gradient(100deg,#7a4213 0,#7a4213 15px,#f0c08a 23px,#cd7f32 27px,#fff 29px,#cd7f32 31px,#f0c08a 37px,#7a4213 44px); }
-body.skin-silver .hd-avatar.completed::before    { background-image: repeating-linear-gradient(100deg,#8a94a3 0,#8a94a3 15px,#ffffff 23px,#d2d9e4 27px,#fff 29px,#d2d9e4 31px,#ffffff 37px,#8a94a3 44px); }
-body.skin-gold .hd-avatar.completed::before    { background-image: repeating-linear-gradient(100deg,#8a6a1e 0,#8a6a1e 15px,#f7e39b 23px,#e5c15c 27px,#fff 29px,#e5c15c 31px,#f7e39b 37px,#8a6a1e 44px); }
-body.skin-platinum .hd-avatar.completed::before    { background-image: repeating-linear-gradient(100deg,#3f96a8 0,#3f96a8 15px,#e3f9ff 23px,#8ce0f0 27px,#fff 29px,#8ce0f0 31px,#e3f9ff 37px,#3f96a8 44px); }
-body.skin-emerald .hd-avatar.completed::before    { background-image: repeating-linear-gradient(100deg,#118a5a 0,#118a5a 15px,#9af0ce 23px,#23c483 27px,#fff 29px,#23c483 31px,#9af0ce 37px,#118a5a 44px); }
-body.skin-diamond .hd-avatar.completed::before    { background-image: repeating-linear-gradient(100deg,#17779c 0,#17779c 15px,#bdf0ff 23px,#35c5f2 27px,#fff 29px,#35c5f2 31px,#bdf0ff 37px,#17779c 44px); }
-body.skin-master .hd-avatar.completed::before    { background-image: repeating-linear-gradient(100deg,#96305a 0,#96305a 15px,#f9b2cd 23px,#e0457b 27px,#fff 29px,#e0457b 31px,#f9b2cd 37px,#96305a 44px); }
-body.skin-grand .hd-avatar.completed::before    { background-image: repeating-linear-gradient(100deg,#9c4f14 0,#9c4f14 15px,#f5c9a2 23px,#e07e3f 27px,#fff 29px,#e07e3f 31px,#f5c9a2 37px,#9c4f14 44px); }
-body.skin-king .hd-avatar.completed::before    { background-image: repeating-linear-gradient(100deg,#8a5f00 0,#8a5f00 15px,#ffe399 23px,#f0a201 27px,#fff 29px,#f0a201 31px,#ffe399 37px,#8a5f00 44px); }
-body.skin-master .hd-avatar.completed .cp-ov,
-body.skin-grand  .hd-avatar.completed .cp-ov,
-body.skin-king   .hd-avatar.completed .cp-ov { display: block; }
-body.skin-master .hd-avatar.completed .cp-ov::before,
-body.skin-grand  .hd-avatar.completed .cp-ov::before,
-body.skin-king   .hd-avatar.completed .cp-ov::before {
-  content: ""; position: absolute; left: 0; top: 0; width: 100%; height: 100%; background-repeat: repeat;
-  animation: ovRise 4.5s linear infinite; -webkit-animation: ovRise 4.5s linear infinite;
-}
-body.skin-master .hd-avatar .cp-ov::before { background-image: radial-gradient(4px 4px at 20% 70%, rgba(240,109,157,.85), transparent 70%), radial-gradient(3px 3px at 82% 30%, rgba(255,255,255,.8), transparent 70%); background-size: 80px 80px; }
-body.skin-grand  .hd-avatar .cp-ov::before { background-image: radial-gradient(4px 4px at 24% 72%, rgba(239,164,104,.85), transparent 70%), radial-gradient(3px 3px at 80% 30%, rgba(255,255,255,.8), transparent 70%); background-size: 76px 76px; }
-body.skin-king   .hd-avatar .cp-ov::before { background-image: radial-gradient(5px 5px at 22% 74%, rgba(255,204,85,.9), transparent 70%), radial-gradient(4px 4px at 78% 28%, rgba(255,255,255,.85), transparent 70%), radial-gradient(4px 4px at 58% 88%, rgba(255,215,120,.8), transparent 70%); background-size: 72px 72px; }
-body.skin-master .hd-avatar .cp-ov::after,
-body.skin-grand  .hd-avatar .cp-ov::after,
-body.skin-king   .hd-avatar .cp-ov::after {
-  content: ""; position: absolute; left: 0; top: 0; width: 100%; height: 100%;
-  background-position: 0 0, 0 0; background-size: 130% 130%, 260% 260%;
-  animation: ovDrift 6s ease-in-out infinite; -webkit-animation: ovDrift 6s ease-in-out infinite;
-}
-body.skin-master .hd-avatar .cp-ov::after { background-image: radial-gradient(ellipse at 42% 22%, rgba(224,69,123,.36), transparent 60%), linear-gradient(115deg, transparent 40%, rgba(255,255,255,.32) 50%, transparent 60%); }
-body.skin-grand  .hd-avatar .cp-ov::after { background-image: radial-gradient(ellipse at 42% 22%, rgba(224,126,63,.34), transparent 60%), linear-gradient(115deg, transparent 40%, rgba(255,255,255,.3) 50%, transparent 60%); }
-body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(ellipse at 42% 22%, rgba(255,204,85,.38), transparent 60%), linear-gradient(115deg, transparent 40%, rgba(255,255,255,.34) 50%, transparent 60%); }
-
+.hero-detail-head .hd-avatar.completed { border-color: #c89b3c; }
+body.skin-gold .hd-avatar.completed { border-color: #c89b3c; box-shadow: 0 0 6px rgba(200,155,60,0.25); }
+body.skin-platinum .hd-avatar.completed { border-color: #e8e8f0; box-shadow: 0 0 6px rgba(200,210,230,0.5), inset 0 0 8px rgba(200,210,230,0.15); }
+body.skin-obsidian .hd-avatar.completed { border-color: #6a3da0; box-shadow: 0 0 6px rgba(106,61,160,0.6), inset 0 0 10px rgba(60,20,100,0.3); }
+body.skin-emerald .hd-avatar.completed { border-color: #2ecc71; box-shadow: 0 0 6px rgba(46,204,113,0.5); }
+body.skin-ruby .hd-avatar.completed { border-color: #e74c3c; box-shadow: 0 0 6px rgba(231,76,60,0.5); }
+body.skin-sapphire .hd-avatar.completed { border-color: #3498db; box-shadow: 0 0 6px rgba(52,152,219,0.5); }
+body.skin-rainbow .hd-avatar.completed { border-color: #ff0000; animation: rainbowBorder 3s linear infinite; }
+body.skin-electric .hd-avatar.completed { border-color: #00d4ff; animation: electricPulse 1.2s ease-in-out infinite; }
+body.skin-inferno .hd-avatar.completed { border-color: #ff4400; animation: infernoBurn 1.5s ease-in-out infinite; }
+body.skin-frost .hd-avatar.completed { border-color: #a8f0ff; animation: frostShimmer 2s ease-in-out infinite; }
+body.skin-void .hd-avatar.completed { border-color: #9b30ff; animation: voidSwirl 2s ease-in-out infinite; }
+body.skin-holy .hd-avatar.completed { border-color: #fff8dc; animation: holyRadiate 2s ease-in-out infinite; }
 .hero-detail-head .hd-info { margin-left: 16px; }
 .hero-detail-head .hd-title { font-size: 20px; font-weight: 700; color: #f0e6d2; }
 .hero-detail-head .hd-name { font-size: 14px; color: #8fa0b0; margin-top: 4px; }
@@ -898,13 +779,6 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
 .md-runes { display: -webkit-flex; display: flex; gap: 3px; margin-left: auto; }
 .md-runes i { width: 16px; height: 16px; background: #1a2a3a; border: 1px solid #223242; border-radius: 2px; overflow: hidden; }
 .md-runes i img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  /* 强化符文图标：按稀有度渲染本来的颜色（素材为灰度图，注入稀有度色调+光晕） */
-  .md-runes i.hp-run img { filter: saturate(2.6) contrast(1.25); }
-  .md-runes i.hp-run.rar-kBronze { box-shadow: inset 0 0 0 1px #cd7f32; background: rgba(205,127,50,.18); }
-  .md-runes i.hp-run.rar-kSilver { box-shadow: inset 0 0 0 1px #aeb9c4; background: rgba(174,185,196,.18); }
-  .md-runes i.hp-run.rar-kGold { box-shadow: inset 0 0 0 1px #c8a340; background: rgba(200,163,64,.20); }
-  .md-runes i.hp-run.rar-kPrismatic { box-shadow: inset 0 0 0 1px #b98ee0, 0 0 4px rgba(185,142,224,.7); background: rgba(185,142,224,.22); }
-  .md-runes i.hp-run.rar-kEventChoice { box-shadow: inset 0 0 0 1px #e07e3f; background: rgba(224,126,63,.18); }
 .md-items { display: -webkit-flex; display: flex; gap: 3px; margin-left: 12px; }
 .md-items i { width: 22px; height: 22px; background: #1a2a3a; border: 1px solid #223242; border-radius: 2px; overflow: hidden; }
 .md-items i img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -949,7 +823,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
   z-index: 9998;
 }
 .rank-box {
-  width: 640px; max-width: 94vw; max-height: 86vh;
+  width: 460px; max-width: 92vw; max-height: 76vh;
   display: -webkit-flex; display: flex;
   -webkit-flex-direction: column; flex-direction: column;
   background: rgba(10,20,30,0.97);
@@ -993,7 +867,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-09 17:58:00</div>
+    <div class="web-update-time">网页版更新时间：2026-09-09 11:05:00</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -1010,7 +884,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
     <div class="login-error" id="loginError"></div>
     <div class="login-download">
       <a class="download-btn" href="download/LoLArena.exe" download>下载 Windows 桌面版</a>
-      <div class="download-time">桌面版更新时间：2026-09-09 20:05:00</div>
+      <div class="download-time">桌面版更新时间：2026-09-09 10:36:00</div>
     </div>
   </div>
 </div>
@@ -1046,19 +920,17 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
         <button class="sort-btn" id="sortBtn" type="button" onclick="toggleSortMenu(event)">默认排序</button>
         <div class="sort-menu" id="sortMenu" style="display:none;">
           <div class="sort-opt" data-v="1" onclick="setSortMode(1)">默认排序</div>
-          <div class="sort-opt" data-v="2" onclick="setSortMode(2)">第一排序</div>
+          <div class="sort-opt" data-v="2" onclick="setSortMode(2)">第一名排序</div>
           <div class="sort-opt" data-v="3" onclick="setSortMode(3)">使用场次</div>
         </div>
       </div>
       <div class="skin-panel-wrap">
         <button class="skin-btn" id="skinBtn" type="button" onclick="toggleSkinPanel()">边框皮肤</button>
         <div class="skin-panel" id="skinPanel">
-          <div class="skin-panel-title">选择边框皮肤<span class="skin-rule-q" id="skinRuleQ" onmouseover="showSkinRule(1)" onmouseout="showSkinRule(0)">?</span></div>
-          <div class="skin-rule-tip" id="skinRuleTip" style="display:none;">每获得10个第一名英雄解锁1款皮肤，按段位顺序依次解锁（黑铁→青铜→白银→黄金→铂金→翡翠→钻石→大师→宗师→王者）。默认皮肤永久开放。注：本规则仅适用当前10款段位皮肤，后续新增皮肤可能有独立解锁方式。</div>
+          <div class="skin-panel-title">选择边框皮肤</div>
           <div class="skin-grid" id="skinGrid"></div>
         </div>
       </div>
-      <button class="avatar-btn" id="avatarBtn" type="button" onclick="toggleAvatarSize()" title="切换首页英雄头像大小">头像</button>
     </div>
     <div class="champion-grid" id="championGrid"></div>
   </div>
@@ -1306,38 +1178,29 @@ var SUPA_KEY = "sb_publishable_aIQtugb8f-rEkLGKAVp9vQ_LaIqVnOY";
 var DD_VERSION = "16.16.1";
 
 var borderSkins = [
-  { num: 1,  id: "default", name: "默认", dynamic: false, color: "#c89b3c" },
-  { num: 2,  id: "iron", name: "坚韧黑铁", dynamic: true, color: "#6b7280" },
-  { num: 3,  id: "bronze", name: "英勇黄铜", dynamic: true, color: "#cd7f32" },
-  { num: 4,  id: "silver", name: "不屈白银", dynamic: true, color: "#d2d9e4" },
-  { num: 5,  id: "gold", name: "荣耀黄金", dynamic: true, color: "#c8a340" },
-  { num: 6,  id: "platinum", name: "华贵铂金", dynamic: true, color: "#8ce0f0" },
-  { num: 7,  id: "emerald", name: "流光翡翠", dynamic: true, color: "#23c483" },
-  { num: 8,  id: "diamond", name: "璀璨钻石", dynamic: true, color: "#35c5f2" },
-  { num: 9,  id: "master", name: "超凡大师", dynamic: true, color: "#e0457b" },
-  { num: 10, id: "grand", name: "傲世宗师", dynamic: true, color: "#e07e3f" },
-  { num: 11, id: "king", name: "最强王者", dynamic: true, color: "#f0a201" }
+  { num: 1,  id: "gold",      name: "黄金", dynamic: false, color: "#c89b3c" },
+  { num: 2,  id: "platinum",  name: "铂金", dynamic: false, color: "#e8e8f0" },
+  { num: 3,  id: "obsidian",  name: "黑曜", dynamic: false, color: "#6a3da0" },
+  { num: 4,  id: "emerald",   name: "翡翠", dynamic: false, color: "#2ecc71" },
+  { num: 5,  id: "ruby",      name: "烈焰", dynamic: false, color: "#e74c3c" },
+  { num: 6,  id: "sapphire",  name: "深海", dynamic: false, color: "#3498db" },
+  { num: 7,  id: "rainbow",   name: "彩虹", dynamic: true,  color: "#ff66aa" },
+  { num: 8,  id: "electric",  name: "闪电", dynamic: true,  color: "#00d4ff" },
+  { num: 9,  id: "inferno",   name: "炼狱", dynamic: true,  color: "#ff4400" },
+  { num: 10, id: "frost",     name: "冰霜", dynamic: true,  color: "#a8f0ff" },
+  { num: 11, id: "void",      name: "虚空", dynamic: true,  color: "#9b30ff" },
+  { num: 12, id: "holy",      name: "神圣", dynamic: true,  color: "#fff8dc" }
 ];
 
-var currentSkin = "default";
-/* 皮肤解锁：默认皮肤始终可用；其余10款（黑铁~王者）按段位顺序，每累计10个第一名英雄解锁1款 */
-var firstPlaceHeroCount = 0;   // 当前账号获得过第一名(placement=1)的去重英雄数
-function unlockedSkinCount() {  // 当前可解锁的段位皮肤款数(0~10)
-  var n = firstPlaceHeroCount || 0;
-  return Math.min(10, Math.floor(n / 10));
-}
-function isSkinUnlocked(num) {  // num1=default 始终解锁；其余需 unlockedSkinCount()>=num-1
-  if (!num || num <= 1) return true;
-  return unlockedSkinCount() >= (num - 1);
-}
+var currentSkin = "gold";
 /* 皮肤编号 ⇄ id 互转（编号持久化到服务器 skin 列） */
 function skinIdToNum(id) { for (var i = 0; i < borderSkins.length; i++) { if (borderSkins[i].id === id) return borderSkins[i].num; } return 1; }
-function skinNumToId(num) { for (var i = 0; i < borderSkins.length; i++) { if (borderSkins[i].num === num) return borderSkins[i].id; } return "default"; }
+function skinNumToId(num) { for (var i = 0; i < borderSkins.length; i++) { if (borderSkins[i].num === num) return borderSkins[i].id; } return "gold"; }
 var currentUserId = null;
 var pinyinFn = null;
 /* 是否已通过桌面版扫描获取过 LOL ID（用于网页版英雄战绩详情判断） */
 var hasScannedId = false;
-/* 英雄网格排序模式：1=默认排序 2=第一排序 3=使用场次 */
+/* 英雄网格排序模式：1=默认排序 2=第一名排序 3=使用场次 */
 var currentSortMode = 1;
 /* 各英雄使用场次映射（champion_name小写 -> 场次数），从 arena_matches 统计 */
 var usageCount = {};
@@ -1418,7 +1281,6 @@ function submitAuth() {
     document.getElementById("loginOverlay").classList.add("hidden");
     document.getElementById("appContainer").style.display = "";
     leaveHeroDetail();  /* 登录后默认显示英雄界面，复位可能残留的详情视图 */
-    restoreAvatarSize();  /* 登录后应用到上次选择的头像大小 */
     loadProgress();
   })
   .catch(function(e) {
@@ -1430,7 +1292,6 @@ function submitAuth() {
 function doLogout() {
   currentUserId = null;
   currentSortMode = 1;
-  restoreAvatarSize();
   leaveHeroDetail();  /* 退出登录时复位到英雄界面 */
   var pid = document.getElementById("playerIdText");
   if (pid) pid.textContent = "";
@@ -1477,7 +1338,7 @@ function loadProgress() {
         if (pid) pid.textContent = syncId;
         hasScannedId = true;
       }
-      /* 应用上次使用的边框皮肤（只应用不作解锁校验；校验延迟到 loadFirstPlaceHeroes 的 applyAndRender，firstPlaceHeroCount 此时才确定，避免误判未解锁回退默认） */
+      /* 应用上次使用的边框皮肤 */
       if (!skinApplied && rr.skin) {
         currentSkin = skinNumToId(parseInt(rr.skin, 10));
         document.body.className = "skin-" + currentSkin;
@@ -1515,19 +1376,10 @@ function loadProgress() {
 function loadFirstPlaceHeroes(accountId) {
   var idSet = {};
   var applyAndRender = function() {
-    var cnt = 0; for (var sk in idSet) { if (Object.prototype.hasOwnProperty.call(idSet, sk)) cnt++; }
-    firstPlaceHeroCount = cnt;
     champions.forEach(function(c) {
       c.completed = idSet[String(c.id).toLowerCase()] ? true : false;
     });
-    /* 解锁校验延迟到此处（firstPlaceHeroCount 已确定）：上次皮肤未解锁才回退默认并同步服务器 */
-    if (currentSkin !== "default" && !isSkinUnlocked(skinIdToNum(currentSkin))) {
-      currentSkin = "default";
-      document.body.className = "skin-default";
-      saveSkin();
-    }
     renderGrid();
-    refreshSkinUnlock();  // 扫描/登录后依最新第一名数刷新解锁状态
   };
   if (!accountId) { applyAndRender(); return; }
   var q = SUPA_URL + "/rest/v1/arena_matches?select=champion_name&account=eq." + encodeURIComponent(accountId) + "&is_self=eq.true&placement=eq.1";
@@ -1586,13 +1438,7 @@ function renderGrid() {
 
     var portrait = document.createElement("div");
     portrait.className = "champion-portrait";
-    var ava = document.createElement("span");
-    ava.className = "cp-ava";
-    ava.style.backgroundImage = "url('" + getImg(c.id) + "')";
-    portrait.appendChild(ava);
-    var ov = document.createElement("span");
-    ov.className = "cp-ov";
-    portrait.appendChild(ov);
+    portrait.style.backgroundImage = "url('" + getImg(c.id) + "')";
     card.appendChild(portrait);
 
     var titleDiv = document.createElement("div");
@@ -1623,26 +1469,25 @@ function renderSkinPanel() {
   var grid = document.getElementById("skinGrid");
   grid.innerHTML = "";
   borderSkins.forEach(function(skin) {
-    var locked = !isSkinUnlocked(skin.num);
     var wrap = document.createElement("div");
     wrap.className = "skin-option";
 
     var inner = document.createElement("div");
-    inner.className = "skin-option-inner" + (skin.id === currentSkin ? " active" : "") + (locked ? " locked" : "");
-    if (!locked) inner.onclick = function() { selectSkin(skin.id); };
+    inner.className = "skin-option-inner" + (skin.id === currentSkin ? " active" : "");
+    inner.onclick = function() { selectSkin(skin.id); };
 
     var preview = document.createElement("div");
-    preview.className = "skin-preview preview-" + skin.id;
-    if (!locked) {
-      var face = document.createElement("span");
-      face.className = "preview-face";
-      face.style.backgroundImage = "url('" + getImg("Jinx") + "')";
-      preview.appendChild(face);
+    preview.className = "skin-preview";
+    if (skin.dynamic) {
+      preview.classList.add("preview-" + skin.id);
+    } else {
+      preview.style.border = "2px solid " + skin.color;
+      preview.style.boxShadow = "0 0 6px " + skin.color + "80";
     }
 
     var name = document.createElement("div");
     name.className = "skin-option-name";
-    name.textContent = locked ? skin.name + "（未解锁）" : skin.name;
+    name.textContent = skin.name;
 
     inner.appendChild(preview);
     inner.appendChild(name);
@@ -1652,49 +1497,10 @@ function renderSkinPanel() {
 }
 
 function selectSkin(id) {
-  if (!isSkinUnlocked(skinIdToNum(id))) {
-    showSkinLockMsg(id);
-    return;
-  }
   currentSkin = id;
   document.body.className = "skin-" + id;
   renderSkinPanel();
   saveSkin();
-}
-
-/* 刷新皮肤解锁状态 */
-function refreshSkinUnlock() {
-  renderSkinPanel();
-}
-
-/* 解锁进度提示 */
-function showSkinLockMsg(id) {
-  var num = skinIdToNum(id);
-  var need = (num - 1) * 10;
-  showHdToast("该皮肤未解锁：需获得 " + need + " 个第一名英雄才能解锁。");
-}
-
-/* 皮肤解锁规则悬浮框开关 */
-function showSkinRule(show) {
-  var tip = document.getElementById("skinRuleTip");
-  var q = document.getElementById("skinRuleQ");
-  if (!tip || !q) return;
-  if (show) {
-    var r = q.getBoundingClientRect();
-    tip.style.display = "block";
-    var w = tip.offsetWidth || 260;
-    var h = tip.offsetHeight || 100;
-    var vw = window.innerWidth || document.documentElement.clientWidth;
-    var vh = window.innerHeight || document.documentElement.clientHeight;
-    var x = r.left + 18;
-    var y = r.top + r.height + 6;
-    if (x + w > vw - 8) x = r.left - w - 12;
-    if (y + h > vh - 8) y = r.top - h - 8;
-    tip.style.left = x + "px";
-    tip.style.top = y + "px";
-  } else {
-    tip.style.display = "none";
-  }
 }
 
 /* 将当前皮肤编号上传到服务器（独立请求，缺列时静默，不影响进度保存） */
@@ -1734,38 +1540,6 @@ document.addEventListener("click", function(e) {
   }
 });
 
-/* 首页英雄头像大小切换：小(默认,66px,适合1080p) / 大(88px,适合高分辨率) */
-var AVATAR_SMALL = "small";
-var AVATAR_LARGE = "large";
-var currentAvatarSize = AVATAR_SMALL;
-function avatarSizeKey() { return "lolArenaAvatarSize_" + (currentUserId || "guest"); }
-function setAvatarSize() {
-  var btn = document.getElementById("avatarBtn");
-  if (btn) btn.textContent = (currentAvatarSize === AVATAR_LARGE) ? "大头像" : "小头像";
-}
-function applyAvatarSize() {
-  var body = document.body;
-  if (currentAvatarSize === AVATAR_LARGE) {
-    body.className = (body.className.replace(/\bav-small\b|\bav-large\b/g, "") + " av-large").replace(/^\s+|\s+$/g, "");
-  } else {
-    body.className = (body.className.replace(/\bav-small\b|\bav-large\b/g, "") + " av-small").replace(/^\s+|\s+$/g, "");
-  }
-  try { window.localStorage.setItem(avatarSizeKey(), currentAvatarSize); } catch (e) {}
-  setAvatarSize();
-}
-function toggleAvatarSize() {
-  currentAvatarSize = (currentAvatarSize === AVATAR_LARGE) ? AVATAR_SMALL : AVATAR_LARGE;
-  applyAvatarSize();
-  renderGrid();
-}
-/* 登录后应用上次的头像大小选择 */
-function restoreAvatarSize() {
-  var v = AVATAR_SMALL;
-  try { var ls = window.localStorage.getItem(avatarSizeKey()); if (ls === AVATAR_LARGE || ls === AVATAR_SMALL) v = ls; } catch (e) {}
-  currentAvatarSize = v;
-  applyAvatarSize();
-}
-
 // ===== 英雄战绩详情（仅界面，暂无真实数据） =====
 var hdToastTimer = null;
 function showHdToast(msg) {
@@ -1801,7 +1575,7 @@ function resetHeroDetailData() {
 function sortedChampions() {
   var list = champions.slice();
   if (currentSortMode === 2) {
-    // 第一排序：completed 前置，组内保持默认相对顺序（稳定排序）
+    // 第一名排序：completed 前置，组内保持默认相对顺序（稳定排序）
     var idx = {};
     for (var si = 0; si < list.length; si++) idx[list[si].id] = si;
     list.sort(function(a, b) {
@@ -1842,7 +1616,7 @@ function updateSortBtn() {
   var btn = document.getElementById("sortBtn");
   if (!btn) return;
   var text = "默认排序";
-  if (currentSortMode === 2) text = "第一排序";
+  if (currentSortMode === 2) text = "第一名排序";
   else if (currentSortMode === 3) text = "使用场次";
   btn.textContent = text;
   var opts = document.querySelectorAll("#sortMenu .sort-opt");
@@ -1998,7 +1772,7 @@ function makePlayerCard(p) {
   for (var i = 0; i < 6; i++) {
     var ai = augInfo(runes[i]);
     if (runes[i] && ai && ai.img) {
-      icons += '<i class="hp-run rar-' + ai.rar + '" title="' + ai.n + '"><img src="' + ai.img + '" alt="' + ai.n + '"></i>';
+      icons += '<i class="hp-run" title="' + ai.n + '"><img src="' + ai.img + '" alt="' + ai.n + '"></i>';
     } else {
       icons += '<i class="hp-run empty"></i>';
     }
@@ -2167,14 +1941,7 @@ function openHeroDetail(id, title, name) {
     loadHeroDetailData();
   });
   var hdAv = document.getElementById("hdAvatar");
-  hdAv.innerHTML = "";
-  var hdAva = document.createElement("span");
-  hdAva.className = "cp-ava";
-  hdAva.style.backgroundImage = "url('" + getImg(id) + "')";
-  hdAv.appendChild(hdAva);
-  var hdOv = document.createElement("span");
-  hdOv.className = "cp-ov";
-  hdAv.appendChild(hdOv);
+  hdAv.style.backgroundImage = "url('" + getImg(id) + "')";
   var isComp = false;
   for (var i = 0; i < champions.length; i++) { if (champions[i].id === id) { isComp = champions[i].completed; break; } }
   hdAv.className = "hd-avatar" + (isComp ? " completed" : "");
