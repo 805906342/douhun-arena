@@ -620,7 +620,7 @@ body.av-large .champion-card { width: 88px; }
 /* 皮肤规则问号 */
 .skin-panel-title { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; }
 .skin-rule-q { display: inline-block; margin-left: 6px; width: 15px; height: 15px; line-height: 15px; text-align: center; border: 1px solid rgba(200,155,60,.6); color: #c89b3c; border-radius: 50%; font-size: 11px; cursor: pointer; -webkit-flex-shrink: 0; flex-shrink: 0; }
-.skin-rule-tip { font-size: 11px; line-height: 1.5; color: #c8a87a; background: rgba(4,12,20,.95); border: 1px solid #785a28; border-radius: 3px; padding: 6px 8px; margin-bottom: 8px; }
+.skin-rule-tip { position: fixed; display: none; width: 260px; font-size: 11px; line-height: 1.5; color: #c8a87a; background: rgba(4,12,20,.97); border: 1px solid #785a28; border-radius: 3px; padding: 8px 10px; z-index: 9999; box-shadow: 0 2px 8px rgba(0,0,0,.5); }
 
 .total-count {
   position: absolute;
@@ -993,7 +993,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-09 15:26:00</div>
+    <div class="web-update-time">网页版更新时间：2026-09-09 15:30:00</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -1010,7 +1010,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
     <div class="login-error" id="loginError"></div>
     <div class="login-download">
       <a class="download-btn" href="download/LoLArena.exe" download>下载 Windows 桌面版</a>
-      <div class="download-time">桌面版更新时间：2026-09-09 15:26:00</div>
+      <div class="download-time">桌面版更新时间：2026-09-09 15:30:00</div>
     </div>
   </div>
 </div>
@@ -1053,7 +1053,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
       <div class="skin-panel-wrap">
         <button class="skin-btn" id="skinBtn" type="button" onclick="toggleSkinPanel()">边框皮肤</button>
         <div class="skin-panel" id="skinPanel">
-          <div class="skin-panel-title">选择边框皮肤<span class="skin-rule-q" onclick="showSkinRule()">?</span></div>
+          <div class="skin-panel-title">选择边框皮肤<span class="skin-rule-q" id="skinRuleQ" onmouseover="showSkinRule(1)" onmouseout="showSkinRule(0)">?</span></div>
           <div class="skin-rule-tip" id="skinRuleTip" style="display:none;">每获得10个第一名英雄解锁1款皮肤，按段位顺序依次解锁（黑铁→青铜→白银→黄金→铂金→翡翠→钻石→大师→宗师→王者）。默认皮肤永久开放。注：本规则仅适用当前10款段位皮肤，后续新增皮肤可能有独立解锁方式。</div>
           <div class="skin-grid" id="skinGrid"></div>
         </div>
@@ -1675,9 +1675,26 @@ function showSkinLockMsg(id) {
 }
 
 /* 皮肤解锁规则悬浮框开关 */
-function showSkinRule() {
+function showSkinRule(show) {
   var tip = document.getElementById("skinRuleTip");
-  if (tip) tip.style.display = (tip.style.display === "block") ? "none" : "block";
+  var q = document.getElementById("skinRuleQ");
+  if (!tip || !q) return;
+  if (show) {
+    var r = q.getBoundingClientRect();
+    tip.style.display = "block";
+    var w = tip.offsetWidth || 260;
+    var h = tip.offsetHeight || 100;
+    var vw = window.innerWidth || document.documentElement.clientWidth;
+    var vh = window.innerHeight || document.documentElement.clientHeight;
+    var x = r.left + 18;
+    var y = r.top + r.height + 6;
+    if (x + w > vw - 8) x = r.left - w - 12;
+    if (y + h > vh - 8) y = r.top - h - 8;
+    tip.style.left = x + "px";
+    tip.style.top = y + "px";
+  } else {
+    tip.style.display = "none";
+  }
 }
 
 /* 将当前皮肤编号上传到服务器（独立请求，缺列时静默，不影响进度保存） */
