@@ -993,7 +993,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-09 20:37:00</div>
+    <div class="web-update-time">网页版更新时间：2026-09-09 20:49:00</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -1010,7 +1010,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
     <div class="login-error" id="loginError"></div>
     <div class="login-download">
       <a class="download-btn" href="download/LoLArena.exe" download>下载 Windows 桌面版</a>
-      <div class="download-time">桌面版更新时间：2026-09-09 20:35:00</div>
+      <div class="download-time">桌面版更新时间：2026-09-09 20:49:00</div>
     </div>
   </div>
 </div>
@@ -1756,9 +1756,26 @@ function applyAvatarSize() {
   try { window.localStorage.setItem(avatarSizeKey(), currentAvatarSize); } catch (e) {}
   setAvatarSize();
 }
+function saveAvatarSize() {
+  if (!currentUserId) return;
+  var avv = (currentAvatarSize === AVATAR_LARGE ? 1 : 0);
+  var url = SUPA_URL + "/rest/v1/arena_progress?user_id=eq." + currentUserId;
+  fetch(url, { headers: { "apikey": SUPA_KEY, "Authorization": "Bearer " + SUPA_KEY } })
+  .then(function(r) { return r.json(); })
+  .then(function(rows) {
+    var bd = { avatar_size: avv, updated_at: new Date().toISOString() };
+    if (rows && rows.length > 0) {
+      return fetch(url, { method: "PATCH", headers: { "Content-Type": "application/json", "apikey": SUPA_KEY, "Authorization": "Bearer " + SUPA_KEY, "Prefer": "return=minimal" }, body: JSON.stringify(bd) });
+    } else {
+      return fetch(SUPA_URL + "/rest/v1/arena_progress", { method: "POST", headers: { "Content-Type": "application/json", "apikey": SUPA_KEY, "Authorization": "Bearer " + SUPA_KEY, "Prefer": "return=minimal" }, body: JSON.stringify({ user_id: currentUserId, avatar_size: avv }) });
+    }
+  })
+  .catch(function() {}); /* silent：若 avatar_size 列未创建则不生效，不崩 UI */
+}
 function toggleAvatarSize() {
   currentAvatarSize = (currentAvatarSize === AVATAR_LARGE) ? AVATAR_SMALL : AVATAR_LARGE;
   applyAvatarSize();
+  saveAvatarSize();
   renderGrid();
 }
 /* 登录后应用上次的头像大小选择 */
@@ -1767,6 +1784,18 @@ function restoreAvatarSize() {
   try { var ls = window.localStorage.getItem(avatarSizeKey()); if (ls === AVATAR_LARGE || ls === AVATAR_SMALL) v = ls; } catch (e) {}
   currentAvatarSize = v;
   applyAvatarSize();
+  /* 跨设备：登录后以服务器账号头像大小为最终值覆盖本地 */
+  if (currentUserId) {
+    fetch(SUPA_URL + "/rest/v1/arena_progress?user_id=eq." + currentUserId, { headers: { "apikey": SUPA_KEY, "Authorization": "Bearer " + SUPA_KEY } })
+    .then(function(r) { return r.json(); })
+    .then(function(rows) {
+      if (rows && rows.length > 0 && (rows[0].avatar_size === 0 || rows[0].avatar_size === 1)) {
+        var sv = (rows[0].avatar_size === 1) ? AVATAR_LARGE : AVATAR_SMALL;
+        if (sv !== currentAvatarSize) { currentAvatarSize = sv; applyAvatarSize(); renderGrid(); }
+      }
+    })
+    .catch(function() {});
+  }
 }
 
 // ===== 英雄战绩详情（仅界面，暂无真实数据） =====
