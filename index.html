@@ -874,7 +874,7 @@ body.skin-holy .hd-avatar.completed { border-color: #fff8dc; animation: holyRadi
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-08 13:52:00</div>
+    <div class="web-update-time">网页版更新时间：2026-09-09 10:05:00</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -1434,13 +1434,17 @@ function saveProgress() {
 // ===== Render =====
 function renderGrid() {
   var grid = document.getElementById("championGrid");
-  grid.innerHTML = "";
   var rawSearch = document.getElementById("searchInput").value.trim();
   var search = rawSearch.toLowerCase();
   var searchPy = rawSearch ? toPinyin(rawSearch) : "";
   var ordered = sortedChampions();
 
+  // DocumentFragment 一次性构建，减少逐卡 appendChild 重排
+  var frag = document.createDocumentFragment();
+  var count = 0;   // 完成数并入渲染循环
+
   ordered.forEach(function(c) {
+    if (c.completed) count++;
     var card = document.createElement("div");
     var cls = "champion-card";
     if (c.completed) cls += " completed";
@@ -1482,15 +1486,21 @@ function renderGrid() {
     nameDiv.textContent = c.name;
     card.appendChild(nameDiv);
 
-    grid.appendChild(card);
+    frag.appendChild(card);
   });
-  updateCount();
+
+  grid.innerHTML = "";
+  grid.appendChild(frag);
+
+  var totalEl = document.getElementById("totalCompleted");
+  if (totalEl) totalEl.textContent = count;
 }
 
 function updateCount() {
   var count = 0;
   champions.forEach(function(c) { if (c.completed) count++; });
-  document.getElementById("totalCompleted").textContent = count;
+  var totalEl = document.getElementById("totalCompleted");
+  if (totalEl) totalEl.textContent = count;
 }
 
 function onSearch() { renderGrid(); }
@@ -1690,11 +1700,31 @@ document.addEventListener("click", function(e) {
   }
 });
 
-function sbFetch(path) {
-  return fetch(SUPA_URL + "/rest/v1/" + path, {
+function sbFetch(path, timeoutMs) {
+  timeoutMs = timeoutMs || 15000;
+  var p = fetch(SUPA_URL + "/rest/v1/" + path, {
     headers: { "apikey": SUPA_KEY, "Authorization": "Bearer " + SUPA_KEY }
   })
   .then(function(r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); });
+  return new Promise(function(resolve, reject) {
+    var settled = false;
+    var timer = setTimeout(function() {
+      if (settled) return;
+      settled = true;
+      reject(new Error("请求超时"));
+    }, timeoutMs);
+    p.then(function(v) {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      resolve(v);
+    }, function(e) {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      reject(e);
+    });
+  });
 }
 
 function openLeaderboard() {
@@ -1837,7 +1867,11 @@ function renderGameDetail(gameId) {
       list.appendChild(row);
     }
   })
-  .catch(function() {});
+  .catch(function() {
+    var md = document.getElementById("hdMdList");
+    if (md) md.innerHTML = '<div class="hd-md-row"><div class="md-rank">加载失败</div></div>';
+    showHdToast("战绩详情加载失败，请重试");
+  });
 }
 /* 点击左栏某条 → 高亮并展示该局详情 */
 function showMatch(el) {
