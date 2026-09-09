@@ -874,7 +874,7 @@ body.skin-holy .hd-avatar.completed { border-color: #fff8dc; animation: holyRadi
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-09 10:13:00</div>
+    <div class="web-update-time">网页版更新时间：2026-09-09 10:25:00</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -1601,6 +1601,16 @@ function leaveHeroDetail() {
 }
 /* ===== 英雄战绩详情：从服务器 arena_matches 读取真实数据 ===== */
 var hdCtx = { account: "", heroEn: "", heroCn: "", matches: [], depth: 0 };
+/* 进入战绩页先复位为加载中，避免残留上一个英雄的数据 */
+function resetHeroDetailData() {
+  var ids = ["hdGames","hdPickRate","hdP1","hdP2","hdP3","hdP4","hdP5","hdP6","hdP1r","hdP2r","hdP3r","hdP4r","hdP5r","hdP6r"];
+  for (var i = 0; i < ids.length; i++) { var el = document.getElementById(ids[i]); if (el) el.textContent = ""; }
+  var list = document.getElementById("hdMatchList");
+  if (list) list.innerHTML = '<div class="hd-match"><div class="hm-date">加载中...</div></div>';
+  var md = document.getElementById("hdMdList");
+  if (md) md.innerHTML = '<div class="hd-md-row"><div class="md-rank">加载中...</div></div>';
+  hdCtx.matches = [];
+}
 
 /* ===== 英雄网格排序（默认/第一名/使用场次）===== */
 function sortedChampions() {
@@ -1884,11 +1894,13 @@ function showMatch(el) {
 /* 从服务器加载某英雄全部本人 CHERRY 局，填充头部统计 + 左栏列表 */
 function loadHeroDetailData() {
   if (!hdCtx.account) return;
+  var myHero = hdCtx.heroEn;
   var path = "arena_matches?account=eq." + encodeURIComponent(hdCtx.account) +
     "&is_self=eq.true&game_mode=eq.CHERRY&champion_name=ilike." + encodeURIComponent(hdCtx.heroEn) +
     "&select=game_id,game_start_timestamp,placement,kills,deaths,assists,total_damage_dealt_to_champions&order=game_start_timestamp.desc";
   sbFetch(path)
   .then(function(rows) {
+    if (hdCtx.heroEn !== myHero) return; /* 已切换英雄则丢弃旧请求 */
     hdCtx.matches = rows || [];
     var n = hdCtx.matches.length;
     /* 头部统计：固定6队（斗魂第1~6名） */
@@ -1897,6 +1909,7 @@ function loadHeroDetailData() {
     /* 本人全部斗魂对局总数 -> 选取率 */
     sbFetch("arena_matches?account=eq." + encodeURIComponent(hdCtx.account) + "\u0026is_self=eq.true\u0026game_mode=eq.CHERRY\u0026select=game_id")
       .then(function(all) {
+        if (hdCtx.heroEn !== myHero) return;
         var total = (all && all.length) || 0;
         var pr = (n > 0 && total > 0) ? (Math.round(n * 1000 / total) / 10) : 0;
         setT("hdPickRate", pr);
@@ -1943,8 +1956,13 @@ function loadHeroDetailData() {
     if (hint) hint.textContent = "英雄战绩 · " + n + " 场真实数据";
   })
   .catch(function() {
+    if (hdCtx.heroEn !== myHero) return;
     var hint = document.getElementById("hdHint");
     if (hint) hint.textContent = "英雄战绩 · 读取失败";
+    var list = document.getElementById("hdMatchList");
+    if (list) list.innerHTML = '<div class="hd-match"><div class="hm-date">加载失败，请重试</div></div>';
+    var md = document.getElementById("hdMdList");
+    if (md) md.innerHTML = '<div class="hd-md-row"><div class="md-rank">加载失败</div></div>';
   });
 }
 function openHeroDetail(id, title, name) {
@@ -1983,6 +2001,8 @@ function openHeroDetail(id, title, name) {
   if (g) g.style.display = "none";
   if (d) { d.style.display = ""; d.classList.add("show"); }
   if (st) st.style.display = "none";
+  /* 先复位战绩页为加载中，避免显示上一英雄残留数据 */
+  resetHeroDetailData();
 }
 
 // ===== Init =====
