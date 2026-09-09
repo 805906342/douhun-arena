@@ -1000,7 +1000,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-09 17:04:00</div>
+    <div class="web-update-time">网页版更新时间：2026-09-09 17:39:00</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -1352,22 +1352,29 @@ var usageCount = {};
 function getImg(id) {
   return "https://ddragon.leagueoflegends.com/cdn/" + DD_VERSION + "/img/champion/" + id + ".png";
 }
-/* ===== 图片异步懒加载：先渲染登录/界面，头像/符文/装备等图标按批慢慢补（英雄头像走腾讯快源→ddragon兜底）===== */
-var __avaQ = [], __avaBusy = 0;
-function __avaCN(id){ return "https://game.gtimg.cn/images/lol/act/img/champion/" + id + ".png"; }
+/* ===== 图片异步懒加载：登录/界面优先，头像等按批慢慢补；战绩页当前用到的图优先=置队首；英雄头像打开网页即全量预载进缓存 ===== */
+var __avaQ = [], __avaBusy = 0, __urlSt = {};
 function __lazyApply(el,url){ if(!el) return; if(el.tagName === "IMG"){ el.setAttribute("src", url); } else { el.style.backgroundImage = "url('" + url + "')"; } }
 function __avaLoad(el,id,url){
   if(!el) return;
   if(url){ __lazyApply(el, url); return; }
   if(el.__avaMark === id) return; el.__avaMark = id;
-  var im = new Image();
-  im.onload = function(){ __lazyApply(el, __avaCN(id)); };
-  im.onerror = function(){ var im2 = new Image(); im2.onload = function(){ __lazyApply(el, getImg(id)); }; im2.src = getImg(id); };
-  im.src = __avaCN(id);
+  __lazyApply(el, getImg(id));
 }
-function pushAva(el,id){ __avaQ.push([el,id,null]); }
-function pushImg(el,url){ if(el) __avaQ.push([el,null,url]); }
-function lazyBindImgs(scope){ var s = scope || document; var a = s.querySelectorAll("img[data-src]"); for(var k=0;k<a.length;k++) pushImg(a[k], a[k].getAttribute("data-src")); }
+function pushAva(el,id,prio){
+  if(!el) return;
+  if(prio){ __avaQ.unshift([el,id,null]); } else { __avaQ.push([el,id,null]); }
+  startAvaCycle();
+}
+function pushImg(el,url,prio){
+  if(!el || !url) return;
+  var st = __urlSt[url];
+  if(st === 1 || st === 2) return;
+  __urlSt[url] = 1;
+  if(prio){ __avaQ.unshift([el,null,url]); } else { __avaQ.push([el,null,url]); }
+  startAvaCycle();
+}
+function lazyBindImgs(scope,prio){ var s = scope || document; var a = s.querySelectorAll("img[data-src]"); for(var k=0;k<a.length;k++) pushImg(a[k], a[k].getAttribute("data-src"), prio); }
 function startAvaCycle(){
   if(__avaBusy) return; __avaBusy = 1;
   (function pump(){
@@ -1376,7 +1383,16 @@ function startAvaCycle(){
     if(__avaQ.length){ setTimeout(pump, 40); } else { __avaBusy = 0; }
   })();
 }
-
+/* ===== 英雄头像打开网页即全量预载进浏览器缓存（海外ddragon，按批慢载不挡首屏）===== */
+var __pre = [], __preBusy = 0;
+function __prePump(){
+  var n = 5, i = 0;
+  while(i < n && __pre.length){ var u = __pre.shift(); if(u){ var im = new Image(); im.onload = im.onerror = function(){}; im.src = u; } i++; }
+  if(__pre.length){ setTimeout(__prePump, 40); } else { __preBusy = 0; }
+}
+function preloadCache(url){ if(!url || __urlSt[url]) return; __urlSt[url] = 1; __pre.push(url); if(!__preBusy){ __preBusy = 1; __prePump(); } }
+function preloadChampionIcons(){ if(!champions) return; for(var k=0;k<champions.length;k++){ preloadCache(getImg(champions[k].id)); } }
+(function(){ function go(){ preloadChampionIcons(); } if(document.readyState !== "loading"){ go(); } else { document.addEventListener("DOMContentLoaded", go); } })();
 
 function toPinyin(str) {
   if (!pinyinFn) return "";
@@ -2093,7 +2109,7 @@ function renderGameDetail(gameId) {
       }
       row.innerHTML = inner;
       list.appendChild(row);
-      lazyBindImgs(row);
+      lazyBindImgs(row, true);
     }
   })
   .catch(function() {
@@ -2204,7 +2220,7 @@ function openHeroDetail(id, title, name) {
   hdAv.innerHTML = "";
   var hdAva = document.createElement("span");
   hdAva.className = "cp-ava";
-  pushAva(hdAva, id);
+  pushAva(hdAva, id, true);
   hdAv.appendChild(hdAva);
   var hdOv = document.createElement("span");
   hdOv.className = "cp-ov";
