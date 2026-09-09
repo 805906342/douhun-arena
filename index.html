@@ -652,7 +652,6 @@ body.skin-holy .hd-avatar.completed { border-color: #fff8dc; animation: holyRadi
 .hero-detail-head .hd-info { margin-left: 16px; }
 .hero-detail-head .hd-title { font-size: 20px; font-weight: 700; color: #f0e6d2; }
 .hero-detail-head .hd-name { font-size: 14px; color: #8fa0b0; margin-top: 4px; }
-.hero-detail-head .hd-hint { font-size: 11px; color: #5a6a7a; margin-top: 8px; }
 .hero-detail-body { padding: 14px 20px 14px; -webkit-flex: 1 1 auto; flex: 1 1 auto; min-height: 0; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; }
 .hd-season-games {
   display: flex;
@@ -785,12 +784,6 @@ body.skin-holy .hd-avatar.completed { border-color: #fff8dc; animation: holyRadi
 .md-items i img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .md-kda { font-size: 12px; color: #8fa0b0; font-family: Consolas, Menlo, monospace; white-space: nowrap; margin-left: 12px; }
 .md-dmg { font-size: 12px; color: #c89b3c; font-family: Consolas, Menlo, monospace; white-space: nowrap; margin-left: 12px; }
-.hd-empty {
-  text-align: center;
-  color: #5a6a7a;
-  font-size: 12px;
-  padding: 18px 0;
-}
 /* 未扫描提示 toast */
 .hd-toast {
   position: fixed;
@@ -874,7 +867,7 @@ body.skin-holy .hd-avatar.completed { border-color: #fff8dc; animation: holyRadi
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-09 10:40:00</div>
+    <div class="web-update-time">网页版更新时间：2026-09-09 11:05:00</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -1204,7 +1197,6 @@ var currentSkin = "gold";
 function skinIdToNum(id) { for (var i = 0; i < borderSkins.length; i++) { if (borderSkins[i].id === id) return borderSkins[i].num; } return 1; }
 function skinNumToId(num) { for (var i = 0; i < borderSkins.length; i++) { if (borderSkins[i].num === num) return borderSkins[i].id; } return "gold"; }
 var currentUserId = null;
-var saveTimer = null;
 var pinyinFn = null;
 /* 是否已通过桌面版扫描获取过 LOL ID（用于网页版英雄战绩详情判断） */
 var hasScannedId = false;
@@ -1403,31 +1395,6 @@ function loadFirstPlaceHeroes(accountId) {
   .catch(function() { applyAndRender(); });
 }
 
-function saveProgress() {
-  // hero_ids 已废弃：此处仅同步进度更新时间，不再写英雄集合
-  if (saveTimer) clearTimeout(saveTimer);
-  saveTimer = setTimeout(function() {
-    fetch(SUPA_URL + "/rest/v1/arena_progress?user_id=eq." + currentUserId, {
-      headers: { "apikey": SUPA_KEY, "Authorization": "Bearer " + SUPA_KEY }
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(rows) {
-      if (rows.length > 0) {
-        return fetch(SUPA_URL + "/rest/v1/arena_progress?user_id=eq." + currentUserId, {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            "apikey": SUPA_KEY,
-            "Authorization": "Bearer " + SUPA_KEY,
-            "Prefer": "return=minimal"
-          },
-          body: JSON.stringify({ updated_at: new Date().toISOString() })
-        });
-      }
-    })
-    .catch(function() {});
-  }, 500);
-}
 
 // ===== Render =====
 function renderGrid() {
@@ -1494,12 +1461,6 @@ function renderGrid() {
   if (totalEl) totalEl.textContent = count;
 }
 
-function updateCount() {
-  var count = 0;
-  champions.forEach(function(c) { if (c.completed) count++; });
-  var totalEl = document.getElementById("totalCompleted");
-  if (totalEl) totalEl.textContent = count;
-}
 
 function onSearch() { renderGrid(); }
 
