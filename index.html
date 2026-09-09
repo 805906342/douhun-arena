@@ -993,7 +993,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-09 15:30:00</div>
+    <div class="web-update-time">网页版更新时间：2026-09-09 15:42:00</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -1010,7 +1010,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
     <div class="login-error" id="loginError"></div>
     <div class="login-download">
       <a class="download-btn" href="download/LoLArena.exe" download>下载 Windows 桌面版</a>
-      <div class="download-time">桌面版更新时间：2026-09-09 15:30:00</div>
+      <div class="download-time">桌面版更新时间：2026-09-09 15:42:00</div>
     </div>
   </div>
 </div>
@@ -1477,16 +1477,10 @@ function loadProgress() {
         if (pid) pid.textContent = syncId;
         hasScannedId = true;
       }
-      /* 应用上次使用的边框皮肤（校验解锁，未解锁则回退默认） */
+      /* 应用上次使用的边框皮肤（只应用不作解锁校验；校验延迟到 loadFirstPlaceHeroes 的 applyAndRender，firstPlaceHeroCount 此时才确定，避免误判未解锁回退默认） */
       if (!skinApplied && rr.skin) {
         currentSkin = skinNumToId(parseInt(rr.skin, 10));
-        if (currentSkin !== "default" && !isSkinUnlocked(skinIdToNum(currentSkin))) {
-          currentSkin = "default";
-          document.body.className = "skin-default";
-          saveSkin();
-        } else {
-          document.body.className = "skin-" + currentSkin;
-        }
+        document.body.className = "skin-" + currentSkin;
         renderSkinPanel();
         skinApplied = true;
       }
@@ -1526,6 +1520,12 @@ function loadFirstPlaceHeroes(accountId) {
     champions.forEach(function(c) {
       c.completed = idSet[String(c.id).toLowerCase()] ? true : false;
     });
+    /* 解锁校验延迟到此处（firstPlaceHeroCount 已确定）：上次皮肤未解锁才回退默认并同步服务器 */
+    if (currentSkin !== "default" && !isSkinUnlocked(skinIdToNum(currentSkin))) {
+      currentSkin = "default";
+      document.body.className = "skin-default";
+      saveSkin();
+    }
     renderGrid();
     refreshSkinUnlock();  // 扫描/登录后依最新第一名数刷新解锁状态
   };
