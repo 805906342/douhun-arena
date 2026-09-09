@@ -993,7 +993,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-09 17:58:00</div>
+    <div class="web-update-time">网页版更新时间：2026-09-09 20:37:00</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -1432,6 +1432,9 @@ function doLogout() {
   currentSortMode = 1;
   restoreAvatarSize();
   leaveHeroDetail();  /* 退出登录时复位到英雄界面 */
+  var sIn = document.getElementById("searchInput");
+  if (sIn) sIn.value = "";
+  if (hdCtx && hdCtx.account !== undefined) { hdCtx.account = ""; hdCtx.heroEn = ""; hdCtx.heroCn = ""; hdCtx.matches = []; hdCtx.depth = 0; }
   var pid = document.getElementById("playerIdText");
   if (pid) pid.textContent = "";
   var st = document.getElementById("statsText");
