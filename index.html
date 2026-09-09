@@ -114,6 +114,29 @@ body::before {
   outline: none;
 }
 .login-field input:focus { border-color: #c89b3c; }
+.login-remember {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin: 2px 0 10px;
+}
+.login-remember label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: #a79b7d;
+  cursor: pointer;
+}
+.login-remember input {
+  width: auto;
+  height: auto;
+  margin: 0;
+  background: transparent;
+  border: none;
+  padding: 0;
+  accent-color: #c89b3c;
+}
 .login-submit {
   width: 100%;
   height: 38px;
@@ -993,7 +1016,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-09 21:05:00</div>
+    <div class="web-update-time">网页版更新时间：2026-09-09 22:49:00</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -1006,11 +1029,15 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
       <label>密码</label>
       <input type="password" id="loginPass" placeholder="请输入密码" autocomplete="current-password">
     </div>
+    <div class="login-remember">
+      <label><input type="checkbox" id="rememberUser"> 记住账号</label>
+      <label><input type="checkbox" id="rememberPass"> 记住密码</label>
+    </div>
     <button class="login-submit" id="loginSubmit" type="button" onclick="submitAuth()">登录</button>
     <div class="login-error" id="loginError"></div>
     <div class="login-download">
       <a class="download-btn" href="download/LoLArena.exe" download>下载 Windows 桌面版</a>
-      <div class="download-time">桌面版更新时间：2026-09-09 22:24:00</div>
+      <div class="download-time">桌面版更新时间：2026-09-09 22:49:00</div>
     </div>
   </div>
 </div>
@@ -1357,6 +1384,54 @@ champions.forEach(function(c) { c.completed = false; c._tp = toPinyin(c.title); 
 // ===== Auth =====
 var authMode = "login";
 
+// ===== 记住账号/密码（本地 localStorage，升级不丢；网页版/桌面版各自独立） =====
+function saveRemember(user, pass) {
+  try {
+    var cu = document.getElementById("rememberUser");
+    var cp = document.getElementById("rememberPass");
+    var uOn = cu && cu.checked;
+    var pOn = cp && cp.checked;
+    if (uOn) window.localStorage.setItem("lolArenaRememberUser", user);
+    else window.localStorage.removeItem("lolArenaRememberUser");
+    if (pOn) window.localStorage.setItem("lolArenaRememberPass", pass);
+    else window.localStorage.removeItem("lolArenaRememberPass");
+    window.localStorage.setItem("lolArenaRememberChecked", (uOn ? "U" : "") + (pOn ? "P" : ""));
+  } catch (e) {}
+}
+function initRemember() {
+  try {
+    var cu = document.getElementById("rememberUser");
+    var cp = document.getElementById("rememberPass");
+    if (!cu) return;
+    var flag = window.localStorage.getItem("lolArenaRememberChecked");
+    if (flag === null || flag === "") {
+      // 新用户首次使用：默认勾选「记住账号」，不勾选「记住密码」
+      cu.checked = true;
+      if (cp) cp.checked = false;
+    } else {
+      cu.checked = flag.indexOf("U") >= 0;
+      if (cp) cp.checked = flag.indexOf("P") >= 0;
+    }
+    var u = window.localStorage.getItem("lolArenaRememberUser");
+    if (u) document.getElementById("loginUser").value = u;
+    if (cp && cp.checked) {
+      var p = window.localStorage.getItem("lolArenaRememberPass");
+      if (p) document.getElementById("loginPass").value = p;
+    }
+  } catch (e) {}
+}
+function wireRemember() {
+  var cu = document.getElementById("rememberUser");
+  var cp = document.getElementById("rememberPass");
+  if (cu && cp) {
+    cp.addEventListener("change", function () { if (cp.checked) cu.checked = true; });
+  }
+}
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", function () { initRemember(); wireRemember(); });
+} else {
+  initRemember(); wireRemember();
+}
 function switchTab(mode) {
   authMode = mode;
   document.getElementById("tabLogin").className = "login-tab" + (mode === "login" ? " active" : "");
@@ -1415,6 +1490,7 @@ function submitAuth() {
       return;
     }
     currentUserId = res.data.user.id;
+    saveRemember(user, pass);
     document.getElementById("loginOverlay").classList.add("hidden");
     document.getElementById("appContainer").style.display = "";
     leaveHeroDetail();  /* 登录后默认显示英雄界面，复位可能残留的详情视图 */
