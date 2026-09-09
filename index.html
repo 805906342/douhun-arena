@@ -504,60 +504,82 @@ body::before {
   filter: grayscale(0.7);
 }
 
-/* Border skins */
-.skin-gold .champion-card.completed .champion-portrait { border-color: #c89b3c; }
-.skin-platinum .champion-card.completed .champion-portrait { border-color: #e8e8f0; box-shadow: 0 0 6px rgba(200,210,230,0.5), inset 0 0 8px rgba(200,210,230,0.15); }
-.skin-obsidian .champion-card.completed .champion-portrait { border-color: #6a3da0; box-shadow: 0 0 6px rgba(106,61,160,0.6), inset 0 0 10px rgba(60,20,100,0.3); }
-.skin-emerald .champion-card.completed .champion-portrait { border-color: #2ecc71; box-shadow: 0 0 6px rgba(46,204,113,0.5); }
-.skin-ruby .champion-card.completed .champion-portrait { border-color: #e74c3c; box-shadow: 0 0 6px rgba(231,76,60,0.5); }
-.skin-sapphire .champion-card.completed .champion-portrait { border-color: #3498db; box-shadow: 0 0 6px rgba(52,152,219,0.5); }
+/* ===== Border skins v27 段位皮肤 ===== */
+.champion-portrait .cp-ava {
+  position: absolute; left: 2px; top: 2px; width: 62px; height: 62px;
+  background-size: cover; background-position: center; z-index: 5;
+}
+.champion-portrait .cp-ov {
+  position: absolute; left: 2px; top: 2px; width: 62px; height: 62px;
+  z-index: 6; pointer-events: none; overflow: hidden; display: none;
+}
+.skin-default .champion-card.completed .champion-portrait { border-color: #c89b3c; box-shadow: 0 0 6px rgba(200,155,60,0.3); }
+.skin-iron .champion-card.completed .champion-portrait::before,
+.skin-bronze .champion-card.completed .champion-portrait::before,
+.skin-silver .champion-card.completed .champion-portrait::before,
+.skin-gold .champion-card.completed .champion-portrait::before,
+.skin-platinum .champion-card.completed .champion-portrait::before,
+.skin-emerald .champion-card.completed .champion-portrait::before,
+.skin-diamond .champion-card.completed .champion-portrait::before,
+.skin-master .champion-card.completed .champion-portrait::before,
+.skin-grand .champion-card.completed .champion-portrait::before,
+.skin-king .champion-card.completed .champion-portrait::before {
+  content: ""; position: absolute; left: 0; top: 0; right: 0; bottom: 0; z-index: 4;
+  border: 2px solid transparent; pointer-events: none;
+  background-clip: padding-box, border-box; background-origin: border-box, border-box;
+  background-size: auto, 44px 100%;
+  animation: skScroll 2.0s linear infinite; -webkit-animation: skScroll 2.0s linear infinite;
+}
+.skin-iron .champion-card.completed .champion-portrait::before    { background-image: linear-gradient(#0d151d,#0d151d), repeating-linear-gradient(100deg,#33363c 0,#33363c 15px,#cfd6e0 23px,#6b7280 27px,#fff 29px,#6b7280 31px,#cfd6e0 37px,#33363c 44px); }
+.skin-bronze .champion-card.completed .champion-portrait::before    { background-image: linear-gradient(#0d151d,#0d151d), repeating-linear-gradient(100deg,#7a4213 0,#7a4213 15px,#f0c08a 23px,#cd7f32 27px,#fff 29px,#cd7f32 31px,#f0c08a 37px,#7a4213 44px); }
+.skin-silver .champion-card.completed .champion-portrait::before    { background-image: linear-gradient(#0d151d,#0d151d), repeating-linear-gradient(100deg,#8a94a3 0,#8a94a3 15px,#ffffff 23px,#d2d9e4 27px,#fff 29px,#d2d9e4 31px,#ffffff 37px,#8a94a3 44px); }
+.skin-gold .champion-card.completed .champion-portrait::before    { background-image: linear-gradient(#0d151d,#0d151d), repeating-linear-gradient(100deg,#8a6a1e 0,#8a6a1e 15px,#f7e39b 23px,#e5c15c 27px,#fff 29px,#e5c15c 31px,#f7e39b 37px,#8a6a1e 44px); }
+.skin-platinum .champion-card.completed .champion-portrait::before    { background-image: linear-gradient(#0d151d,#0d151d), repeating-linear-gradient(100deg,#3f96a8 0,#3f96a8 15px,#e3f9ff 23px,#8ce0f0 27px,#fff 29px,#8ce0f0 31px,#e3f9ff 37px,#3f96a8 44px); }
+.skin-emerald .champion-card.completed .champion-portrait::before    { background-image: linear-gradient(#0d151d,#0d151d), repeating-linear-gradient(100deg,#118a5a 0,#118a5a 15px,#9af0ce 23px,#23c483 27px,#fff 29px,#23c483 31px,#9af0ce 37px,#118a5a 44px); }
+.skin-diamond .champion-card.completed .champion-portrait::before    { background-image: linear-gradient(#0d151d,#0d151d), repeating-linear-gradient(100deg,#17779c 0,#17779c 15px,#bdf0ff 23px,#35c5f2 27px,#fff 29px,#35c5f2 31px,#bdf0ff 37px,#17779c 44px); }
+.skin-master .champion-card.completed .champion-portrait::before    { background-image: linear-gradient(#0d151d,#0d151d), repeating-linear-gradient(100deg,#96305a 0,#96305a 15px,#f9b2cd 23px,#e0457b 27px,#fff 29px,#e0457b 31px,#f9b2cd 37px,#96305a 44px); }
+.skin-grand .champion-card.completed .champion-portrait::before    { background-image: linear-gradient(#0d151d,#0d151d), repeating-linear-gradient(100deg,#9c4f14 0,#9c4f14 15px,#f5c9a2 23px,#e07e3f 27px,#fff 29px,#e07e3f 31px,#f5c9a2 37px,#9c4f14 44px); }
+.skin-king .champion-card.completed .champion-portrait::before    { background-image: linear-gradient(#0d151d,#0d151d), repeating-linear-gradient(100deg,#8a5f00 0,#8a5f00 15px,#ffe399 23px,#f0a201 27px,#fff 29px,#f0a201 31px,#ffe399 37px,#8a5f00 44px); }
 
-.skin-rainbow .champion-card.completed .champion-portrait { border-color: #ff0000; animation: rainbowBorder 3s linear infinite; }
-.skin-electric .champion-card.completed .champion-portrait { border-color: #00d4ff; animation: electricPulse 1.2s ease-in-out infinite; }
-.skin-inferno .champion-card.completed .champion-portrait { border-color: #ff4400; animation: infernoBurn 1.5s ease-in-out infinite; }
-.skin-frost .champion-card.completed .champion-portrait { border-color: #a8f0ff; animation: frostShimmer 2s ease-in-out infinite; }
-.skin-void .champion-card.completed .champion-portrait { border-color: #9b30ff; animation: voidSwirl 2s ease-in-out infinite; }
-.skin-holy .champion-card.completed .champion-portrait { border-color: #fff8dc; animation: holyRadiate 2s ease-in-out infinite; }
+@keyframes skScroll { from { background-position: 0 0, 0 0; } to { background-position: 0 0, 44px 0; } }
+@-webkit-keyframes skScroll { from { background-position: 0 0, 0 0; } to { background-position: 0 0, 44px 0; } }
+.skin-master .champion-card.completed .champion-portrait .cp-ov,
+.skin-grand  .champion-card.completed .champion-portrait .cp-ov,
+.skin-king   .champion-card.completed .champion-portrait .cp-ov { display: block; }
+.skin-master .champion-portrait .cp-ov::before,
+.skin-grand  .champion-portrait .cp-ov::before,
+.skin-king   .champion-portrait .cp-ov::before {
+  content: ""; position: absolute; left: 0; top: 0; width: 100%; height: 100%; background-repeat: repeat;
+  animation: ovRise 4.5s linear infinite; -webkit-animation: ovRise 4.5s linear infinite;
+}
+.skin-master .champion-portrait .cp-ov::before { background-image: radial-gradient(3px 3px at 20% 70%, rgba(240,109,157,.85), transparent 70%), radial-gradient(2px 2px at 82% 30%, rgba(255,255,255,.8), transparent 70%); background-size: 62px 62px; }
+.skin-grand  .champion-portrait .cp-ov::before { background-image: radial-gradient(3px 3px at 24% 72%, rgba(239,164,104,.85), transparent 70%), radial-gradient(2px 2px at 80% 30%, rgba(255,255,255,.8), transparent 70%); background-size: 60px 60px; }
+.skin-king   .champion-portrait .cp-ov::before { background-image: radial-gradient(4px 4px at 22% 74%, rgba(255,204,85,.9), transparent 70%), radial-gradient(3px 3px at 78% 28%, rgba(255,255,255,.85), transparent 70%), radial-gradient(3px 3px at 58% 88%, rgba(255,215,120,.8), transparent 70%); background-size: 58px 58px; }
+.skin-master .champion-portrait .cp-ov::after,
+.skin-grand  .champion-portrait .cp-ov::after,
+.skin-king   .champion-portrait .cp-ov::after {
+  content: ""; position: absolute; left: 0; top: 0; width: 100%; height: 100%;
+  background-position: 0 0, 0 0; background-size: 130% 130%, 260% 260%;
+  animation: ovDrift 6s ease-in-out infinite; -webkit-animation: ovDrift 6s ease-in-out infinite;
+}
+.skin-master .champion-portrait .cp-ov::after { background-image: radial-gradient(ellipse at 42% 22%, rgba(224,69,123,.36), transparent 60%), linear-gradient(115deg, transparent 40%, rgba(255,255,255,.32) 50%, transparent 60%); }
+.skin-grand  .champion-portrait .cp-ov::after { background-image: radial-gradient(ellipse at 42% 22%, rgba(224,126,63,.34), transparent 60%), linear-gradient(115deg, transparent 40%, rgba(255,255,255,.3) 50%, transparent 60%); }
+.skin-king   .champion-portrait .cp-ov::after { background-image: radial-gradient(ellipse at 42% 22%, rgba(255,204,85,.38), transparent 60%), linear-gradient(115deg, transparent 40%, rgba(255,255,255,.34) 50%, transparent 60%); }
+@keyframes ovRise { from { background-position: 0 0, 0 0; } to { background-position: 0 -88px, 0 -88px; } }
+@-webkit-keyframes ovRise { from { background-position: 0 0, 0 0; } to { background-position: 0 -88px, 0 -88px; } }
+@keyframes ovDrift { 0%,100% { background-position: 0 0, 0 0; opacity: .92; } 50% { background-position: 18% 6%, 100% -40%; opacity: 1; } }
+@-webkit-keyframes ovDrift { 0%,100% { background-position: 0 0, 0 0; opacity: .92; } 50% { background-position: 18% 6%, 100% -40%; opacity: 1; } }
 
-@keyframes rainbowBorder {
-  0%{border-color:#ff0000;box-shadow:0 0 8px rgba(255,0,0,0.6)}
-  16%{border-color:#ff8800;box-shadow:0 0 8px rgba(255,136,0,0.6)}
-  33%{border-color:#ffff00;box-shadow:0 0 8px rgba(255,255,0,0.6)}
-  50%{border-color:#00ff00;box-shadow:0 0 8px rgba(0,255,0,0.6)}
-  66%{border-color:#0088ff;box-shadow:0 0 8px rgba(0,136,255,0.6)}
-  83%{border-color:#8800ff;box-shadow:0 0 8px rgba(136,0,255,0.6)}
-  100%{border-color:#ff0000;box-shadow:0 0 8px rgba(255,0,0,0.6)}
-}
-@keyframes electricPulse {
-  0%,100%{border-color:#00d4ff;box-shadow:0 0 5px rgba(0,212,255,0.4),0 0 10px rgba(0,212,255,0.2)}
-  50%{border-color:#fff;box-shadow:0 0 12px rgba(0,212,255,0.9),0 0 24px rgba(0,212,255,0.5),inset 0 0 8px rgba(0,212,255,0.3)}
-}
-@keyframes infernoBurn {
-  0%,100%{border-color:#ff4400;box-shadow:0 0 6px rgba(255,68,0,0.5),0 0 12px rgba(255,100,0,0.3)}
-  25%{border-color:#ffaa00;box-shadow:0 0 10px rgba(255,170,0,0.7),0 0 20px rgba(255,68,0,0.4)}
-  50%{border-color:#ff2200;box-shadow:0 0 14px rgba(255,34,0,0.8),0 0 28px rgba(255,68,0,0.5),inset 0 0 10px rgba(255,100,0,0.2)}
-  75%{border-color:#ffcc00;box-shadow:0 0 10px rgba(255,204,0,0.7),0 0 20px rgba(255,68,0,0.4)}
-}
-@keyframes frostShimmer {
-  0%,100%{border-color:#a8f0ff;box-shadow:0 0 5px rgba(168,240,255,0.4),inset 0 0 6px rgba(168,240,255,0.1)}
-  50%{border-color:#fff;box-shadow:0 0 12px rgba(168,240,255,0.8),0 0 24px rgba(120,200,255,0.4),inset 0 0 10px rgba(200,240,255,0.2)}
-}
-@keyframes voidSwirl {
-  0%,100%{border-color:#9b30ff;box-shadow:0 0 6px rgba(155,48,255,0.5),0 0 12px rgba(120,0,200,0.3)}
-  33%{border-color:#ff00ff;box-shadow:0 0 10px rgba(255,0,255,0.6),0 0 20px rgba(155,48,255,0.4)}
-  66%{border-color:#6600cc;box-shadow:0 0 14px rgba(102,0,204,0.7),0 0 28px rgba(155,48,255,0.5),inset 0 0 8px rgba(120,0,200,0.2)}
-}
-@keyframes holyRadiate {
-  0%,100%{border-color:#fff8dc;box-shadow:0 0 5px rgba(255,248,220,0.4),0 0 10px rgba(255,220,100,0.2)}
-  50%{border-color:#fff;box-shadow:0 0 14px rgba(255,248,220,0.9),0 0 28px rgba(255,220,100,0.5),0 0 42px rgba(255,200,50,0.3),inset 0 0 10px rgba(255,248,220,0.2)}
-}
-
-.preview-rainbow { animation: rainbowBorder 2s linear infinite; border: 2px solid #ff0000; }
-.preview-electric { animation: electricPulse 1.2s ease-in-out infinite; border: 2px solid #00d4ff; }
-.preview-inferno { animation: infernoBurn 1.5s ease-in-out infinite; border: 2px solid #ff4400; }
-.preview-frost { animation: frostShimmer 2s ease-in-out infinite; border: 2px solid #a8f0ff; }
-.preview-void { animation: voidSwirl 2s ease-in-out infinite; border: 2px solid #9b30ff; }
-.preview-holy { animation: holyRadiate 2s ease-in-out infinite; border: 2px solid #fff8dc; }
+.preview-iron { border: 2px solid #6b7280; }
+.preview-bronze { border: 2px solid #cd7f32; }
+.preview-silver { border: 2px solid #d2d9e4; }
+.preview-gold { border: 2px solid #c8a340; }
+.preview-platinum { border: 2px solid #8ce0f0; }
+.preview-emerald { border: 2px solid #23c483; }
+.preview-diamond { border: 2px solid #35c5f2; }
+.preview-master { border: 2px solid #e0457b; }
+.preview-grand { border: 2px solid #e07e3f; }
+.preview-king { border: 2px solid #f0a201; box-shadow: 0 0 6px rgba(240,162,1,.6); }
 
 .total-count {
   position: absolute;
@@ -628,7 +650,7 @@ body::before {
   border-bottom: 1px solid #223242;
   background: linear-gradient(180deg, rgba(200,155,60,0.08), rgba(10,20,30,0));
 }
-.hero-detail-head .hd-avatar {
+.hero-detail-head .hd-avatar  position: relative; overflow: hidden; }
   width: 84px; height: 84px;
   border: 2px solid #2c3c4c;
   box-shadow: none;
@@ -637,18 +659,65 @@ body::before {
   flex-shrink: 0;
 }
 .hero-detail-head .hd-avatar.completed { border-color: #c89b3c; }
-body.skin-gold .hd-avatar.completed { border-color: #c89b3c; box-shadow: 0 0 6px rgba(200,155,60,0.25); }
-body.skin-platinum .hd-avatar.completed { border-color: #e8e8f0; box-shadow: 0 0 6px rgba(200,210,230,0.5), inset 0 0 8px rgba(200,210,230,0.15); }
-body.skin-obsidian .hd-avatar.completed { border-color: #6a3da0; box-shadow: 0 0 6px rgba(106,61,160,0.6), inset 0 0 10px rgba(60,20,100,0.3); }
-body.skin-emerald .hd-avatar.completed { border-color: #2ecc71; box-shadow: 0 0 6px rgba(46,204,113,0.5); }
-body.skin-ruby .hd-avatar.completed { border-color: #e74c3c; box-shadow: 0 0 6px rgba(231,76,60,0.5); }
-body.skin-sapphire .hd-avatar.completed { border-color: #3498db; box-shadow: 0 0 6px rgba(52,152,219,0.5); }
-body.skin-rainbow .hd-avatar.completed { border-color: #ff0000; animation: rainbowBorder 3s linear infinite; }
-body.skin-electric .hd-avatar.completed { border-color: #00d4ff; animation: electricPulse 1.2s ease-in-out infinite; }
-body.skin-inferno .hd-avatar.completed { border-color: #ff4400; animation: infernoBurn 1.5s ease-in-out infinite; }
-body.skin-frost .hd-avatar.completed { border-color: #a8f0ff; animation: frostShimmer 2s ease-in-out infinite; }
-body.skin-void .hd-avatar.completed { border-color: #9b30ff; animation: voidSwirl 2s ease-in-out infinite; }
-body.skin-holy .hd-avatar.completed { border-color: #fff8dc; animation: holyRadiate 2s ease-in-out infinite; }
+/* hd-avatar 内层头像/覆盖层（v27 段位皮肤） */
+.hero-detail-head .hd-avatar .cp-ava {
+  position: absolute; left: 2px; top: 2px; width: 80px; height: 80px;
+  background-size: cover; background-position: center; z-index: 5;
+}
+.hero-detail-head .hd-avatar .cp-ov {
+  position: absolute; left: 2px; top: 2px; width: 80px; height: 80px;
+  z-index: 6; pointer-events: none; overflow: hidden; display: none;
+}
+body.skin-default .hd-avatar.completed { border-color: #c89b3c; box-shadow: 0 0 6px rgba(200,155,60,0.25); }
+body.skin-iron .hd-avatar.completed::before,
+body.skin-bronze .hd-avatar.completed::before,
+body.skin-silver .hd-avatar.completed::before,
+body.skin-gold .hd-avatar.completed::before,
+body.skin-platinum .hd-avatar.completed::before,
+body.skin-emerald .hd-avatar.completed::before,
+body.skin-diamond .hd-avatar.completed::before,
+body.skin-master .hd-avatar.completed::before,
+body.skin-grand .hd-avatar.completed::before,
+body.skin-king .hd-avatar.completed::before {
+  content: ""; position: absolute; left: 0; top: 0; right: 0; bottom: 0; z-index: 4;
+  border: 2px solid transparent; pointer-events: none;
+  background-clip: padding-box, border-box; background-origin: border-box, border-box;
+  background-size: auto, 44px 100%;
+  animation: skScroll 2.0s linear infinite; -webkit-animation: skScroll 2.0s linear infinite;
+}
+body.skin-iron .hd-avatar.completed::before    { background-image: linear-gradient(#0d151d,#0d151d), repeating-linear-gradient(100deg,#33363c 0,#33363c 15px,#cfd6e0 23px,#6b7280 27px,#fff 29px,#6b7280 31px,#cfd6e0 37px,#33363c 44px); }
+body.skin-bronze .hd-avatar.completed::before    { background-image: linear-gradient(#0d151d,#0d151d), repeating-linear-gradient(100deg,#7a4213 0,#7a4213 15px,#f0c08a 23px,#cd7f32 27px,#fff 29px,#cd7f32 31px,#f0c08a 37px,#7a4213 44px); }
+body.skin-silver .hd-avatar.completed::before    { background-image: linear-gradient(#0d151d,#0d151d), repeating-linear-gradient(100deg,#8a94a3 0,#8a94a3 15px,#ffffff 23px,#d2d9e4 27px,#fff 29px,#d2d9e4 31px,#ffffff 37px,#8a94a3 44px); }
+body.skin-gold .hd-avatar.completed::before    { background-image: linear-gradient(#0d151d,#0d151d), repeating-linear-gradient(100deg,#8a6a1e 0,#8a6a1e 15px,#f7e39b 23px,#e5c15c 27px,#fff 29px,#e5c15c 31px,#f7e39b 37px,#8a6a1e 44px); }
+body.skin-platinum .hd-avatar.completed::before    { background-image: linear-gradient(#0d151d,#0d151d), repeating-linear-gradient(100deg,#3f96a8 0,#3f96a8 15px,#e3f9ff 23px,#8ce0f0 27px,#fff 29px,#8ce0f0 31px,#e3f9ff 37px,#3f96a8 44px); }
+body.skin-emerald .hd-avatar.completed::before    { background-image: linear-gradient(#0d151d,#0d151d), repeating-linear-gradient(100deg,#118a5a 0,#118a5a 15px,#9af0ce 23px,#23c483 27px,#fff 29px,#23c483 31px,#9af0ce 37px,#118a5a 44px); }
+body.skin-diamond .hd-avatar.completed::before    { background-image: linear-gradient(#0d151d,#0d151d), repeating-linear-gradient(100deg,#17779c 0,#17779c 15px,#bdf0ff 23px,#35c5f2 27px,#fff 29px,#35c5f2 31px,#bdf0ff 37px,#17779c 44px); }
+body.skin-master .hd-avatar.completed::before    { background-image: linear-gradient(#0d151d,#0d151d), repeating-linear-gradient(100deg,#96305a 0,#96305a 15px,#f9b2cd 23px,#e0457b 27px,#fff 29px,#e0457b 31px,#f9b2cd 37px,#96305a 44px); }
+body.skin-grand .hd-avatar.completed::before    { background-image: linear-gradient(#0d151d,#0d151d), repeating-linear-gradient(100deg,#9c4f14 0,#9c4f14 15px,#f5c9a2 23px,#e07e3f 27px,#fff 29px,#e07e3f 31px,#f5c9a2 37px,#9c4f14 44px); }
+body.skin-king .hd-avatar.completed::before    { background-image: linear-gradient(#0d151d,#0d151d), repeating-linear-gradient(100deg,#8a5f00 0,#8a5f00 15px,#ffe399 23px,#f0a201 27px,#fff 29px,#f0a201 31px,#ffe399 37px,#8a5f00 44px); }
+body.skin-master .hd-avatar.completed .cp-ov,
+body.skin-grand  .hd-avatar.completed .cp-ov,
+body.skin-king   .hd-avatar.completed .cp-ov { display: block; }
+body.skin-master .hd-avatar.completed .cp-ov::before,
+body.skin-grand  .hd-avatar.completed .cp-ov::before,
+body.skin-king   .hd-avatar.completed .cp-ov::before {
+  content: ""; position: absolute; left: 0; top: 0; width: 100%; height: 100%; background-repeat: repeat;
+  animation: ovRise 4.5s linear infinite; -webkit-animation: ovRise 4.5s linear infinite;
+}
+body.skin-master .hd-avatar .cp-ov::before { background-image: radial-gradient(4px 4px at 20% 70%, rgba(240,109,157,.85), transparent 70%), radial-gradient(3px 3px at 82% 30%, rgba(255,255,255,.8), transparent 70%); background-size: 80px 80px; }
+body.skin-grand  .hd-avatar .cp-ov::before { background-image: radial-gradient(4px 4px at 24% 72%, rgba(239,164,104,.85), transparent 70%), radial-gradient(3px 3px at 80% 30%, rgba(255,255,255,.8), transparent 70%); background-size: 76px 76px; }
+body.skin-king   .hd-avatar .cp-ov::before { background-image: radial-gradient(5px 5px at 22% 74%, rgba(255,204,85,.9), transparent 70%), radial-gradient(4px 4px at 78% 28%, rgba(255,255,255,.85), transparent 70%), radial-gradient(4px 4px at 58% 88%, rgba(255,215,120,.8), transparent 70%); background-size: 72px 72px; }
+body.skin-master .hd-avatar .cp-ov::after,
+body.skin-grand  .hd-avatar .cp-ov::after,
+body.skin-king   .hd-avatar .cp-ov::after {
+  content: ""; position: absolute; left: 0; top: 0; width: 100%; height: 100%;
+  background-position: 0 0, 0 0; background-size: 130% 130%, 260% 260%;
+  animation: ovDrift 6s ease-in-out infinite; -webkit-animation: ovDrift 6s ease-in-out infinite;
+}
+body.skin-master .hd-avatar .cp-ov::after { background-image: radial-gradient(ellipse at 42% 22%, rgba(224,69,123,.36), transparent 60%), linear-gradient(115deg, transparent 40%, rgba(255,255,255,.32) 50%, transparent 60%); }
+body.skin-grand  .hd-avatar .cp-ov::after { background-image: radial-gradient(ellipse at 42% 22%, rgba(224,126,63,.34), transparent 60%), linear-gradient(115deg, transparent 40%, rgba(255,255,255,.3) 50%, transparent 60%); }
+body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(ellipse at 42% 22%, rgba(255,204,85,.38), transparent 60%), linear-gradient(115deg, transparent 40%, rgba(255,255,255,.34) 50%, transparent 60%); }
+
 .hero-detail-head .hd-info { margin-left: 16px; }
 .hero-detail-head .hd-title { font-size: 20px; font-weight: 700; color: #f0e6d2; }
 .hero-detail-head .hd-name { font-size: 14px; color: #8fa0b0; margin-top: 4px; }
@@ -867,7 +936,7 @@ body.skin-holy .hd-avatar.completed { border-color: #fff8dc; animation: holyRadi
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-09 11:05:00</div>
+    <div class="web-update-time">网页版更新时间：2026-09-09 12:31:00</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -1178,24 +1247,23 @@ var SUPA_KEY = "sb_publishable_aIQtugb8f-rEkLGKAVp9vQ_LaIqVnOY";
 var DD_VERSION = "16.16.1";
 
 var borderSkins = [
-  { num: 1,  id: "gold",      name: "黄金", dynamic: false, color: "#c89b3c" },
-  { num: 2,  id: "platinum",  name: "铂金", dynamic: false, color: "#e8e8f0" },
-  { num: 3,  id: "obsidian",  name: "黑曜", dynamic: false, color: "#6a3da0" },
-  { num: 4,  id: "emerald",   name: "翡翠", dynamic: false, color: "#2ecc71" },
-  { num: 5,  id: "ruby",      name: "烈焰", dynamic: false, color: "#e74c3c" },
-  { num: 6,  id: "sapphire",  name: "深海", dynamic: false, color: "#3498db" },
-  { num: 7,  id: "rainbow",   name: "彩虹", dynamic: true,  color: "#ff66aa" },
-  { num: 8,  id: "electric",  name: "闪电", dynamic: true,  color: "#00d4ff" },
-  { num: 9,  id: "inferno",   name: "炼狱", dynamic: true,  color: "#ff4400" },
-  { num: 10, id: "frost",     name: "冰霜", dynamic: true,  color: "#a8f0ff" },
-  { num: 11, id: "void",      name: "虚空", dynamic: true,  color: "#9b30ff" },
-  { num: 12, id: "holy",      name: "神圣", dynamic: true,  color: "#fff8dc" }
+  { num: 1,  id: "default", name: "默认", dynamic: false, color: "#c89b3c" },
+  { num: 2,  id: "iron", name: "坚韧黑铁", dynamic: true, color: "#6b7280" },
+  { num: 3,  id: "bronze", name: "英勇黄铜", dynamic: true, color: "#cd7f32" },
+  { num: 4,  id: "silver", name: "不屈白银", dynamic: true, color: "#d2d9e4" },
+  { num: 5,  id: "gold", name: "荣耀黄金", dynamic: true, color: "#c8a340" },
+  { num: 6,  id: "platinum", name: "华贵铂金", dynamic: true, color: "#8ce0f0" },
+  { num: 7,  id: "emerald", name: "流光翡翠", dynamic: true, color: "#23c483" },
+  { num: 8,  id: "diamond", name: "璀璨钻石", dynamic: true, color: "#35c5f2" },
+  { num: 9,  id: "master", name: "超凡大师", dynamic: true, color: "#e0457b" },
+  { num: 10, id: "grand", name: "傲世宗师", dynamic: true, color: "#e07e3f" },
+  { num: 11, id: "king", name: "最强王者", dynamic: true, color: "#f0a201" }
 ];
 
-var currentSkin = "gold";
+var currentSkin = "default";
 /* 皮肤编号 ⇄ id 互转（编号持久化到服务器 skin 列） */
 function skinIdToNum(id) { for (var i = 0; i < borderSkins.length; i++) { if (borderSkins[i].id === id) return borderSkins[i].num; } return 1; }
-function skinNumToId(num) { for (var i = 0; i < borderSkins.length; i++) { if (borderSkins[i].num === num) return borderSkins[i].id; } return "gold"; }
+function skinNumToId(num) { for (var i = 0; i < borderSkins.length; i++) { if (borderSkins[i].num === num) return borderSkins[i].id; } return "default"; }
 var currentUserId = null;
 var pinyinFn = null;
 /* 是否已通过桌面版扫描获取过 LOL ID（用于网页版英雄战绩详情判断） */
@@ -1438,7 +1506,13 @@ function renderGrid() {
 
     var portrait = document.createElement("div");
     portrait.className = "champion-portrait";
-    portrait.style.backgroundImage = "url('" + getImg(c.id) + "')";
+    var ava = document.createElement("span");
+    ava.className = "cp-ava";
+    ava.style.backgroundImage = "url('" + getImg(c.id) + "')";
+    portrait.appendChild(ava);
+    var ov = document.createElement("span");
+    ov.className = "cp-ov";
+    portrait.appendChild(ov);
     card.appendChild(portrait);
 
     var titleDiv = document.createElement("div");
@@ -1941,7 +2015,14 @@ function openHeroDetail(id, title, name) {
     loadHeroDetailData();
   });
   var hdAv = document.getElementById("hdAvatar");
-  hdAv.style.backgroundImage = "url('" + getImg(id) + "')";
+  hdAv.innerHTML = "";
+  var hdAva = document.createElement("span");
+  hdAva.className = "cp-ava";
+  hdAva.style.backgroundImage = "url('" + getImg(id) + "')";
+  hdAv.appendChild(hdAva);
+  var hdOv = document.createElement("span");
+  hdOv.className = "cp-ov";
+  hdAv.appendChild(hdOv);
   var isComp = false;
   for (var i = 0; i < champions.length; i++) { if (champions[i].id === id) { isComp = champions[i].completed; break; } }
   hdAv.className = "hd-avatar" + (isComp ? " completed" : "");
