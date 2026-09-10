@@ -898,7 +898,8 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
 .hm-dmg { font-size: 11px; color: #c89b3c; text-align: right; width: 60px; white-space: nowrap; margin-left: 10px; }
 /* 最近战绩：左列名次 + 右栏选中局队友详情 */
 .hd-match-layout { display: -webkit-flex; display: flex; -webkit-align-items: stretch; align-items: stretch; gap: 12px; -webkit-flex: 1 1 auto; flex: 1 1 auto; min-height: 0; }
-#hdMatchList { -webkit-flex: 0 0 210px; flex: 0 0 210px; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; gap: 9px; min-height: 0; overflow-y: auto; }
+.hd-left-col { display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; -webkit-flex: 0 0 210px; flex: 0 0 210px; margin-right: 12px; min-width: 0; }
+#hdMatchList { -webkit-flex: 1 1 auto; flex: 1 1 auto; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; gap: 9px; min-height: 0; overflow-y: auto; }
 #hdMatchList .hd-match { padding: 13px 8px; justify-content: center; -webkit-flex-direction: column; flex-direction: column; gap: 6px; cursor: pointer; background: #0d1a26; border: 1px solid #1c2c3c; border-left: 3px solid #2c3c4c; border-radius: 3px; }
 #hdMatchList .hd-match:hover { border-color: #2c3c4c; }
 #hdMatchList .hd-match.active { border-color: #c89b3c; background: rgba(200,155,60,0.12); }
@@ -914,7 +915,10 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
 .hd-md-row.own { border-color: rgba(200,155,60,0.45); background: linear-gradient(180deg, rgba(200,155,60,0.08), #0a141f); }
 .hd-md-row.own .md-rank { color: #c89b3c; font-weight: 700; }
 .hd-md-team { display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; gap: 6px; margin-top: 8px; }
-.hd-md-p { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; padding: 7px 9px; background: #101c28; border: 1px solid #223242; border-left: 3px solid #2c3c4c; border-radius: 3px; }
+.hd-md-p { display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; padding: 7px 9px; background: #101c28; border: 1px solid #223242; border-left: 3px solid #2c3c4c; border-radius: 3px; }
+.hd-md-p .md-labels { display: -webkit-flex; display: flex; -webkit-justify-content: flex-end; justify-content: flex-end; margin-bottom: 5px; font-size: 11px; color: #7f8c8d; letter-spacing: 1px; }
+.hd-md-p .md-labels span { margin-left: 12px; white-space: nowrap; }
+.hd-md-p .md-row { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; }
 .md-champ { width: 26px; height: 26px; background: #162636 no-repeat center / cover; border: 1px solid #223242; border-radius: 3px; -webkit-flex-shrink: 0; flex-shrink: 0; overflow: hidden; }
 .md-champ img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .md-id { margin-left: 9px; font-size: 12px; color: #e0d0b0; white-space: normal; word-break: break-all; line-height: 1.35; -webkit-flex-shrink: 0; flex-shrink: 0; }
@@ -963,6 +967,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
   white-space: nowrap; margin-left: 10px;
   -webkit-flex-shrink: 0; flex-shrink: 0;
 }
+.rank-btn:hover { border-color: #c89b3c; }
 .rank-overlay {
   position: fixed; top: 0; left: 0; right: 0; bottom: 0;
   background: rgba(1,10,19,0.9);
@@ -990,7 +995,12 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
 .rank-close { background: none; border: none; color: #8fa0b0; font-size: 20px; line-height: 1; cursor: pointer; padding: 0 4px; }
 .rank-close:hover { color: #fff; }
 .rank-sub { font-size: 12px; color: #8fa0b0; margin-bottom: 12px; }
-.rank-list { overflow-y: auto; border: 1px solid #2a3a4a; background: rgba(4,12,20,0.5); min-height: 120px; }
+.rank-list { overflow-y: auto; border: 1px solid #2a3a4a; background: rgba(4,12,20,0.5); height: 346px; }
+.rank-pager { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: center; justify-content: center; margin-top: 12px; }
+.rank-pager button { background: rgba(10,20,30,0.8); border: 1px solid #3a4a5a; color: #c89b3c; font-size: 12px; padding: 5px 12px; cursor: pointer; }
+.rank-pager button:hover { border-color: #c89b3c; }
+.rank-pager button[disabled] { color: #5a6a7a; cursor: default; border-color: #2a3a4a; }
+.rank-page-info { margin: 0 12px; font-size: 12px; color: #8fa0b0; white-space: nowrap; }
 .rank-row {
   display: -webkit-flex; display: flex;
   -webkit-align-items: center; align-items: center;
@@ -1001,9 +1011,17 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
 .rank-count { color: #c89b3c; -webkit-flex-shrink: 0; flex-shrink: 0; white-space: nowrap; }
 .rank-top1 .rank-rank, .rank-top2 .rank-rank, .rank-top3 .rank-rank { color: #c89b3c; font-weight: bold; }
 .rank-empty { padding: 20px; text-align: center; color: #5a6a7a; font-size: 13px; }
+.hd-left-col .all-pager { -webkit-flex-shrink: 0; flex-shrink: 0; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: center; justify-content: center; margin-top: 10px; padding-top: 9px; border-top: 1px solid #22303e; }
+.hd-left-col .all-pager button { background: rgba(10,20,30,0.8); border: 1px solid #3a4a5a; color: #c89b3c; font-size: 12px; padding: 4px 10px; cursor: pointer; }
+.hd-left-col .all-pager button:hover { border-color: #c89b3c; }
+.hd-left-col .all-pager button[disabled] { color: #5a6a7a; cursor: default; border-color: #2a3a4a; }
+.hd-left-col .all-pager span { margin: 0 10px; font-size: 11px; color: #8fa0b0; white-space: nowrap; }
+#hdMatchList .hm-head { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: center; justify-content: center; margin-bottom: 5px; }
+#hdMatchList .hm-head .hm-champ { width: 36px; height: 36px; border-radius: 3px; }
 
 .sort-wrap { position: relative; display: inline-block; margin-left: 10px; -webkit-flex-shrink: 0; flex-shrink: 0; }
 .sort-btn { height: 32px; padding: 0 14px; background: rgba(10,20,30,0.8); border: 1px solid #3a4a5a; color: #c89b3c; font-size: 13px; outline: none; cursor: pointer; white-space: nowrap; }
+.sort-btn:hover { border-color: #c89b3c; }
 .sort-menu { position: absolute; top: 36px; left: 0; min-width: 126px; background: rgba(10,20,30,0.97); border: 1px solid #3a4a5a; box-shadow: 0 8px 24px rgba(0,0,0,0.5); z-index: 1500; }
 .sort-opt { padding: 8px 12px; font-size: 13px; color: #e0d0b0; cursor: pointer; white-space: nowrap; }
 .sort-opt:hover { background: rgba(200,155,60,0.15); color: #fff; }
@@ -1037,7 +1055,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
     <div class="login-error" id="loginError"></div>
     <div class="login-download">
       <a class="download-btn" href="download/LoLArena.exe" download>下载 Windows 桌面版</a>
-      <div class="download-time">桌面版更新时间：2026-09-11 01:44:00</div>
+      <div class="download-time">桌面版更新时间：2026-09-11 02:34:48</div>
     </div>
   </div>
 </div>
@@ -1080,8 +1098,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
       <div class="skin-panel-wrap">
         <button class="skin-btn" id="skinBtn" type="button" onclick="toggleSkinPanel()">边框皮肤</button>
         <div class="skin-panel" id="skinPanel">
-          <div class="skin-panel-title">选择边框皮肤<span class="skin-rule-q" id="skinRuleQ" onmouseover="showSkinRule(1)" onmouseout="showSkinRule(0)">?</span></div>
-          <div class="skin-rule-tip" id="skinRuleTip" style="display:none;">每获得10个第一名英雄解锁1款皮肤，按段位顺序依次解锁（黑铁→青铜→白银→黄金→铂金→翡翠→钻石→大师→宗师→王者）。默认皮肤永久开放。注：本规则仅适用当前10款段位皮肤，后续新增皮肤可能有独立解锁方式。</div>
+          <div class="skin-panel-title">选择边框皮肤</div>
           <div class="skin-grid" id="skinGrid"></div>
         </div>
       </div>
@@ -1103,6 +1120,11 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
       </div>
       <div class="rank-sub">已完成扫描的用户 · 按获得第一名的英雄数量排名</div>
       <div class="rank-list" id="rankList"><div class="rank-empty">加载中…</div></div>
+      <div class="rank-pager" id="rankPager" style="display:none;">
+        <button type="button" onclick="goRankPage(-1)">‹ 上一页</button>
+        <span class="rank-page-info" id="rankPageInfo"></span>
+        <button type="button" onclick="goRankPage(1)">下一页 ›</button>
+      </div>
     </div>
   </div>
 
@@ -1111,6 +1133,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
     <div class="detail-topbar">
       <button class="detail-back" type="button" onclick="leaveHeroDetail()">← 返回英雄界面</button>
       <div class="detail-top-title">英雄战绩详情</div>
+      <button class="detail-back all-matches-btn" type="button" onclick="openAllMatches()">所有战绩</button>
     </div>
     <div class="hero-detail-head">
       <div class="hd-avatar" id="hdAvatar"></div>
@@ -1134,6 +1157,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
       
       <div class="hd-section-title">最近战绩</div>
       <div class="hd-match-layout">
+      <div class="hd-left-col">
       <div id="hdMatchList">
         <div class="hd-match active" onclick="showMatch(this)"><div class="hm-place p1">第1</div><div class="hm-date">09-07</div></div>
         <div class="hd-match" onclick="showMatch(this)"><div class="hm-place p3">第3</div><div class="hm-date">09-06</div></div>
@@ -1141,6 +1165,12 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
         <div class="hd-match" onclick="showMatch(this)"><div class="hm-place p2">第2</div><div class="hm-date">09-04</div></div>
         <div class="hd-match" onclick="showMatch(this)"><div class="hm-place p6">第6</div><div class="hm-date">09-03</div></div>
         <div class="hd-match" onclick="showMatch(this)"><div class="hm-place p4">第4</div><div class="hm-date">09-02</div></div>
+      </div>
+      <div class="all-pager" id="allPager" style="display:none;">
+        <button type="button" onclick="goAllPage(-1)">‹ 上一页</button>
+        <span id="allPageInfo"></span>
+        <button type="button" onclick="goAllPage(1)">下一页 ›</button>
+      </div>
       </div>
       <div id="hdMatchDetail">
         <div class="hd-md-list" id="hdMdList"></div>
@@ -1710,6 +1740,11 @@ function renderSkinPanel() {
     var inner = document.createElement("div");
     inner.className = "skin-option-inner" + (skin.id === currentSkin ? " active" : "") + (locked ? " locked" : "");
     if (!locked) inner.onclick = function() { selectSkin(skin.id); };
+    var needCnt = (skin.num <= 1) ? 0 : ((skin.num - 1) * 10);
+    inner.title = (skin.num <= 1)
+      ? (skin.name + "：默认皮肤，永久解锁")
+      : (locked ? (skin.name + "：需累计获得 " + needCnt + " 个第一名英雄解锁")
+                : (skin.name + "：已解锁（累计获得满 " + needCnt + " 个第一名英雄）"));
 
     var preview = document.createElement("div");
     preview.className = "skin-preview preview-" + skin.id;
@@ -1754,28 +1789,6 @@ function showSkinLockMsg(id) {
   showHdToast("该皮肤未解锁：需获得 " + need + " 个第一名英雄才能解锁。");
 }
 
-/* 皮肤解锁规则悬浮框开关 */
-function showSkinRule(show) {
-  var tip = document.getElementById("skinRuleTip");
-  var q = document.getElementById("skinRuleQ");
-  if (!tip || !q) return;
-  if (show) {
-    var r = q.getBoundingClientRect();
-    tip.style.display = "block";
-    var w = tip.offsetWidth || 260;
-    var h = tip.offsetHeight || 100;
-    var vw = window.innerWidth || document.documentElement.clientWidth;
-    var vh = window.innerHeight || document.documentElement.clientHeight;
-    var x = r.left + 18;
-    var y = r.top + r.height + 6;
-    if (x + w > vw - 8) x = r.left - w - 12;
-    if (y + h > vh - 8) y = r.top - h - 8;
-    tip.style.left = x + "px";
-    tip.style.top = y + "px";
-  } else {
-    tip.style.display = "none";
-  }
-}
 
 /* 将当前皮肤编号上传到服务器（独立请求，缺列时静默，不影响进度保存） */
 function saveSkin() {
@@ -1897,6 +1910,11 @@ function leaveHeroDetail() {
   if (d) { d.style.display = "none"; d.classList.remove("show"); }
   var st = document.getElementById("statsText");
   if (st) st.style.display = "";
+  /* 退出时复位全部战绩模式 UI */
+  window.allMode = 0; window.allPage = 0;
+  var ah = document.querySelector(".hero-detail-head"); if (ah) ah.style.display = "";
+  var as = document.querySelector(".hd-section-title"); if (as) as.textContent = "最近战绩";
+  var ap = document.getElementById("allPager"); if (ap) ap.style.display = "none";
 }
 /* ===== 英雄战绩详情：从服务器 arena_matches 读取真实数据 ===== */
 var hdCtx = { account: "", heroEn: "", heroCn: "", matches: [], depth: 0 };
@@ -2066,18 +2084,27 @@ function openLeaderboard() {
         users[k].count = c ? Object.keys(c).length : 0;
       }
       users.sort(function(a, b) { return b.count - a.count; });
-      renderLeaderboard(users);
+      window.rankUsers = users; window.rankPage = 0;
+      renderLeaderboard();
       return null;
     });
   })
   .catch(function() { if (list) list.innerHTML = '<div class="rank-empty">读取失败</div>'; });
 }
-function renderLeaderboard(users) {
+function renderLeaderboard() {
   var list = document.getElementById("rankList");
   if (!list) return;
-  if (!users || !users.length) { list.innerHTML = '<div class="rank-empty">暂无已完成扫描的用户</div>'; return; }
+  var users = window.rankUsers || [];
+  var total = users.length;
+  var per = 10, pages = Math.ceil(total / per);
+  if (!total) { list.innerHTML = '<div class="rank-empty">暂无已完成扫描的用户</div>'; setRankPager(0); return; }
+  var page = window.rankPage || 0;
+  if (page < 0) page = 0;
+  if (page >= pages) page = pages - 1;
+  window.rankPage = page;
+  var start = page * per, end = Math.min(start + per, total);
   var html = "";
-  for (var i = 0; i < users.length; i++) {
+  for (var i = start; i < end; i++) {
     var u = users[i], rank = i + 1;
     var cls = rank === 1 ? " rank-top1" : (rank === 2 ? " rank-top2" : (rank === 3 ? " rank-top3" : ""));
     html += '<div class="rank-row' + cls + '">'
@@ -2087,6 +2114,22 @@ function renderLeaderboard(users) {
       + '</div>';
   }
   list.innerHTML = html;
+  setRankPager(pages);
+}
+function goRankPage(d) {
+  window.rankPage = (window.rankPage || 0) + d;
+  renderLeaderboard();
+}
+function setRankPager(pages) {
+  var pg = document.getElementById("rankPager");
+  if (!pg) return;
+  if (!pages || pages <= 1) { pg.style.display = "none"; return; }
+  pg.style.display = "-webkit-flex";
+  var info = document.getElementById("rankPageInfo");
+  if (info) info.textContent = ((window.rankPage || 0) + 1) + " / " + pages;
+  var btns = pg.getElementsByTagName("button");
+  if (btns.length > 0) btns[0].disabled = (window.rankPage || 0) <= 0;
+  if (btns.length > 1) btns[1].disabled = (window.rankPage || 0) >= (pages - 1);
 }
 function closeLeaderboard() {
   var ov = document.getElementById("rankOverlay");
@@ -2130,12 +2173,15 @@ function makePlayerCard(p) {
   var champIcon = p.champion_name ? getImgByChampionName(p.champion_name) : "";
   var champHtml = champIcon ? '<div class="md-champ"><img src="' + champIcon + '" alt=""></div>'
                              : '<div class="md-champ"></div>';
-  return '<div class="hd-md-p">' + champHtml +
-    '<div class="md-id">' + (p.summoner_name || (p.is_self ? hdCtx.account : "未知")) + '</div>' +
-    '<div class="md-runes">' + icons + '</div>' +
-    '<div class="md-items">' + itemHtml + '</div>' +
-    '<div class="md-kda">' + (p.kills || 0) + '/' + (p.deaths || 0) + '/' + (p.assists || 0) + '</div>' +
-    '<div class="md-dmg">伤害 ' + Math.round(p.total_damage_dealt_to_champions || 0).toLocaleString() + '</div>' +
+  return '<div class="hd-md-p">' +
+    '<div class="md-labels"><span>伤害</span><span>KDA</span><span>装备</span><span>强化符文</span></div>' +
+    '<div class="md-row">' + champHtml +
+      '<div class="md-id">' + (p.summoner_name || (p.is_self ? hdCtx.account : "未知")) + '</div>' +
+      '<div class="md-runes">' + icons + '</div>' +
+      '<div class="md-items">' + itemHtml + '</div>' +
+      '<div class="md-kda">' + (p.kills || 0) + '/' + (p.deaths || 0) + '/' + (p.assists || 0) + '</div>' +
+      '<div class="md-dmg">' + Math.round(p.total_damage_dealt_to_champions || 0).toLocaleString() + '</div>' +
+    '</div>' +
     '</div>';
 }
 /* champion 英文名 → 头像URL（在 champions 列表里匹配英文 id） */
@@ -2181,6 +2227,80 @@ function renderGameDetail(gameId) {
     if (md) md.innerHTML = '<div class="hd-md-row"><div class="md-rank">加载失败</div></div>';
     showHdToast("战绩详情加载失败，请重试");
   });
+}
+/* ===== 所有战绩：detail 内全量模式，左栏带头像，每页10条翻页懒加载 ===== */
+function openAllMatches() {
+  if (!hdCtx.account) { showHdToast("当前无可查看账号"); return; }
+  window.allMode = 1; window.allPage = 0;
+  var head = document.querySelector(".hero-detail-head"); if (head) head.style.display = "none";
+  var st = document.querySelector(".hd-section-title"); if (st) st.textContent = "全部战绩 · 按时间倒序";
+  var ap = document.getElementById("allPager"); if (ap) ap.style.display = "-webkit-flex";
+  loadAllPage();
+}
+function loadAllPage() {
+  if (!window.allMode) return;
+  var list = document.getElementById("hdMatchList");
+  if (list) list.innerHTML = '<div class="hd-match"><div class="hm-date">加载中...</div></div>';
+  var off = (window.allPage || 0) * 10;
+  var path = "arena_matches?account=eq." + encodeURIComponent(hdCtx.account) +
+    "&is_self=eq.true&game_mode=eq.CHERRY&select=game_id,game_start_timestamp,placement,champion_name" +
+    "&order=game_start_timestamp.desc&limit=11&offset=" + off;
+  sbFetch(path)
+  .then(function(rows) {
+    if (!window.allMode) return;
+    renderAllMatches(rows || []);
+  })
+  .catch(function() {
+    if (!window.allMode) return;
+    var l = document.getElementById("hdMatchList"); if (l) l.innerHTML = '<div class="hd-match"><div class="hm-date">加载失败</div></div>';
+    setAllPager(false, false);
+    showHdToast("全部战绩加载失败，请重试");
+  });
+}
+function renderAllMatches(rows) {
+  var list = document.getElementById("hdMatchList");
+  if (!list) return;
+  list.innerHTML = "";
+  var hasNext = rows.length > 10;
+  var show = Math.min(rows.length, 10);
+  if (show === 0) {
+    list.innerHTML = '<div class="hd-match"><div class="hm-date">暂无战绩</div></div>';
+    var md = document.getElementById("hdMdList"); if (md) md.innerHTML = "";
+    setAllPager(false, false);
+    return;
+  }
+  for (var j = 0; j < show; j++) {
+    var m = rows[j];
+    var d = new Date(m.game_start_timestamp);
+    var y = d.getFullYear(), mo = ("0" + (d.getMonth() + 1)).slice(-2), dd = ("0" + d.getDate()).slice(-2);
+    var hh = ("0" + d.getHours()).slice(-2), mi = ("0" + d.getMinutes()).slice(-2);
+    var item = document.createElement("div");
+    item.className = "hd-match" + (j === 0 ? " active" : "");
+    item.setAttribute("data-gid", m.game_id);
+    item.onclick = function() { showMatch(this); };
+    var plc = m.placement || 6;
+    var ic = m.champion_name ? getImgByChampionName(m.champion_name) : "";
+    item.innerHTML = '<div class="hm-head">' + (ic ? '<img class="hm-champ" src="' + ic + '" alt="">' : '<div class="hm-champ"></div>') + '</div>' +
+      '<div class="hm-place p' + plc + '">第' + plc + '</div>' +
+      '<div class="hm-date">' + y + "-" + mo + "-" + dd + " " + hh + ":" + mi + '</div>';
+    list.appendChild(item);
+  }
+  setAllPager((window.allPage || 0) > 0, hasNext);
+}
+function goAllPage(d) {
+  if (!window.allMode) return;
+  window.allPage = (window.allPage || 0) + d;
+  if (window.allPage < 0) window.allPage = 0;
+  loadAllPage();
+}
+function setAllPager(hasPrev, hasNext) {
+  var pg = document.getElementById("allPager");
+  if (!pg) return;
+  var info = document.getElementById("allPageInfo");
+  if (info) info.textContent = "第 " + ((window.allPage || 0) + 1) + " 页";
+  var btns = pg.getElementsByTagName("button");
+  if (btns.length > 0) btns[0].disabled = !hasPrev;
+  if (btns.length > 1) btns[1].disabled = !hasNext;
 }
 /* 点击左栏某条 → 高亮并展示该局详情 */
 function showMatch(el) {
