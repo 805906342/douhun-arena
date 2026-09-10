@@ -1014,6 +1014,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
 }
 .rank-rank { width: 40px; color: #8fa0b0; -webkit-flex-shrink: 0; flex-shrink: 0; }
 .rank-id { -webkit-flex: 1; flex: 1; color: #e0d0b0; word-break: break-all; }
+.rank-scan { color: #5a6a7a; font-size: 11px; -webkit-flex-shrink: 0; flex-shrink: 0; white-space: nowrap; padding-left: 10px; }
 .rank-count { color: #c89b3c; -webkit-flex-shrink: 0; flex-shrink: 0; white-space: nowrap; }
 .rank-top1 .rank-rank, .rank-top2 .rank-rank, .rank-top3 .rank-rank { color: #c89b3c; font-weight: bold; }
 .rank-empty { padding: 20px; text-align: center; color: #5a6a7a; font-size: 13px; }
@@ -1040,7 +1041,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-11 05:16:00</div>
+    <div class="web-update-time">网页版更新时间：2026-09-11 05:50:00</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -1061,7 +1062,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
     <div class="login-error" id="loginError"></div>
     <div class="login-download">
       <a class="download-btn" href="download/LoLArena.exe" download>下载 Windows 桌面版</a>
-      <div class="download-time">桌面版更新时间：2026-09-11 05:22:00</div>
+      <div class="download-time">桌面版更新时间：2026-09-11 05:50:00</div>
     </div>
   </div>
 </div>
@@ -2068,12 +2069,23 @@ function sbFetch(path, timeoutMs) {
   });
 }
 
+function fmtScanTime(v) {
+  if (!v) return "-";
+  var s = String(v);
+  var m = s.match(/(\d{4})-(\d{2})-(\d{2})[T ](\d{1,2}):(\d{2}):(\d{2})/);
+  if (!m) return "-";
+  // 服务器存的为 UTC(+00:00)，统一转北京时间(UTC+8)显示
+  var ms = Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +m[6]) + 8 * 3600 * 1000;
+  var d = new Date(ms);
+  function p(n) { return (n < 10 ? "0" : "") + n; }
+  return d.getUTCFullYear() + "-" + p(d.getUTCMonth() + 1) + "-" + p(d.getUTCDate()) + " " + p(d.getUTCHours()) + ":" + p(d.getUTCMinutes()) + ":" + p(d.getUTCSeconds());
+}
 function openLeaderboard() {
   var ov = document.getElementById("rankOverlay");
   var list = document.getElementById("rankList");
   if (ov) ov.style.display = "flex";
   if (list) list.innerHTML = '<div class="rank-empty">加载中…</div>';
-  sbFetch("arena_progress?select=user_id,last_lol_id&last_lol_id=not.is.null")
+  sbFetch("arena_progress?select=user_id,last_lol_id,updated_at&last_lol_id=not.is.null")
   .then(function(rows) {
     var users = [], seen = {};
     for (var i = 0; i < rows.length; i++) {
@@ -2081,7 +2093,7 @@ function openLeaderboard() {
       if (!r || !r.last_lol_id) continue;
       if (seen[r.user_id]) continue;
       seen[r.user_id] = true;
-      users.push({ id: String(r.last_lol_id) });
+      users.push({ id: String(r.last_lol_id), scan: r.updated_at || "" });
     }
     return sbFetch("arena_matches?select=account,champion_name&is_self=eq.true&placement=eq.1")
     .then(function(mats) {
@@ -2124,6 +2136,7 @@ function renderLeaderboard() {
     html += '<div class="rank-row' + cls + '">'
       + '<div class="rank-rank">' + rank + '</div>'
       + '<div class="rank-id">' + u.id + '</div>'
+      + '<div class="rank-scan">' + fmtScanTime(u.scan) + '</div>'
       + '<div class="rank-count">' + u.count + ' 个</div>'
       + '</div>';
   }
