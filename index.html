@@ -1055,7 +1055,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
     <div class="login-error" id="loginError"></div>
     <div class="login-download">
       <a class="download-btn" href="download/LoLArena.exe" download>下载 Windows 桌面版</a>
-      <div class="download-time">桌面版更新时间：2026-09-11 03:29:20</div>
+      <div class="download-time">桌面版更新时间：2026-09-11 03:37:10</div>
     </div>
   </div>
 </div>
@@ -1133,7 +1133,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
   <div class="detail-view" id="detailView">
     <div class="detail-topbar">
       <button class="detail-back" type="button" onclick="leaveHeroDetail()">← 返回英雄界面</button>
-      <div class="detail-top-title">英雄战绩详情</div>
+      <div class="detail-top-title"></div>
     </div>
     <div class="hero-detail-head">
       <div class="hd-avatar" id="hdAvatar"></div>
@@ -2268,7 +2268,6 @@ function openAllFromHome() {
 /* ===== 所有战绩：detail 内全量模式，左栏带头像，每页10条翻页懒加载 ===== */
 function openAllMatches() {
   if (!hdCtx.account) { showHdToast("当前无可查看账号"); return; }
-  window.allMode = 1; window.allPage = 0;
   /* BUG3根治: 从主页进入时若未处于详情视图, 先切换到详情层 */
   var gAll = document.getElementById("listView");
   var dAll = document.getElementById("detailView");
@@ -2276,7 +2275,9 @@ function openAllMatches() {
   if (gAll) gAll.style.display = "none";
   if (dAll) { dAll.style.display = ""; dAll.classList.add("show"); }
   if (stAll) stAll.style.display = "none";
+  /* 先复位(resetHeroDetailData 会清空 allMode/allPage)，再进入"所有战绩"模式 */
   resetHeroDetailData();
+  window.allMode = 1; window.allPage = 0;
   var head = document.querySelector(".hero-detail-head"); if (head) head.style.display = "none";
   var st = document.querySelector(".hd-section-title"); if (st) st.textContent = "全部战绩 · 按时间倒序";
   var hp = document.getElementById("hdPager"); if (hp) hp.style.display = "none";
