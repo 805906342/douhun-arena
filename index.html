@@ -1040,7 +1040,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-11 04:13:00</div>
+    <div class="web-update-time">网页版更新时间：2026-09-11 05:16:00</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -1061,7 +1061,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
     <div class="login-error" id="loginError"></div>
     <div class="login-download">
       <a class="download-btn" href="download/LoLArena.exe" download>下载 Windows 桌面版</a>
-      <div class="download-time">桌面版更新时间：2026-09-11 05:09:00</div>
+      <div class="download-time">桌面版更新时间：2026-09-11 05:16:00</div>
     </div>
   </div>
 </div>
@@ -1640,12 +1640,9 @@ function loadFirstPlaceHeroes(accountId) {
     champions.forEach(function(c) {
       c.completed = idSet[String(c.id).toLowerCase()] ? true : false;
     });
-    /* 解锁校验延迟到此处（firstPlaceHeroCount 已确定）：上次皮肤未解锁才回退默认并同步服务器 */
-    if (currentSkin !== "default" && !isSkinUnlocked(skinIdToNum(currentSkin))) {
-      currentSkin = "default";
-      setBodySkin("default");
-      saveSkin();
-    }
+    /* 登录恢复皮肤不做解锁回退：解锁校验仅在用户选择皮肤时执行(已完成)；
+       登录时的一票否决会在空账号/第一名数据未就绪时误把上次皮肤砍成默认并覆盖服务器,已移除;
+       皮肤面板仍由 refreshSkinUnlock 显示实际锁定状态。 */
     renderGrid();
     refreshSkinUnlock();  // 扫描/登录后依最新第一名数刷新解锁状态
   };
