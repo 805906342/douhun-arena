@@ -1034,7 +1034,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-11 03:05:44</div>
+    <div class="web-update-time">网页版更新时间：2026-09-11 03:29:20</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -1055,7 +1055,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
     <div class="login-error" id="loginError"></div>
     <div class="login-download">
       <a class="download-btn" href="download/LoLArena.exe" download>下载 Windows 桌面版</a>
-      <div class="download-time">桌面版更新时间：2026-09-11 03:05:44</div>
+      <div class="download-time">桌面版更新时间：2026-09-11 03:29:20</div>
     </div>
   </div>
 </div>
@@ -1170,6 +1170,11 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
         <button type="button" onclick="goAllPage(-1)">‹ 上一页</button>
         <span id="allPageInfo"></span>
         <button type="button" onclick="goAllPage(1)">下一页 ›</button>
+      </div>
+      <div class="all-pager" id="hdPager" style="display:none;">
+        <button type="button" onclick="goHdPage(-1)">‹ 上一页</button>
+        <span id="hdPageInfo"></span>
+        <button type="button" onclick="goHdPage(1)">下一页 ›</button>
       </div>
       </div>
       <div id="hdMatchDetail">
@@ -1915,6 +1920,7 @@ function leaveHeroDetail() {
   var ah = document.querySelector(".hero-detail-head"); if (ah) ah.style.display = "";
   var as = document.querySelector(".hd-section-title"); if (as) as.textContent = "最近战绩";
   var ap = document.getElementById("allPager"); if (ap) ap.style.display = "none";
+  var hp = document.getElementById("hdPager"); if (hp) hp.style.display = "none";
 }
 /* ===== 英雄战绩详情：从服务器 arena_matches 读取真实数据 ===== */
 var hdCtx = { account: "", heroEn: "", heroCn: "", matches: [], depth: 0 };
@@ -1922,6 +1928,12 @@ var hdCtx = { account: "", heroEn: "", heroCn: "", matches: [], depth: 0 };
 function resetHeroDetailData() {
   var ids = ["hdGames","hdPickRate","hdP1","hdP2","hdP3","hdP4","hdP5","hdP6","hdP1r","hdP2r","hdP3r","hdP4r","hdP5r","hdP6r"];
   for (var i = 0; i < ids.length; i++) { var el = document.getElementById(ids[i]); if (el) el.textContent = ""; }
+  /* BUG1根治: 进入单英雄时必须强制恢复顶部统计整块显示 */
+  var ah = document.querySelector(".hero-detail-head"); if (ah) ah.style.display = "flex";
+  var hst = document.querySelector(".hd-section-title"); if (hst) hst.textContent = "最近战绩";
+  var hp = document.getElementById("hdPager"); if (hp) hp.style.display = "flex";
+  var ap = document.getElementById("allPager"); if (ap) ap.style.display = "none";
+  window.hdPage = 0; window.allMode = 0; window.allPage = 0;
   var list = document.getElementById("hdMatchList");
   if (list) list.innerHTML = '<div class="hd-match"><div class="hm-date">加载中...</div></div>';
   var md = document.getElementById("hdMdList");
@@ -2123,7 +2135,7 @@ function goRankPage(d) {
 function setRankPager(pages) {
   var pg = document.getElementById("rankPager");
   if (!pg) return;
-  pg.style.display = "-webkit-flex";
+  pg.style.display = "flex";
   pages = pages || 0;
   if (!pages) pages = 1;
   var info = document.getElementById("rankPageInfo");
@@ -2257,9 +2269,18 @@ function openAllFromHome() {
 function openAllMatches() {
   if (!hdCtx.account) { showHdToast("当前无可查看账号"); return; }
   window.allMode = 1; window.allPage = 0;
+  /* BUG3根治: 从主页进入时若未处于详情视图, 先切换到详情层 */
+  var gAll = document.getElementById("listView");
+  var dAll = document.getElementById("detailView");
+  var stAll = document.getElementById("statsText");
+  if (gAll) gAll.style.display = "none";
+  if (dAll) { dAll.style.display = ""; dAll.classList.add("show"); }
+  if (stAll) stAll.style.display = "none";
+  resetHeroDetailData();
   var head = document.querySelector(".hero-detail-head"); if (head) head.style.display = "none";
   var st = document.querySelector(".hd-section-title"); if (st) st.textContent = "全部战绩 · 按时间倒序";
-  var ap = document.getElementById("allPager"); if (ap) ap.style.display = "-webkit-flex";
+  var hp = document.getElementById("hdPager"); if (hp) hp.style.display = "none";
+  var ap = document.getElementById("allPager"); if (ap) ap.style.display = "flex";
   loadAllPage();
 }
 function loadAllPage() {
@@ -2322,11 +2343,60 @@ function goAllPage(d) {
 function setAllPager(hasPrev, hasNext) {
   var pg = document.getElementById("allPager");
   if (!pg) return;
+  pg.style.display = "flex";
   var info = document.getElementById("allPageInfo");
   if (info) info.textContent = "第 " + ((window.allPage || 0) + 1) + " 页";
   var btns = pg.getElementsByTagName("button");
   if (btns.length > 0) btns[0].disabled = !hasPrev;
   if (btns.length > 1) btns[1].disabled = !hasNext;
+}
+/* 单英雄战绩分页: 每页10局, 不足10局也常显分页键(单页置灰) */
+function goHdPage(d) {
+  if (window.allMode) return;
+  var pages = Math.max(1, Math.ceil((hdCtx.matches || []).length / 10));
+  window.hdPage = Math.max(0, Math.min((window.hdPage || 0) + d, pages - 1));
+  renderHeroList();
+}
+/* 渲染单英雄当前页左栏(每页10局), 默认高亮最新一局并打开详情 */
+function renderHeroList() {
+  var list = document.getElementById("hdMatchList");
+  if (!list) return;
+  var matches = hdCtx.matches || [];
+  var n = matches.length;
+  var pages = Math.max(1, Math.ceil(n / 10));
+  var hp = window.hdPage || 0; if (hp >= pages) hp = pages - 1; if (hp < 0) hp = 0; window.hdPage = hp;
+  list.innerHTML = "";
+  var start = hp * 10;
+  var end = Math.min(start + 10, n);
+  if (start >= n) { var e = document.createElement("div"); e.className = "hd-match"; e.innerHTML = '<div class="hm-date">暂无战绩</div>'; list.appendChild(e); setHdPager(pages); return; }
+  for (var j = start; j < end; j++) {
+    var m = matches[j];
+    var d = new Date(m.game_start_timestamp);
+    var y = d.getFullYear(), mo = ("0" + (d.getMonth() + 1)).slice(-2), dd = ("0" + d.getDate()).slice(-2);
+    var hh = ("0" + d.getHours()).slice(-2), mi = ("0" + d.getMinutes()).slice(-2);
+    var item = document.createElement("div");
+    item.className = "hd-match" + (j === start ? " active" : "");
+    item.setAttribute("data-gid", m.game_id);
+    item.onclick = function() { showMatch(this); };
+    var plc = m.placement || 6;
+    item.innerHTML = '<div class="hm-place p' + plc + '">第' + plc + '</div>' +
+      '<div class="hm-date">' + y + "-" + mo + "-" + dd + " " + hh + ":" + mi + '</div>';
+    list.appendChild(item);
+  }
+  setHdPager(pages);
+  var first = list.querySelector(".hd-match");
+  if (first) showMatch(first);
+}
+function setHdPager(pages) {
+  var pg = document.getElementById("hdPager");
+  if (!pg) return;
+  pg.style.display = "flex";
+  pages = (pages || 1);
+  var info = document.getElementById("hdPageInfo");
+  if (info) info.textContent = ((window.hdPage || 0) + 1) + " / " + pages;
+  var btns = pg.getElementsByTagName("button");
+  if (btns.length > 0) btns[0].disabled = (window.hdPage || 0) <= 0;
+  if (btns.length > 1) btns[1].disabled = (window.hdPage || 0) >= (pages - 1);
 }
 /* 点击左栏某条 → 高亮并展示该局详情 */
 function showMatch(el) {
@@ -2369,34 +2439,23 @@ function loadHeroDetailData() {
       setT("hdP" + k, cnt[k]);
       setT("hdP" + k + "r", n > 0 ? (Math.round(cnt[k] * 1000 / n) / 10) + "%" : "0%");
     }
-    /* 左栏最近战绩列表（固定名次显示） */
+    /* 左栏最近战绩列表（分页渲染，每页10局；不足10局也常显翻页按钮） */
     var list = document.getElementById("hdMatchList");
     if (list) list.innerHTML = "";
     if (n === 0) {
       var empty = document.createElement("div");
       empty.className = "hd-match";
       empty.innerHTML = '<div class="hm-date">暂无战绩</div>';
-      list.appendChild(empty);
+      if (list) list.appendChild(empty);
+      /* 同时清空右栏详情，避免残留上一个英雄的详情 */
+      var md = document.getElementById("hdMdList");
+      if (md) md.innerHTML = '';
+      window.hdPage = 0;
+      setHdPager(1);
       return;
     }
-    var maxShow = Math.min(n, 100);
-    for (var j = 0; j < maxShow; j++) {
-      var m = hdCtx.matches[j];
-      var d = new Date(m.game_start_timestamp);
-      var y = d.getFullYear(), mo = ("0" + (d.getMonth() + 1)).slice(-2), dd = ("0" + d.getDate()).slice(-2);
-      var hh = ("0" + d.getHours()).slice(-2), mi = ("0" + d.getMinutes()).slice(-2);
-      var item = document.createElement("div");
-      item.className = "hd-match" + (j === 0 ? " active" : "");
-      item.setAttribute("data-gid", m.game_id);
-      item.onclick = function() { showMatch(this); };
-      var plc = m.placement || 6;
-      item.innerHTML = '<div class="hm-place p' + plc + '">第' + plc + '</div>' +
-        '<div class="hm-date">' + y + "-" + mo + "-" + dd + " " + hh + ":" + mi + '</div>';
-      list.appendChild(item);
-    }
-    /* 默认展示最近一局 */
-    var first = list.querySelector(".hd-match");
-    if (first) showMatch(first);
+    window.hdPage = 0;
+    renderHeroList();
   })
   .catch(function() {
     if (hdCtx.heroEn !== myHero) return;
