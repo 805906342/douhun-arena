@@ -883,7 +883,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
 .hm-place.p2 { color: #c6cdd6; }
 .hm-place.p3 { color: #d0905b; }
 .hm-champ {
-  width: 30px; height: 30px;
+  width: 22px; height: 22px;
   background: #162636 no-repeat center / cover;
   border: 1px solid #223242;
   border-radius: 3px;
@@ -899,25 +899,25 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
 /* 最近战绩：左列名次 + 右栏选中局队友详情 */
 .hd-match-layout { display: -webkit-flex; display: flex; -webkit-align-items: stretch; align-items: stretch; gap: 12px; -webkit-flex: 1 1 auto; flex: 1 1 auto; min-height: 0; }
 .hd-left-col { display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; -webkit-flex: 0 0 210px; flex: 0 0 210px; margin-right: 12px; min-width: 0; }
-#hdMatchList { -webkit-flex: 1 1 auto; flex: 1 1 auto; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; gap: 9px; min-height: 0; overflow-y: auto; }
-#hdMatchList .hd-match { padding: 13px 8px; justify-content: center; -webkit-flex-direction: column; flex-direction: column; gap: 6px; cursor: pointer; background: #0d1a26; border: 1px solid #1c2c3c; border-left: 3px solid #2c3c4c; border-radius: 3px; }
+#hdMatchList { -webkit-flex: 1 1 auto; flex: 1 1 auto; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; gap: 6px; min-height: 0; overflow-y: auto; }
+#hdMatchList .hd-match { padding: 6px 8px; -webkit-flex-direction: row; flex-direction: row; -webkit-align-items: center; align-items: center; cursor: pointer; background: #0d1a26; border: 1px solid #1c2c3c; border-left: 3px solid #2c3c4c; border-radius: 3px; }
 #hdMatchList .hd-match:hover { border-color: #2c3c4c; }
 #hdMatchList .hd-match.active { border-color: #c89b3c; background: rgba(200,155,60,0.12); }
-#hdMatchList .hm-place { width: auto; font-size: 18px; }
-#hdMatchList .hm-date { font-size: 14px; color: #8fa0b0; letter-spacing: 1px; }
+#hdMatchList .hm-place { width: 36px; font-size: 13px; text-align: left; }
+#hdMatchList .hm-date { margin-left: auto; font-size: 12px; color: #8fa0b0; letter-spacing: 1px; text-align: right; }
 #hdMatchDetail { -webkit-flex: 1 1 auto; flex: 1 1 auto; min-width: 0; min-height: 0; overflow-y: auto; background: #0d1a26; border: 1px solid #1c2c3c; border-radius: 3px; padding: 12px 14px; }
 .hd-md-head { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid #223242; }
 .md-head-place { width: auto; }
 .md-head-txt { font-size: 13px; color: #e0d0b0; letter-spacing: 1px; margin-left: 8px; }
 .hd-md-list { display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; gap: 6px; }
 .hd-md-row { background: #0a141f; border: 1px solid #1c2c3c; border-radius: 3px; padding: 7px 10px; }
-.hd-md-row .md-rank { font-size: 11px; color: #5a6a7a; letter-spacing: 1px; }
+.hd-md-row .md-rank { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: space-between; justify-content: space-between; font-size: 11px; color: #5a6a7a; letter-spacing: 1px; }
 .hd-md-row.own { border-color: rgba(200,155,60,0.45); background: linear-gradient(180deg, rgba(200,155,60,0.08), #0a141f); }
 .hd-md-row.own .md-rank { color: #c89b3c; font-weight: 700; }
 .hd-md-team { display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; gap: 6px; margin-top: 8px; }
 .hd-md-p { display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; padding: 7px 9px; background: #101c28; border: 1px solid #223242; border-left: 3px solid #2c3c4c; border-radius: 3px; }
-.hd-md-p .md-labels { display: -webkit-flex; display: flex; -webkit-justify-content: flex-end; justify-content: flex-end; margin-bottom: 5px; font-size: 11px; color: #7f8c8d; letter-spacing: 1px; }
-.hd-md-p .md-labels span { margin-left: 12px; white-space: nowrap; }
+.hd-md-row .md-rank .md-labels { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; font-size: 11px; color: #7f8c8d; letter-spacing: 1px; }
+.hd-md-row .md-rank .md-labels span { margin-left: 14px; white-space: nowrap; }
 .hd-md-p .md-row { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; }
 .md-champ { width: 26px; height: 26px; background: #162636 no-repeat center / cover; border: 1px solid #223242; border-radius: 3px; -webkit-flex-shrink: 0; flex-shrink: 0; overflow: hidden; }
 .md-champ img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -1016,8 +1016,8 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
 .hd-left-col .all-pager button:hover { border-color: #c89b3c; }
 .hd-left-col .all-pager button[disabled] { color: #5a6a7a; cursor: default; border-color: #2a3a4a; }
 .hd-left-col .all-pager span { margin: 0 10px; font-size: 11px; color: #8fa0b0; white-space: nowrap; }
-#hdMatchList .hm-head { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: center; justify-content: center; margin-bottom: 5px; }
-#hdMatchList .hm-head .hm-champ { width: 36px; height: 36px; border-radius: 3px; }
+#hdMatchList .hm-head { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: flex-start; justify-content: flex-start; -webkit-flex-shrink: 0; flex-shrink: 0; margin-bottom: 0; }
+#hdMatchList .hm-head .hm-champ { width: 22px; height: 22px; border-radius: 3px; }
 
 .sort-wrap { position: relative; display: inline-block; margin-left: 10px; -webkit-flex-shrink: 0; flex-shrink: 0; }
 .sort-btn { height: 32px; padding: 0 14px; background: rgba(10,20,30,0.8); border: 1px solid #3a4a5a; color: #c89b3c; font-size: 13px; outline: none; cursor: pointer; white-space: nowrap; }
@@ -1034,7 +1034,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-11 02:36:00</div>
+    <div class="web-update-time">网页版更新时间：2026-09-11 03:05:44</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -1055,7 +1055,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
     <div class="login-error" id="loginError"></div>
     <div class="login-download">
       <a class="download-btn" href="download/LoLArena.exe" download>下载 Windows 桌面版</a>
-      <div class="download-time">桌面版更新时间：2026-09-11 02:34:48</div>
+      <div class="download-time">桌面版更新时间：2026-09-11 03:05:44</div>
     </div>
   </div>
 </div>
@@ -1087,6 +1087,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
         <input type="text" id="searchInput" placeholder="搜索称号或名字（支持拼音/同音字）" oninput="onSearch()">
       </div>
       <button class="rank-btn" id="rankBtn" type="button" onclick="openLeaderboard()">排行榜</button>
+      <button class="rank-btn" type="button" onclick="openAllFromHome()">所有战绩</button>
       <div class="sort-wrap">
         <button class="sort-btn" id="sortBtn" type="button" onclick="toggleSortMenu(event)">默认排序</button>
         <div class="sort-menu" id="sortMenu" style="display:none;">
@@ -1133,7 +1134,6 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
     <div class="detail-topbar">
       <button class="detail-back" type="button" onclick="leaveHeroDetail()">← 返回英雄界面</button>
       <div class="detail-top-title">英雄战绩详情</div>
-      <button class="detail-back all-matches-btn" type="button" onclick="openAllMatches()">所有战绩</button>
     </div>
     <div class="hero-detail-head">
       <div class="hd-avatar" id="hdAvatar"></div>
@@ -2123,8 +2123,9 @@ function goRankPage(d) {
 function setRankPager(pages) {
   var pg = document.getElementById("rankPager");
   if (!pg) return;
-  if (!pages || pages <= 1) { pg.style.display = "none"; return; }
   pg.style.display = "-webkit-flex";
+  pages = pages || 0;
+  if (!pages) pages = 1;
   var info = document.getElementById("rankPageInfo");
   if (info) info.textContent = ((window.rankPage || 0) + 1) + " / " + pages;
   var btns = pg.getElementsByTagName("button");
@@ -2174,7 +2175,6 @@ function makePlayerCard(p) {
   var champHtml = champIcon ? '<div class="md-champ"><img src="' + champIcon + '" alt=""></div>'
                              : '<div class="md-champ"></div>';
   return '<div class="hd-md-p">' +
-    '<div class="md-labels"><span>伤害</span><span>KDA</span><span>装备</span><span>强化符文</span></div>' +
     '<div class="md-row">' + champHtml +
       '<div class="md-id">' + (p.summoner_name || (p.is_self ? hdCtx.account : "未知")) + '</div>' +
       '<div class="md-runes">' + icons + '</div>' +
@@ -2212,7 +2212,11 @@ function renderGameDetail(gameId) {
       var row = document.createElement("div");
       row.className = "hd-md-row" + (i === selfPlc ? " own" : "");
       var cards = "";
-      var inner = '<div class="md-rank">第' + i + '名</div>';
+      var rankTxt = '<span class="md-rank-txt">第' + i + '名</span>';
+      var rankLabels = (i === selfPlc)
+        ? '<div class="md-labels"><span>强化符文</span><span>装备</span><span>KDA</span><span>伤害</span></div>'
+        : "";
+      var inner = '<div class="md-rank">' + rankTxt + rankLabels + '</div>';
       if (i === selfPlc) {
         var gp = byPlc[i];
         if (gp) gp.forEach(function(p) { cards += makePlayerCard(p); });
@@ -2226,6 +2230,27 @@ function renderGameDetail(gameId) {
     var md = document.getElementById("hdMdList");
     if (md) md.innerHTML = '<div class="hd-md-row"><div class="md-rank">加载失败</div></div>';
     showHdToast("战绩详情加载失败，请重试");
+  });
+}
+/* 主页「所有战绩」入口：用当前登录账号进入全量战绩，默认开最新一局详情 */
+function openAllFromHome() {
+  if (!currentUserId) { showHdToast("请先登录"); return; }
+  if (!hasScannedId) { showHdToast("请先使用桌面版读取数据"); return; }
+  sbFetch("arena_progress?user_id=eq." + currentUserId + "&select=last_lol_id")
+  .then(function(rows2) {
+    var acc = (rows2 && rows2[0] && rows2[0].last_lol_id) ? rows2[0].last_lol_id : "";
+    var pid = document.getElementById("playerIdText");
+    if (!acc && pid) acc = pid.textContent || "";
+    if (!acc) { showHdToast("当前无可查看账号"); return; }
+    hdCtx.account = acc;
+    openAllMatches();
+  })
+  .catch(function() {
+    var pid = document.getElementById("playerIdText");
+    var acc = (pid ? pid.textContent : "") || "";
+    if (!acc) { showHdToast("当前无可查看账号"); return; }
+    hdCtx.account = acc;
+    openAllMatches();
   });
 }
 /* ===== 所有战绩：detail 内全量模式，左栏带头像，每页10条翻页懒加载 ===== */
@@ -2286,6 +2311,7 @@ function renderAllMatches(rows) {
     list.appendChild(item);
   }
   setAllPager((window.allPage || 0) > 0, hasNext);
+  if (window.allMode) { var _first = list.querySelector(".hd-match"); if (_first) showMatch(_first); }
 }
 function goAllPage(d) {
   if (!window.allMode) return;
