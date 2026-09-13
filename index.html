@@ -1041,7 +1041,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-11 05:50:00</div>
+    <div class="web-update-time">网页版更新时间：2026-09-14 04:55:00</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -1545,24 +1545,22 @@ function submitAuth() {
 }
 
 function doLogout() {
-  currentUserId = null;
-  currentSortMode = 1;
-  restoreAvatarSize();
-  leaveHeroDetail();  /* 退出登录时复位到英雄界面 */
-  var sIn = document.getElementById("searchInput");
-  if (sIn) sIn.value = "";
-  if (hdCtx && hdCtx.account !== undefined) { hdCtx.account = ""; hdCtx.heroEn = ""; hdCtx.heroCn = ""; hdCtx.matches = []; hdCtx.depth = 0; }
-  var pid = document.getElementById("playerIdText");
-  if (pid) pid.textContent = "";
-  var st = document.getElementById("statsText");
-  if (st) st.textContent = "请先使用桌面版读取数据";
-  champions.forEach(function(c) { c.completed = false; });
-  document.getElementById("appContainer").style.display = "none";
-  document.getElementById("loginOverlay").classList.remove("hidden");
-  document.getElementById("loginUser").value = "";
-  document.getElementById("loginPass").value = "";
-  initRemember();  // 退出登录后按"记住"回填账号/密码
-  renderGrid();
+  /* v101: 网页版退出登录 = 重新打开网页(整页重载)，所有状态 100% 归零(物理复位)；
+     记住的账号/密码由 reload 后 initRemember() 自动回填(等同重新打开网页)；
+     重载本身失败时才回退到手动切回登录视图。 */
+  try {
+    window.location.reload();
+    return;
+  } catch (e) {}
+  try {
+    currentUserId = null;
+    currentSortMode = 1;
+    document.getElementById("appContainer").style.display = "none";
+    var ov = document.getElementById("loginOverlay");
+    if (ov) ov.classList.remove("hidden");
+    initRemember();
+    return;
+  } catch (e) {}
 }
 
 // Show stats next to the LoL ID
