@@ -42,6 +42,8 @@ body::before {
   background: rgba(1,10,19,0.95);
   display: -webkit-flex;
   display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
   -webkit-justify-content: center;
   justify-content: center;
   -webkit-align-items: center;
@@ -49,6 +51,23 @@ body::before {
   z-index: 9999;
 }
 .login-overlay.hidden { display: none; }
+
+/* 登录页顶部宣传海报横幅：完整大图展示，群号清晰可辨，下方登录框居中 */
+.login-poster {
+  width: 100%;
+  max-width: 760px;
+  padding: 0 16px 18px;
+  box-sizing: border-box;
+}
+.login-poster img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid #785a28;
+  border-radius: 4px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+  background: #0a1a2a;
+}
 
 .login-box {
   width: 340px;
@@ -1039,9 +1058,10 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
 <body class="skin-gold">
 
 <div class="login-overlay" id="loginOverlay">
+  <div class="login-poster"><img src="poster_login.png" alt="斗魂竞技场 · QQ交流群 530152245"></div>
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-14 04:55:00</div>
+    <div class="web-update-time">网页版更新时间：2026-09-14 06:43:00</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
