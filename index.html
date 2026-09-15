@@ -35,34 +35,20 @@ body::before {
   z-index: 0;
 }
 
-/* Login overlay：整页背景用宣传海报图，文字(标题+群号)偏上，登录框落在下方深色区 */
+/* Login overlay：整页深色背景，登录框居中 */
 .login-overlay {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: url('login_bg.png') center top / cover no-repeat;
-  background-color: #020a14;
+  background: rgba(1,10,19,0.95);
   display: -webkit-flex;
   display: flex;
-  -webkit-flex-direction: column;
-  flex-direction: column;
-  -webkit-justify-content: flex-start;
-  justify-content: flex-start;
-  padding-top: 38vh;
+  -webkit-justify-content: center;
+  justify-content: center;
   -webkit-align-items: center;
   align-items: center;
   z-index: 9999;
 }
 .login-overlay.hidden { display: none; }
-
-/* 登录框直接叠放在背景图上，位于顶部文字下方中央，不做深色压暗 */
-.login-shade {
-  display: -webkit-flex;
-  display: flex;
-  -webkit-justify-content: center;
-  justify-content: center;
-  width: 100%;
-  padding: 26px 0 32px;
-}
 
 .login-box {
   width: 340px;
@@ -1053,33 +1039,32 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
 <body class="skin-gold">
 
 <div class="login-overlay" id="loginOverlay">
-    <div class="login-shade">
-      <div class="login-box">
-        <div class="web-update-time">网页版更新时间：2026-09-15 12:39:14</div>
-        <div class="login-tabs">
-          <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
-          <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
-        </div>
-        <div class="login-field">
-          <label>用户名</label>
-          <input type="text" id="loginUser" placeholder="请输入用户名" autocomplete="username">
-        </div>
-        <div class="login-field">
-          <label>密码</label>
-          <input type="password" id="loginPass" placeholder="请输入密码" autocomplete="current-password">
-        </div>
-        <div class="login-remember">
-          <label><input type="checkbox" id="rememberUser"> 记住账号</label>
-          <label><input type="checkbox" id="rememberPass"> 记住密码</label>
-        </div>
-        <button class="login-submit" id="loginSubmit" type="button" onclick="submitAuth()">登录</button>
-        <div class="login-error" id="loginError"></div>
-        <div class="login-download">
-          <a class="download-btn" href="download/LoLArena.exe" download>下载 Windows 桌面版</a>
-          <div class="download-time">桌面版更新时间：2026-09-15 12:57:11</div>
-        </div>
-      </div>
+  <div class="login-box">
+    <div class="login-title">斗魂竞技场</div>
+    <div class="web-update-time">网页版更新时间：2026-09-15 13:50:00</div>
+    <div class="login-tabs">
+      <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
+      <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
     </div>
+    <div class="login-field">
+      <label>用户名</label>
+      <input type="text" id="loginUser" placeholder="请输入用户名" autocomplete="username">
+    </div>
+    <div class="login-field">
+      <label>密码</label>
+      <input type="password" id="loginPass" placeholder="请输入密码" autocomplete="current-password">
+    </div>
+    <div class="login-remember">
+      <label><input type="checkbox" id="rememberUser"> 记住账号</label>
+      <label><input type="checkbox" id="rememberPass"> 记住密码</label>
+    </div>
+    <button class="login-submit" id="loginSubmit" type="button" onclick="submitAuth()">登录</button>
+    <div class="login-error" id="loginError"></div>
+    <div class="login-download">
+      <a class="download-btn" href="download/LoLArena.exe" download>下载 Windows 桌面版</a>
+      <div class="download-time">桌面版更新时间：2026-09-15 12:57:11</div>
+    </div>
+  </div>
 </div>
 
 <div class="app-container" id="appContainer" style="display:none;">
