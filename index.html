@@ -1068,7 +1068,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-16 05:36:00</div>
+    <div class="web-update-time">网页版更新时间：2026-09-16 05:50:00</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -1089,7 +1089,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
     <div class="login-error" id="loginError"></div>
     <div class="login-download">
       <a class="download-btn" href="download/LoLArena.exe" download>下载 Windows 桌面版</a>
-      <div class="download-time">桌面版更新时间：2026-09-16 05:36:00</div>
+      <div class="download-time">桌面版更新时间：2026-09-16 05:50:00</div>
     </div>
   </div>
 </div>
@@ -2266,10 +2266,13 @@ function authorityUploadToServer(accountId, value) {
 /* 加载当前账号权威值并渲染到主页 LOL ID 后（本地权威 = 本地缓存兜底 + 服务器全集权威值上传覆盖） */
 function loadAuthorityForAccount(accountId) {
   var el = document.getElementById("authorityText");
+  var pid = document.getElementById("playerIdText");
   var show = function (score, scanned) {
     if (!el) return;
     if (!scanned || score === null || score === undefined || isNaN(score)) {
-      el.innerHTML = "";
+      /* 未扫描：主页顶部显示占位 LOL ID + 权威值 0 分（与真实账号同色） */
+      if (pid && !String(pid.textContent || "").trim()) { pid.innerHTML = 'LOL ID '; }
+      el.innerHTML = ' 权威值：<b>0分</b>';
       return;
     }
     el.innerHTML = " 权威值：<b>" + authorityDisplay(score) + "分</b>";
