@@ -1041,7 +1041,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-15 13:50:00</div>
+    <div class="web-update-time">网页版更新时间：2026-09-15 16:57:00</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -1062,7 +1062,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
     <div class="login-error" id="loginError"></div>
     <div class="login-download">
       <a class="download-btn" href="download/LoLArena.exe" download>下载 Windows 桌面版</a>
-      <div class="download-time">桌面版更新时间：2026-09-15 12:57:11</div>
+      <div class="download-time">桌面版更新时间：2026-09-15 16:49:00</div>
     </div>
   </div>
 </div>
@@ -1372,6 +1372,10 @@ var champions = [
 var SUPA_URL = "https://qkkglbhtszjtfrkookwv.supabase.co";
 var SUPA_KEY = "sb_publishable_aIQtugb8f-rEkLGKAVp9vQ_LaIqVnOY";
 var DD_VERSION = "16.16.1";
+/* v107: 登录后持有 access_token(JWT)。arena_progress 的 INSERT 被 RLS 要求 auth.uid()=user_id，
+   仅用 SUPA_KEY(无身份)会静默被拒(返回空)导致写入失败。写操作优先用 JWT。 */
+var _authTok = "";
+function actTok() { return _authTok || SUPA_KEY; }
 
 var borderSkins = [
   { num: 1,  id: "default", name: "默认", dynamic: false, color: "#c89b3c" },
@@ -1531,6 +1535,7 @@ function submitAuth() {
       return;
     }
     currentUserId = res.data.user.id;
+    _authTok = res.data.access_token || "";
     saveRemember(user, pass);
     document.getElementById("loginOverlay").classList.add("hidden");
     document.getElementById("appContainer").style.display = "";
@@ -1807,13 +1812,13 @@ function saveSkin() {
     if (rows.length > 0) {
       return fetch(SUPA_URL + "/rest/v1/arena_progress?user_id=eq." + currentUserId, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json", "apikey": SUPA_KEY, "Authorization": "Bearer " + SUPA_KEY, "Prefer": "return=minimal" },
+        headers: { "Content-Type": "application/json", "apikey": SUPA_KEY, "Authorization": "Bearer " + actTok(), "Prefer": "return=minimal" },
         body: JSON.stringify({ skin: num, updated_at: new Date().toISOString() })
       });
     } else {
       return fetch(SUPA_URL + "/rest/v1/arena_progress", {
         method: "POST",
-        headers: { "Content-Type": "application/json", "apikey": SUPA_KEY, "Authorization": "Bearer " + SUPA_KEY, "Prefer": "return=minimal" },
+        headers: { "Content-Type": "application/json", "apikey": SUPA_KEY, "Authorization": "Bearer " + actTok(), "Prefer": "return=minimal" },
         body: JSON.stringify({ user_id: currentUserId, skin: num, updated_at: new Date().toISOString() })
       });
     }
@@ -1866,9 +1871,9 @@ function saveAvatarSize() {
   .then(function(rows) {
     var bd = { avatar_size: avv, updated_at: new Date().toISOString() };
     if (rows && rows.length > 0) {
-      return fetch(url, { method: "PATCH", headers: { "Content-Type": "application/json", "apikey": SUPA_KEY, "Authorization": "Bearer " + SUPA_KEY, "Prefer": "return=minimal" }, body: JSON.stringify(bd) });
+      return fetch(url, { method: "PATCH", headers: { "Content-Type": "application/json", "apikey": SUPA_KEY, "Authorization": "Bearer " + actTok(), "Prefer": "return=minimal" }, body: JSON.stringify(bd) });
     } else {
-      return fetch(SUPA_URL + "/rest/v1/arena_progress", { method: "POST", headers: { "Content-Type": "application/json", "apikey": SUPA_KEY, "Authorization": "Bearer " + SUPA_KEY, "Prefer": "return=minimal" }, body: JSON.stringify({ user_id: currentUserId, avatar_size: avv }) });
+      return fetch(SUPA_URL + "/rest/v1/arena_progress", { method: "POST", headers: { "Content-Type": "application/json", "apikey": SUPA_KEY, "Authorization": "Bearer " + actTok(), "Prefer": "return=minimal" }, body: JSON.stringify({ user_id: currentUserId, avatar_size: avv }) });
     }
   })
   .catch(function() {}); /* silent：若 avatar_size 列未创建则不生效，不崩 UI */
@@ -2019,13 +2024,13 @@ function saveSortMode(mode) {
     if (rows.length > 0) {
       return fetch(SUPA_URL + "/rest/v1/arena_progress?user_id=eq." + currentUserId, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json", "apikey": SUPA_KEY, "Authorization": "Bearer " + SUPA_KEY, "Prefer": "return=minimal" },
+        headers: { "Content-Type": "application/json", "apikey": SUPA_KEY, "Authorization": "Bearer " + actTok(), "Prefer": "return=minimal" },
         body: JSON.stringify({ sort_mode: mode, updated_at: new Date().toISOString() })
       });
     } else {
       return fetch(SUPA_URL + "/rest/v1/arena_progress", {
         method: "POST",
-        headers: { "Content-Type": "application/json", "apikey": SUPA_KEY, "Authorization": "Bearer " + SUPA_KEY, "Prefer": "return=minimal" },
+        headers: { "Content-Type": "application/json", "apikey": SUPA_KEY, "Authorization": "Bearer " + actTok(), "Prefer": "return=minimal" },
         body: JSON.stringify({ user_id: currentUserId, sort_mode: mode, updated_at: new Date().toISOString() })
       });
     }
