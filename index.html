@@ -1041,7 +1041,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-15 16:57:00</div>
+    <div class="web-update-time">网页版更新时间：2026-09-16 01:40:00</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -1100,7 +1100,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
         <div class="sort-menu" id="sortMenu" style="display:none;">
           <div class="sort-opt" data-v="1" onclick="setSortMode(1)">默认排序</div>
           <div class="sort-opt" data-v="2" onclick="setSortMode(2)">第一排序</div>
-          <div class="sort-opt" data-v="3" onclick="setSortMode(3)">使用场次</div>
+          <div class="sort-opt" data-v="3" onclick="setSortMode(3)">场次排序</div>
         </div>
       </div>
       <div class="skin-panel-wrap">
@@ -2060,7 +2060,7 @@ function updateSortBtn() {
   if (!btn) return;
   var text = "默认排序";
   if (currentSortMode === 2) text = "第一排序";
-  else if (currentSortMode === 3) text = "使用场次";
+  else if (currentSortMode === 3) text = "场次排序";
   btn.textContent = text;
   var opts = document.querySelectorAll("#sortMenu .sort-opt");
   for (var i = 0; i < opts.length; i++) opts[i].classList.toggle("active", parseInt(opts[i].getAttribute("data-v"), 10) === currentSortMode);
