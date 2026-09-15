@@ -45,24 +45,23 @@ body::before {
   display: flex;
   -webkit-flex-direction: column;
   flex-direction: column;
-  -webkit-justify-content: flex-end;
-  justify-content: flex-end;
+  -webkit-justify-content: flex-start;
+  justify-content: flex-start;
+  padding-top: 38vh;
   -webkit-align-items: center;
   align-items: center;
   z-index: 9999;
 }
 .login-overlay.hidden { display: none; }
 
-/* 登录框下方的半透明压暗区，保证表单在深色背景上清晰可读（不影响上方海报文字） */
+/* 登录框直接叠放在背景图上，位于顶部文字下方中央，不做深色压暗 */
 .login-shade {
   display: -webkit-flex;
   display: flex;
   -webkit-justify-content: center;
   justify-content: center;
   width: 100%;
-  padding: 24px 0 32px;
-  background: -webkit-linear-gradient(0deg, rgba(2,10,20,0) 0%, rgba(2,10,20,0.82) 30%, rgba(2,10,20,0.92) 55%, rgba(2,10,20,0.95) 100%);
-  background: linear-gradient(0deg, rgba(2,10,20,0) 0%, rgba(2,10,20,0.82) 30%, rgba(2,10,20,0.92) 55%, rgba(2,10,20,0.95) 100%);
+  padding: 26px 0 32px;
 }
 
 .login-box {
@@ -1056,7 +1055,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
 <div class="login-overlay" id="loginOverlay">
     <div class="login-shade">
       <div class="login-box">
-        <div class="web-update-time">网页版更新时间：2026-09-14 06:51:00</div>
+        <div class="web-update-time">网页版更新时间：2026-09-15 12:39:14</div>
         <div class="login-tabs">
           <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
           <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
