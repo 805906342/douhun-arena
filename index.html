@@ -243,6 +243,8 @@ body::before {
   white-space: nowrap;
 }
 .player-id-box b { color: #f0e6d2; font-weight: 600; }
+.player-id-box .authority-hint { margin-left: 10px; color: #e9b949; }
+.player-id-box .authority-hint b { color: #f7d37a; font-weight: 600; }
 .placement-bar {
   margin-top: 8px;
   font-size: 12px;
@@ -992,15 +994,25 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
   padding: 18px 20px 20px;
 }
 .rank-head {
+  position: relative;
   display: -webkit-flex; display: flex;
   -webkit-align-items: center; align-items: center;
-  -webkit-justify-content: space-between; justify-content: space-between;
   margin-bottom: 6px;
 }
-.rank-title { font-size: 16px; color: #c89b3c; font-weight: bold; }
-.rank-close { background: none; border: none; color: #8fa0b0; font-size: 20px; line-height: 1; cursor: pointer; padding: 0 4px; }
+.rank-title { font-size: 18px; color: #c89b3c; font-weight: bold; -webkit-flex: 1; flex: 1; text-align: center; }
+.rank-close { position: absolute; right: 0; top: 50%; -webkit-transform: translateY(-50%); transform: translateY(-50%); background: none; border: none; color: #8fa0b0; font-size: 20px; line-height: 1; cursor: pointer; padding: 0 4px; }
 .rank-close:hover { color: #fff; }
-.rank-sub { font-size: 12px; color: #8fa0b0; margin-bottom: 12px; }
+.rank-sub { font-size: 12px; color: #8fa0b0; margin-bottom: 8px; }
+.rank-head-row {
+  display: -webkit-flex; display: flex;
+  -webkit-align-items: center; align-items: center;
+  padding: 6px 12px; font-size: 12px; color: #8fa0b0;
+  border-bottom: 1px solid #2a3a4a; background: rgba(8,16,26,0.6);
+}
+.rank-h-rank { width: 40px; -webkit-flex-shrink: 0; flex-shrink: 0; }
+.rank-h-id { -webkit-flex: 1; flex: 1; }
+.rank-h-scan { -webkit-flex-shrink: 0; flex-shrink: 0; white-space: nowrap; padding-left: 10px; }
+.rank-h-count { -webkit-flex-shrink: 0; flex-shrink: 0; white-space: nowrap; padding-left: 18px; }
 .rank-list { overflow-y: auto; border: 1px solid #2a3a4a; background: rgba(4,12,20,0.5); height: 346px; }
 .rank-pager { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: center; justify-content: center; margin-top: 12px; }
 .rank-pager button { background: rgba(10,20,30,0.8); border: 1px solid #3a4a5a; color: #c89b3c; font-size: 12px; padding: 5px 12px; cursor: pointer; }
@@ -1015,9 +1027,24 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
 .rank-rank { width: 40px; color: #8fa0b0; -webkit-flex-shrink: 0; flex-shrink: 0; }
 .rank-id { -webkit-flex: 1; flex: 1; color: #e0d0b0; word-break: break-all; }
 .rank-scan { color: #5a6a7a; font-size: 11px; -webkit-flex-shrink: 0; flex-shrink: 0; white-space: nowrap; padding-left: 10px; }
-.rank-count { color: #c89b3c; -webkit-flex-shrink: 0; flex-shrink: 0; white-space: nowrap; }
+.rank-count { color: #c89b3c; -webkit-flex-shrink: 0; flex-shrink: 0; white-space: nowrap; padding-left: 18px; }
 .rank-top1 .rank-rank, .rank-top2 .rank-rank, .rank-top3 .rank-rank { color: #c89b3c; font-weight: bold; }
 .rank-empty { padding: 20px; text-align: center; color: #5a6a7a; font-size: 13px; }
+/* 排行榜最下"自己"固定行：以明显不同的底色/分隔线区分，区别于普通上榜行 */
+.rank-self {
+  margin-top: 8px;
+  border: 1px solid #e9b949;
+  border-left: 3px solid #e9b949;
+  background: rgba(233,185,73,0.10);
+  display: -webkit-flex; display: flex;
+  -webkit-align-items: center; align-items: center;
+  padding: 8px 12px; font-size: 13px;
+}
+.rank-self .rank-rank { width: 40px; color: #e9b949; font-weight: bold; -webkit-flex-shrink: 0; flex-shrink: 0; }
+.rank-self .rank-id { -webkit-flex: 1; flex: 1; color: #f7d37a; font-weight: 600; word-break: break-all; }
+.rank-self .rank-scan { width: 84px; -webkit-flex-shrink: 0; flex-shrink: 0; }
+.rank-self .rank-count { color: #e9b949; font-weight: bold; -webkit-flex-shrink: 0; flex-shrink: 0; white-space: nowrap; }
+.rank-self-label { color: #8fa0b0; font-size: 10px; margin-left: 8px; -webkit-flex-shrink: 0; flex-shrink: 0; }
 .hd-left-col .all-pager { -webkit-flex-shrink: 0; flex-shrink: 0; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: center; justify-content: center; margin-top: 10px; padding-top: 9px; border-top: 1px solid #22303e; }
 .hd-left-col .all-pager button { background: rgba(10,20,30,0.8); border: 1px solid #3a4a5a; color: #c89b3c; font-size: 12px; padding: 4px 10px; cursor: pointer; }
 .hd-left-col .all-pager button:hover { border-color: #c89b3c; }
@@ -1041,7 +1068,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-16 01:40:00</div>
+    <div class="web-update-time">网页版更新时间：2026-09-16 05:36:00</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -1062,7 +1089,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
     <div class="login-error" id="loginError"></div>
     <div class="login-download">
       <a class="download-btn" href="download/LoLArena.exe" download>下载 Windows 桌面版</a>
-      <div class="download-time">桌面版更新时间：2026-09-16 05:20:00</div>
+      <div class="download-time">桌面版更新时间：2026-09-16 05:36:00</div>
     </div>
   </div>
 </div>
@@ -1078,7 +1105,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
   <div class="header">
     <div class="title-row">
       <h1>斗魂竞技场赛季旅程</h1>
-      <div class="player-id-box" id="playerIdBox">LOL ID：<b id="playerIdText"></b></div>
+      <div class="player-id-box" id="playerIdBox">LOL ID：<b id="playerIdText"></b> <span class="authority-hint" id="authorityText"></span></div>
     </div>
     <div class="placement-bar" id="statsText">请先使用桌面版读取数据</div>
   </div>
@@ -1123,11 +1150,18 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
   <div class="rank-overlay" id="rankOverlay" style="display:none;">
     <div class="rank-box">
       <div class="rank-head">
-        <div class="rank-title">第一名英雄排行榜</div>
+        <div class="rank-title">排行榜</div>
         <button class="rank-close" type="button" onclick="closeLeaderboard()">×</button>
       </div>
-      <div class="rank-sub">已完成扫描的用户 · 按获得第一名的英雄数量排名</div>
+      <div class="rank-sub">已完成扫描的用户 · 按权威值从高到低排名</div>
+      <div class="rank-head-row">
+        <div class="rank-h-rank">排名</div>
+        <div class="rank-h-id">LOL ID</div>
+        <div class="rank-h-scan">扫描时间</div>
+        <div class="rank-h-count">权威值</div>
+      </div>
       <div class="rank-list" id="rankList"><div class="rank-empty">加载中…</div></div>
+      <div class="rank-self" id="rankSelf" style="display:none;"></div>
       <div class="rank-pager" id="rankPager" style="display:none;">
         <button type="button" onclick="goRankPage(-1)">‹ 上一页</button>
         <span class="rank-page-info" id="rankPageInfo"></span>
@@ -1681,6 +1715,7 @@ function loadProgress() {
     // hero_ids 已废弃：冠军集合改从对局名次(placement==1)查询推导
     loadFirstPlaceHeroes(syncId);
     loadUsageCount(syncId);
+    if (typeof loadAuthorityForAccount === "function") { try { loadAuthorityForAccount(syncId); } catch (e) {} }
     updateSortBtn();
   })
   .catch(function() {});
@@ -2152,12 +2187,119 @@ function fmtScanTime(v) {
   function p(n) { return (n < 10 ? "0" : "") + n; }
   return d.getUTCFullYear() + "-" + p(d.getUTCMonth() + 1) + "-" + p(d.getUTCDate()) + " " + p(d.getUTCHours()) + ":" + p(d.getUTCMinutes()) + ":" + p(d.getUTCSeconds());
 }
+
+/* ===== 权威值系统（与桌面版对齐。权威值分上传服务器 last_stats 第8段，排行榜直接读服务器分，不实时算） ===== */
+function authorityFromMatches(mats) {
+  var total = 0, p1 = 0, p2 = 0, p3 = 0;
+  var win = {}, played = {};
+  if (mats) {
+    for (var i = 0; i < mats.length; i++) {
+      var m = mats[i];
+      if (!m) continue;
+      total++;
+      var hn = String(m.champion_name || "").toLowerCase();
+      if (hn) played[hn] = true;
+      var plc = parseInt(m.placement, 10);
+      if (!isNaN(plc)) {
+        if (plc === 1) { p1++; if (hn) win[hn] = true; }
+        else if (plc === 2) p2++;
+        else if (plc === 3) p3++;
+      }
+    }
+  }
+  var winCnt = 0; for (var wk in win) { if (Object.prototype.hasOwnProperty.call(win, wk)) winCnt++; }
+  var playedCnt = 0; for (var pk in played) { if (Object.prototype.hasOwnProperty.call(played, pk)) playedCnt++; }
+  var base = total * 1 + p3 * 1 + p2 * 3 + p1 * 7;
+  var ratio = winCnt / 173;   // 吃鸡英雄数 ÷ 全部英雄数(约173)
+  var fixed = playedCnt * 10 + winCnt * 10 + 0;  // 成就点暂为0
+  return base * ratio + fixed;
+}
+function authorityDisplay(score) {
+  if (score === null || score === undefined || isNaN(score)) return "";
+  return Math.floor(score);
+}
+/* 存储：本地 ucSave("authority", {account, value})；服务器追加上该 user 的 arena_progress.last_stats 第8段。
+   权威值 = authorityFromMatches(该账号 arena_matches 全集)。扫描可能是增量，故权威值必须以服务器全集战绩为准，
+   绝不从单次扫描 data 的 heroes/place_counts 直接算。 */
+function authoritySaveLocal(accountId, value) {
+  try {
+    var snap = {};
+    if (accountId) snap.account = String(accountId);
+    snap.value = value;
+    ucSave("authority", snap);
+  } catch (e) {}
+}
+function authorityLoadLocal() {
+  try { var a = ucGet("authority"); return (a && typeof a.value === "number") ? a.value : null; } catch (e) { return null; }
+}
+function authorityUploadToServer(accountId, value) {
+  if (!currentUserId || !accountId) return;
+  fetch(SUPA_URL + "/rest/v1/arena_progress?user_id=eq." + currentUserId + "&select=last_lol_id,last_stats", {
+    headers: { "apikey": SUPA_KEY, "Authorization": "Bearer " + SUPA_KEY }
+  })
+  .then(function (r) { return r.json(); })
+  .then(function (rows) {
+    if (!rows || !rows.length || !rows[0]) return;
+    var rr = rows[0];
+    /* 只在自己认领的账号上写权威值段，避免把他人账号的权威值串行 */
+    if (String(rr.last_lol_id || "") !== String(accountId)) return;
+    var old = rr.last_stats ? String(rr.last_stats) : "";
+    var seg = old.split("|");
+    var base = "";
+    if (seg.length >= 2) {
+      var keepEnd = seg.length >= 8 ? 7 : seg.length;
+      var ksegs = [];
+      for (var si = 0; si < keepEnd; si++) ksegs.push(seg[si]);
+      base = ksegs.join("|");
+    } else {
+      base = old || ("0|0|0|0|0|0|0");
+    }
+    var statsStr = base + "|" + String(value);
+    return fetch(SUPA_URL + "/rest/v1/arena_progress?user_id=eq." + currentUserId, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", "apikey": SUPA_KEY, "Authorization": "Bearer " + actTok(), "Prefer": "return=minimal" },
+      body: JSON.stringify({ last_stats: statsStr, updated_at: new Date().toISOString() })
+    });
+  })
+  .catch(function (e) {});
+}
+/* 加载当前账号权威值并渲染到主页 LOL ID 后（本地权威 = 本地缓存兜底 + 服务器全集权威值上传覆盖） */
+function loadAuthorityForAccount(accountId) {
+  var el = document.getElementById("authorityText");
+  var show = function (score, scanned) {
+    if (!el) return;
+    if (!scanned || score === null || score === undefined || isNaN(score)) {
+      el.innerHTML = "";
+      return;
+    }
+    el.innerHTML = " 权威值：<b>" + authorityDisplay(score) + "分</b>";
+  };
+  if (!accountId) { show(null, false); return; }
+  var local = authorityLoadLocal();
+  var localOk = false;
+  if (local !== null && local !== undefined && !isNaN(local)) {
+    try { var la = ucGet("authority"); if (la && String(la.account || "") === String(accountId)) localOk = true; } catch (e) {}
+  }
+  if (localOk) show(local, true);
+  sbFetch("arena_matches?select=champion_name,placement&account=eq." + encodeURIComponent(accountId) + "&is_self=eq.true")
+    .then(function (mats) {
+      var sc = authorityFromMatches(mats || []);
+      authoritySaveLocal(accountId, sc);
+      authorityUploadToServer(accountId, sc);
+      show(sc, true);
+    })
+    .catch(function () {});
+}
 function openLeaderboard() {
   var ov = document.getElementById("rankOverlay");
   var list = document.getElementById("rankList");
   if (ov) ov.style.display = "flex";
   if (list) list.innerHTML = '<div class="rank-empty">加载中…</div>';
-  sbFetch("arena_progress?select=user_id,last_lol_id,updated_at&last_lol_id=not.is.null")
+  var selfEl = document.getElementById("rankSelf");
+  if (selfEl) selfEl.style.display = "none";
+  /* 权威值分上传到服务器(last_stats 第8段)，排行榜直接读服务器存的权威值分，不实时算。
+     兼容: 对老扫描数据(无权威值段)回退按战绩实时算(仅兜底旧行)。 */
+  sbFetch("arena_progress?select=user_id,last_lol_id,last_stats_at,updated_at,last_stats&last_lol_id=not.is.null")
   .then(function(rows) {
     var users = [], seen = {};
     for (var i = 0; i < rows.length; i++) {
@@ -2165,28 +2307,61 @@ function openLeaderboard() {
       if (!r || !r.last_lol_id) continue;
       if (seen[r.user_id]) continue;
       seen[r.user_id] = true;
-      users.push({ id: String(r.last_lol_id), scan: r.updated_at || "" });
+      users.push({ id: String(r.last_lol_id), scan: r.last_stats_at || r.updated_at || "", stats: r.last_stats || "" });
     }
-    return sbFetch("arena_matches?select=account,champion_name&is_self=eq.true&placement=eq.1")
-    .then(function(mats) {
-      var cc = {};
-      for (var j = 0; j < mats.length; j++) {
-        var x = mats[j], acc = String(x.account || "");
-        var hn = String(x.champion_name || "").toLowerCase();
-        if (!acc || !hn) continue;
-        if (!cc[acc]) cc[acc] = {};
-        cc[acc][hn] = true;
+    /* 先读服务器存好的权威值段(last_stats 第8段) */
+    for (var k = 0; k < users.length; k++) {
+      var ss = String(users[k].stats).split("|");
+      if (ss.length >= 8 && ss[7] !== "" && ss[7] !== undefined) {
+        var sv = parseFloat(ss[7]);
+        if (!isNaN(sv)) { users[k].authority = sv; users[k].authorityInt = authorityDisplay(sv); }
       }
-      for (var k = 0; k < users.length; k++) {
-        var c = cc[users[k].id];
-        users[k].count = c ? Object.keys(c).length : 0;
+    }
+    /* 对仍无权威值段的旧行兜底：从战绩实时算一次(需拉全量战绩) */
+    var needCalc = 0;
+    for (var nc = 0; nc < users.length; nc++) { if (typeof users[nc].authority === "undefined") needCalc++; }
+    if (needCalc > 0) {
+      return sbFetch("arena_matches?select=account,champion_name,placement&is_self=eq.true")
+      .then(function(mats) {
+        var accm = {};
+        for (var j = 0; j < (mats || []).length; j++) {
+          var x = mats[j], acc = String(x.account || "");
+          if (!acc) continue;
+          if (!accm[acc]) accm[acc] = [];
+          accm[acc].push(x);
+        }
+        for (var k2 = 0; k2 < users.length; k2++) {
+          if (typeof users[k2].authority !== "undefined") continue;
+          var am = accm[users[k2].id];
+          if (!am) continue;
+          users[k2].authority = authorityFromMatches(am);
+          users[k2].authorityInt = authorityDisplay(users[k2].authority);
+        }
+        return users;
+      });
+    }
+    return users;
+  })
+  .then(function(users) {
+      users.sort(function(a, b) {
+        if (typeof a.authority === "undefined") return 1;
+        if (typeof b.authority === "undefined") return -1;
+        if (a.authority !== b.authority) return b.authority - a.authority;
+        return String(a.id).localeCompare(String(b.id));
+      });
+      var kept = [];
+      for (var fk = 0; fk < users.length; fk++) {
+        if (typeof users[fk].authority !== "undefined") kept.push(users[fk]);
       }
-      users.sort(function(a, b) { return b.count - a.count; });
+      users = kept;
       window.rankUsers = users; window.rankPage = 0;
+      var myId = "";
+      var pid = document.getElementById("playerIdText");
+      if (pid) myId = String(pid.innerText || "");
+      window.rankSelfId = myId ? String(myId) : "";
       renderLeaderboard();
       return null;
-    });
-  })
+    })
   .catch(function() { if (list) list.innerHTML = '<div class="rank-empty">读取失败</div>'; });
 }
 function renderLeaderboard() {
@@ -2195,25 +2370,50 @@ function renderLeaderboard() {
   var users = window.rankUsers || [];
   var total = users.length;
   var per = 10, pages = Math.ceil(total / per);
-  if (!total) { list.innerHTML = '<div class="rank-empty">暂无已完成扫描的用户</div>'; setRankPager(0); return; }
-  var page = window.rankPage || 0;
-  if (page < 0) page = 0;
-  if (page >= pages) page = pages - 1;
-  window.rankPage = page;
-  var start = page * per, end = Math.min(start + per, total);
-  var html = "";
-  for (var i = start; i < end; i++) {
-    var u = users[i], rank = i + 1;
-    var cls = rank === 1 ? " rank-top1" : (rank === 2 ? " rank-top2" : (rank === 3 ? " rank-top3" : ""));
-    html += '<div class="rank-row' + cls + '">'
-      + '<div class="rank-rank">' + rank + '</div>'
-      + '<div class="rank-id">' + u.id + '</div>'
-      + '<div class="rank-scan">' + fmtScanTime(u.scan) + '</div>'
-      + '<div class="rank-count">' + u.count + ' 个</div>'
-      + '</div>';
+  if (!total) { list.innerHTML = '<div class="rank-empty">暂无已完成扫描的用户</div>'; setRankPager(0); }
+  else {
+    var page = window.rankPage || 0;
+    if (page < 0) page = 0;
+    if (page >= pages) page = pages - 1;
+    window.rankPage = page;
+    var start = page * per, end = Math.min(start + per, total);
+    var html = "";
+    for (var i = start; i < end; i++) {
+      var u = users[i], rank = i + 1;
+      var cls = rank === 1 ? " rank-top1" : (rank === 2 ? " rank-top2" : (rank === 3 ? " rank-top3" : ""));
+      html += '<div class="rank-row' + cls + '">'
+        + '<div class="rank-rank">' + rank + '</div>'
+        + '<div class="rank-id">' + u.id + '</div>'
+        + '<div class="rank-scan">' + fmtScanTime(u.scan) + '</div>'
+        + '<div class="rank-count">'+ u.authorityInt + '分</div>'
+        + '</div>';
+    }
+    list.innerHTML = html;
+    setRankPager(pages);
   }
-  list.innerHTML = html;
-  setRankPager(pages);
+  renderRankSelf();
+}
+/* 排行榜最下"自己"固定行：无论翻到哪页都固定显示在最底部，风格区分于上榜行 */
+function renderRankSelf() {
+  var selfEl = document.getElementById("rankSelf");
+  if (!selfEl) return;
+  var myId = window.rankSelfId || "";
+  if (!myId) {
+    selfEl.innerHTML = '<div class="rank-rank">0</div><div class="rank-id">LOL ID</div><div class="rank-scan"></div><div class="rank-count">0分</div><span class="rank-self-label">我</span>';
+    selfEl.style.display = "flex";
+    return;
+  }
+  var rank = 0;
+  var users = window.rankUsers || [];
+  for (var i = 0; i < users.length; i++) { if (String(users[i].id) === myId) { rank = i + 1; break; } }
+  var sc = 0;
+  if (rank > 0) { sc = authorityDisplay(users[rank-1].authority); }
+  selfEl.innerHTML = '<div class="rank-rank">' + rank + '</div>'
+    + '<div class="rank-id">' + myId + '</div>'
+    + '<div class="rank-scan"></div>'
+    + '<div class="rank-count">' + sc + '分</div>'
+    + '<span class="rank-self-label">我</span>';
+  selfEl.style.display = "flex";
 }
 function goRankPage(d) {
   window.rankPage = (window.rankPage || 0) + d;
