@@ -1068,7 +1068,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-21 03:20:41</div>
+    <div class="web-update-time">网页版更新时间：2026-09-21 04:23:41</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -1089,7 +1089,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
     <div class="login-error" id="loginError"></div>
     <div class="login-download">
       <a class="download-btn" href="download/LoLArena.exe" download>下载 Windows 桌面版</a>
-      <div class="download-time">桌面版更新时间：2026-09-21 03:20:41</div>
+      <div class="download-time">桌面版更新时间：2026-09-21 04:23:41</div>
     </div>
   </div>
 </div>
@@ -1867,6 +1867,22 @@ function loadFirstPlaceHeroes(accountId) {
     renderGrid();
     refreshSkinUnlock();  // 扫描/登录后依最新第一名数刷新解锁状态
   };
+  /* v129.8.9: 皮肤锁定数据校正。皮肤锁定状态实时由服务器明细推导(firstPlaceHeroCount)，
+     随统一"全部落库→再物理刷新"链路在刷新时自动正确；此处仅负责：当服务器已确认最新
+     第一名集合时，若当前应用中的边框皮肤已不足解锁门槛(unlockedSkinCount 变少)，
+     把 currentSkin 回退默认并落库，避免"删除战绩后边框皮肤仍残留上次已解锁皮肤"。
+     仅在服务器确认(defender=true)后校正，本地/空数据兜底不触发，防止数据未就绪时误回退。 */
+  var revertSkinIfLocked = function(defender) {
+    if (!defender) return;
+    try {
+      if (!isSkinUnlocked(skinIdToNum(currentSkin)) && currentSkin !== "default") {
+        currentSkin = "default";
+        setBodySkin(currentSkin);
+        renderSkinPanel();
+        saveSkin();
+      }
+    } catch (e) {}
+  };
   /* v110 本地兜底：先从本地缓存显示，再从服务器覆盖 */
   var localSet = ucGet("first");
   if (localSet && typeof localSet === "object") {
@@ -1887,6 +1903,7 @@ function loadFirstPlaceHeroes(accountId) {
     var snap = {}; for (var sk in idSet) { if (Object.prototype.hasOwnProperty.call(idSet, sk)) snap[sk] = true; }
     ucSave("first", snap);
     applyAndRender();
+    revertSkinIfLocked(true);  // 服务器确认后：皮肤已锁回则回退默认
   })
   .catch(function() { applyAndRender(); });
 }
@@ -2715,7 +2732,9 @@ function loadAllPage() {
   }
   var path = "arena_matches?account=eq." + encodeURIComponent(hdCtx.account) +
     "&is_self=eq.true&game_mode=eq.CHERRY&select=game_id,game_start_timestamp,placement,champion_name" +
-    "&order=game_start_timestamp.desc&limit=11&offset=" + off;
+    /* v129.8.9: 分页加稳定二级排序键 game_id(唯一)。仅按 game_start_timestamp 排序时同秒对局
+       offset 翻页漂移 → 第1页第10条/第2页第1条重复、漏条。加 game_id.desc 把边界钉死。 */
+    "&order=game_start_timestamp.desc,game_id.desc&limit=11&offset=" + off;
   sbFetch(path)
   .then(function(rows) {
     if (!window.allMode) return;
