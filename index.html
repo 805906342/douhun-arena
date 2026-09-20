@@ -1068,7 +1068,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-21 02:10:31</div>
+    <div class="web-update-time">网页版更新时间：2026-09-21 02:58:17</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -1089,7 +1089,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
     <div class="login-error" id="loginError"></div>
     <div class="login-download">
       <a class="download-btn" href="download/LoLArena.exe" download>下载 Windows 桌面版</a>
-      <div class="download-time">桌面版更新时间：2026-09-21 02:05:31</div>
+      <div class="download-time">桌面版更新时间：2026-09-21 02:58:17</div>
     </div>
   </div>
 </div>
@@ -1635,6 +1635,48 @@ function setStatsDisplay(cherry, counts) {
   el.textContent = "本赛季斗魂 " + (cherry || 0) + " 场：" + c.join("，") + "。";
 }
 
+/* v129.8.6(网页端同步): 顶部"本赛季斗魂X场 + 六档名次次数"改为从服务器 arena_matches 明细精确统计，
+   不再依赖 C# 扫描临时算的 cherry_games/place_counts（C# 曾漏计导致 663 vs 明细 668 不一致）。
+   采用与 loadUsageCount 一致的普通 fetch 拉明细 json + offset 分页(按 game_start_timestamp 排序翻页)
+   本地计数，兼容 IE11 fetch polyfill(不读响应头)。 */
+var SEASON_START_MS = 1777395600000; /* 与 C# Program.cs 一致：万魔殿S2 2026-04-29 01:00 北京时间 */
+function refreshSeasonStatsFromServer(accountId) {
+  if (!accountId || !window.fetch) return;
+  var total = 0;
+  var pc = [0, 0, 0, 0, 0, 0];
+  var offset = 0;
+  var PAGE = 1000;
+  (function nextPage() {
+    var q = "arena_matches?select=placement&account=eq." + encodeURIComponent(accountId) +
+            "&is_self=eq.true&game_start_timestamp=gte." + SEASON_START_MS +
+            "&order=game_start_timestamp.desc&limit=" + PAGE + "&offset=" + offset;
+    sbFetch(q)
+      .then(function (rows) {
+        if (!rows || !rows.length) { finish(); return; }
+        for (var i = 0; i < rows.length; i++) {
+          var plc = parseInt(rows[i].placement, 10);
+          if (isNaN(plc)) continue;
+          if (plc >= 1) total++;                 /* 总场数：名次>0 全部(含7/8名) */
+          if (plc >= 1 && plc <= 6) pc[plc - 1]++; /* 六档名次 */
+        }
+        if (rows.length < PAGE) { finish(); return; }
+        offset += rows.length;
+        try { nextPage(); } catch (e) { finish(); }
+      })
+      .catch(function () { finish(); });
+    function finish() {
+      if (total === 0) return;                     /* 完全拿不到不进展示(保留现有/兜底) */
+      try { setStatsDisplay(total, pc); } catch (e) {}
+      /* 把真实统计写本地 stats 缓存兜底 */
+      try {
+        var ss = String(total);
+        for (var s2 = 0; s2 < 6; s2++) ss += "|" + (pc[s2] || 0);
+        ucSave("stats", { last_lol_id: accountId || "", last_stats: ss });
+      } catch (e2) {}
+    }
+  })();
+}
+
 // ===== Supabase progress =====
 function loadProgress() {
   /* v110 本地兜底：服务器返回前先用本地缓存的 排序/战绩统计/账号 恢复显示 */
@@ -1716,6 +1758,8 @@ function loadProgress() {
     loadFirstPlaceHeroes(syncId);
     loadUsageCount(syncId);
     if (typeof loadAuthorityForAccount === "function") { try { loadAuthorityForAccount(syncId); } catch (e) {} }
+    /* v129.8.6: 顶部整串(场数+六档名次)以服务器明细精确统计为准(同步桌面端) */
+    if (syncId) { setTimeout(function () { try { refreshSeasonStatsFromServer(syncId); } catch (e) {} }, 400); }
     updateSortBtn();
   })
   .catch(function() {});
