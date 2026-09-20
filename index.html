@@ -1068,7 +1068,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-21 01:08:00</div>
+    <div class="web-update-time">网页版更新时间：2026-09-21 01:24:31</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -1089,7 +1089,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
     <div class="login-error" id="loginError"></div>
     <div class="login-download">
       <a class="download-btn" href="download/LoLArena.exe" download>下载 Windows 桌面版</a>
-      <div class="download-time">桌面版更新时间：2026-09-21 01:08:00</div>
+      <div class="download-time">桌面版更新时间：2026-09-21 01:23:16</div>
     </div>
   </div>
 </div>
@@ -1743,9 +1743,11 @@ function loadFirstPlaceHeroes(accountId) {
     applyAndRender();
   }
   if (!accountId) { applyAndRender(); return; }
-  var q = SUPA_URL + "/rest/v1/arena_matches?select=champion_name&account=eq." + encodeURIComponent(accountId) + "&is_self=eq.true&placement=eq.1";
-  fetch(q, { headers: { "apikey": SUPA_KEY, "Authorization": "Bearer " + SUPA_KEY } })
-  .then(function(r) { return r.json(); })
+  /* v129.8.2: 改用 sbFetch(15s 超时+HTTP状态检查+reject)，与 loadUsageCount 看齐，
+     修复扫描后裸 fetch 在 IE11 file:// 下超时/失败时只在 catch 里空跑、冠军集合停留在
+     本地旧缓存、导致新第一名英雄不被标记 completed 的时序隐患 */
+  var q = "arena_matches?select=champion_name&account=eq." + encodeURIComponent(accountId) + "&is_self=eq.true&placement=eq.1";
+  sbFetch(q)
   .then(function(mats) {
     for (var j = 0; j < mats.length; j++) {
       var hn = String(mats[j].champion_name || "").toLowerCase();
