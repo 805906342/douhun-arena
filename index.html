@@ -1068,7 +1068,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-21 03:04:46</div>
+    <div class="web-update-time">网页版更新时间：2026-09-21 03:20:41</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -1089,7 +1089,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
     <div class="login-error" id="loginError"></div>
     <div class="login-download">
       <a class="download-btn" href="download/LoLArena.exe" download>下载 Windows 桌面版</a>
-      <div class="download-time">桌面版更新时间：2026-09-21 03:04:46</div>
+      <div class="download-time">桌面版更新时间：2026-09-21 03:20:41</div>
     </div>
   </div>
 </div>
@@ -1644,7 +1644,7 @@ function setStatsPending() {
 
 /* v129.8.7(网页端同步): 把服务器明细统计的真实值更新到 arena_progress.last_stats 前7段(cherry|p1..p6)，
    保留权威段(第8段)。用于修正 C# 扫描时写入的漏计临时值(如 663)。 */
-function statsUploadToServer(accountId, cherry, pc) {
+function statsUploadToServer(accountId, cherry, pc, authorityVal) {
   if (!currentUserId || !accountId) return Promise.resolve(false);
   return ensureAuthToken().then(function (ok) {
     if (!ok) return false;
@@ -1665,7 +1665,15 @@ function statsUploadToServer(accountId, cherry, pc) {
       var seg = old.split("|");
       var ns7 = String(cherry || 0);
       for (var i2 = 0; i2 < 6; i2++) ns7 += "|" + ((pc && pc[i2]) || 0);
-      var authSeg = (seg && seg.length >= 8 && seg[7] !== undefined && seg[7] !== null && String(seg[7]) !== "" && !isNaN(parseInt(seg[7], 10))) ? String(seg[7]) : "";
+      /* v129.8.8: 若本次明确传入权威值(authorityVal 来自服务器明细同一次统计)，
+         则用它作第8段合并一次上传(前7段+权威段同一次PATCH，杜绝竞态/二次上传)；
+         否则保留服务器现有第8段。 */
+      var authSeg;
+      if (authorityVal !== undefined && authorityVal !== null && !isNaN(authorityVal)) {
+        authSeg = String(authorityVal);
+      } else {
+        authSeg = (seg && seg.length >= 8 && seg[7] !== undefined && seg[7] !== null && String(seg[7]) !== "" && !isNaN(parseInt(seg[7], 10))) ? String(seg[7]) : "";
+      }
       var newStats = authSeg ? (ns7 + "|" + authSeg) : ns7;
       if (String(old) === String(newStats)) return true;
       return fetch(SUPA_URL + "/rest/v1/arena_progress?user_id=eq." + currentUserId, {
@@ -1716,9 +1724,34 @@ function refreshSeasonStatsFromServer(accountId) {
         for (var s2 = 0; s2 < 6; s2++) ss += "|" + (pc[s2] || 0);
         ucSave("stats", { last_lol_id: accountId || "", last_stats: ss });
       } catch (e2) {}
-      /* v129.8.7: 把服务器明细统计的真实值回写 arena_progress.last_stats 前7段，
-         修正 C# 扫描时写错的漏计临时值(如 663)。保留权威段(第8段)不被覆盖。 */
-      try { statsUploadToServer(accountId, total, pc); } catch (e3) {}
+      /* v129.8.8: 从服务器明细全集一次算出权威值(第8段)，与前面七段合并为一次完整 PATCH 上传。
+         权威值口径与 loadAuthorityForAccount 一致(全集 champion_name+placement → authorityFromMatches)。
+         杜绝"前7段 statsUploadToServer 与权威段 authorityUploadToServer 各自读旧值、互为覆盖"的竞态。
+         权威值全集分页收集(PostgREST 单查硬限1000行)，收集完才上传。 */
+      collectAuthority(0);
+    }
+    /* 分页收集全集战绩(champion_name+placement)供权威值计算，collect 完一次合并上传 */
+    var AUTH_PAGE = 1000, authTotal = 0;
+    function collectAuthority(aoff) {
+      sbFetch("arena_matches?select=champion_name,placement&account=eq." + encodeURIComponent(accountId) +
+              "&is_self=eq.true&order=game_start_timestamp.desc&limit=" + AUTH_PAGE + "&offset=" + aoff)
+        .then(function (rows) {
+          if (!rows || !rows.length) { computeAuthority([]); return; }
+          authTotal += rows.length;
+          authMatsAll = (authMatsAll || []).concat(rows);
+          if (rows.length < AUTH_PAGE) { computeAuthority(authMatsAll); return; }
+          try { collectAuthority(authTotal); } catch (e) { computeAuthority(authMatsAll || []); }
+        })
+        .catch(function () {
+          /* 权威值拉取失败：退化为沿用服务器现有第8段(不主动覆盖)，前7段照常一次上传 */
+          try { statsUploadToServer(accountId, total, pc); } catch (e3) {}
+        });
+    }
+    var authMatsAll = null;
+    function computeAuthority(mats) {
+      var av = null;
+      try { av = authorityFromMatches(mats || []); } catch (eA) { av = null; }
+      try { statsUploadToServer(accountId, total, pc, av); } catch (e3) {}
     }
   })();
 }
@@ -1735,9 +1768,15 @@ function loadProgress() {
         if (_pid) _pid.textContent = String(localStats.last_lol_id);
       }
       if (localStats.last_stats) {
-        /* v129.8.7: 顶部不再用本地 last_stats(可能是 C# 漏计临时值)直接显示，
-          只显示"统计中"占位，真实数字由 refreshSeasonStatsFromServer 明细统计给出。 */
-        try { setStatsPending(); } catch (e2) {}
+        /* v129.8.8: 顶部直接读 last_stats 前7段(快，瞬间显示)，数据正确性由
+           refreshSeasonStatsFromServer 后台统计后覆盖服务器前7段保证。 */
+        try {
+          var _ss = String(localStats.last_stats).split("|");
+          var _cherry = parseInt(_ss[0], 10) || 0, _c6 = [];
+          if (_ss.length >= 7) { for (var _i = 1; _i <= 6; _i++) _c6.push(parseInt(_ss[_i], 10) || 0); }
+          else { _c6 = [parseInt(_ss[1], 10) || 0, 0, 0, 0, 0, 0]; }
+          setStatsDisplay(_cherry, _c6);
+        } catch (e3) {}
       }
     } catch (e) {}
   }
@@ -1777,9 +1816,20 @@ function loadProgress() {
         sortApplied = true;
       }
       if (!statsApplied && rr.last_stats) {
-        /* v129.8.7: 顶部不再用服务器 last_stats(可能是 C# 漏计临时值 663)直接显示，
-          只显示"统计中"占位，真实数字由 refreshSeasonStatsFromServer 明细统计给出。 */
-        try { setStatsPending(); } catch (e2) {}
+        /* v129.8.8: 顶部直接读服务器 last_stats 前7段(快)，数据正确性由
+           refreshSeasonStatsFromServer 后台统计后覆盖服务器前7段保证。 */
+        try {
+          var ss = String(rr.last_stats).split("|");
+          var cherry = parseInt(ss[0], 10) || 0;
+          var counts = [];
+          if (ss.length >= 7) {
+            for (var i = 1; i <= 6; i++) counts.push(parseInt(ss[i], 10) || 0);
+          } else {
+            // 旧格式（场数|第一名次数）：其余名次暂时记 0
+            counts = [parseInt(ss[1], 10) || 0, 0, 0, 0, 0, 0];
+          }
+          setStatsDisplay(cherry, counts);
+        } catch (e3) {}
         statsApplied = true;
       }
       if (syncId && statsApplied && skinApplied && sortApplied) break;
@@ -2372,11 +2422,13 @@ function loadAuthorityForAccount(accountId) {
     try { var la = ucGet("authority"); if (la && String(la.account || "") === String(accountId)) localOk = true; } catch (e) {}
   }
   if (localOk) show(local, true);
+  /* v129.8.8: 不再单独 authorityUploadToServer 写第8段 —— 权威值服务器写入统一由
+     refreshFromServer→refreshSeasonStatsFromServer 合并上传(前7段+权威段一次PATCH)完成，
+     避免两次写互相覆盖竞态。此处只计算/展示/写本地缓存。 */
   sbFetch("arena_matches?select=champion_name,placement&account=eq." + encodeURIComponent(accountId) + "&is_self=eq.true")
     .then(function (mats) {
       var sc = authorityFromMatches(mats || []);
       authoritySaveLocal(accountId, sc);
-      authorityUploadToServer(accountId, sc);
       show(sc, true);
     })
     .catch(function () {});
