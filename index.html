@@ -2300,71 +2300,56 @@ function openLeaderboard() {
   if (list) list.innerHTML = '<div class="rank-empty">加载中…</div>';
   var selfEl = document.getElementById("rankSelf");
   if (selfEl) selfEl.style.display = "none";
-  /* 权威值分上传到服务器(last_stats 第8段)，排行榜直接读服务器存的权威值分，不实时算。
-     兼容: 对老扫描数据(无权威值段)回退按战绩实时算(仅兜底旧行)。 */
-  sbFetch("arena_progress?select=user_id,last_lol_id,last_stats_at,updated_at,last_stats&last_lol_id=not.is.null")
-  .then(function(rows) {
+  /* 只显示已上传权威值(last_stats 第8段)的用户：
+     - 分页顺序读取 arena_progress(每页1000, offset游标循环至拉完),避免一次查询撞 PostgREST 1000行上限漏人
+     - 无权威值的用户不上榜、不实时重算(移除现算兜底,根治 is_self 全量拉取被截断导致权威虚降)
+     - 排名(权威值)在 TOP1000 之外的用户不占用排行榜 */
+  var collectAll = function(offset, acc) {
+    acc = acc || [];
+    return sbFetch("arena_progress?select=user_id,last_lol_id,last_stats_at,updated_at,last_stats&last_lol_id=not.is.null&order=updated_at.desc&limit=1000&offset=" + offset)
+    .then(function(rows) {
+      var list = rows || [];
+      for (var i = 0; i < list.length; i++) acc.push(list[i]);
+      if (list.length >= 1000) return collectAll(offset + list.length, acc); /* 还有下一页则继续按序读取 */
+      return acc;
+    });
+  };
+  collectAll(0).then(function(rows) {
     var users = [], seen = {};
     for (var i = 0; i < rows.length; i++) {
       var r = rows[i];
       if (!r || !r.last_lol_id) continue;
       if (seen[r.user_id]) continue;
       seen[r.user_id] = true;
-      users.push({ id: String(r.last_lol_id), scan: r.last_stats_at || r.updated_at || "", stats: r.last_stats || "" });
-    }
-    /* 先读服务器存好的权威值段(last_stats 第8段) */
-    for (var k = 0; k < users.length; k++) {
-      var ss = String(users[k].stats).split("|");
-      if (ss.length >= 8 && ss[7] !== "" && ss[7] !== undefined) {
-        var sv = parseFloat(ss[7]);
-        if (!isNaN(sv)) { users[k].authority = sv; users[k].authorityInt = authorityDisplay(sv); }
-      }
-    }
-    /* 对仍无权威值段的旧行兜底：从战绩实时算一次(需拉全量战绩) */
-    var needCalc = 0;
-    for (var nc = 0; nc < users.length; nc++) { if (typeof users[nc].authority === "undefined") needCalc++; }
-    if (needCalc > 0) {
-      return sbFetch("arena_matches?select=account,champion_name,placement&is_self=eq.true")
-      .then(function(mats) {
-        var accm = {};
-        for (var j = 0; j < (mats || []).length; j++) {
-          var x = mats[j], acc = String(x.account || "");
-          if (!acc) continue;
-          if (!accm[acc]) accm[acc] = [];
-          accm[acc].push(x);
-        }
-        for (var k2 = 0; k2 < users.length; k2++) {
-          if (typeof users[k2].authority !== "undefined") continue;
-          var am = accm[users[k2].id];
-          if (!am) continue;
-          users[k2].authority = authorityFromMatches(am);
-          users[k2].authorityInt = authorityDisplay(users[k2].authority);
-        }
-        return users;
+      var ss = String(r.last_stats || "").split("|");
+      /* 只有第8段存在且为有效数值的用户才进榜 */
+      if (ss.length < 8 || ss[7] === "" || ss[7] === undefined) continue;
+      var sv = parseFloat(ss[7]);
+      if (isNaN(sv)) continue;
+      users.push({
+        id: String(r.last_lol_id),
+        scan: String(r.updated_at || r.last_stats_at || ""),
+        stats: String(r.last_stats || ""),
+        authority: sv,
+        authorityInt: authorityDisplay(sv)
       });
     }
-    return users;
+    users.sort(function(a, b) {
+      /* 完整小数排名，不并列 */
+      if (a.authority !== b.authority) return b.authority - a.authority;
+      return String(a.id).localeCompare(String(b.id));
+    });
+    /* 只保留 TOP1000，排名1000名以外的用户不占用排行榜 */
+    if (users.length > 1000) users = users.slice(0, 1000);
+    window.rankUsers = users; window.rankPage = 0;
+    /* 记录"自己"：当前登录账号或当前扫描账号 */
+    var myId = "";
+    var pid = document.getElementById("playerIdText");
+    if (pid) myId = String(pid.innerText || "");
+    window.rankSelfId = myId ? String(myId) : "";
+    renderLeaderboard();
+    return null;
   })
-  .then(function(users) {
-      users.sort(function(a, b) {
-        if (typeof a.authority === "undefined") return 1;
-        if (typeof b.authority === "undefined") return -1;
-        if (a.authority !== b.authority) return b.authority - a.authority;
-        return String(a.id).localeCompare(String(b.id));
-      });
-      var kept = [];
-      for (var fk = 0; fk < users.length; fk++) {
-        if (typeof users[fk].authority !== "undefined") kept.push(users[fk]);
-      }
-      users = kept;
-      window.rankUsers = users; window.rankPage = 0;
-      var myId = "";
-      var pid = document.getElementById("playerIdText");
-      if (pid) myId = String(pid.innerText || "");
-      window.rankSelfId = myId ? String(myId) : "";
-      renderLeaderboard();
-      return null;
-    })
   .catch(function() { if (list) list.innerHTML = '<div class="rank-empty">读取失败</div>'; });
 }
 function renderLeaderboard() {
