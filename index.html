@@ -1068,7 +1068,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-21 02:58:17</div>
+    <div class="web-update-time">网页版更新时间：2026-09-21 03:04:46</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -1089,7 +1089,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
     <div class="login-error" id="loginError"></div>
     <div class="login-download">
       <a class="download-btn" href="download/LoLArena.exe" download>下载 Windows 桌面版</a>
-      <div class="download-time">桌面版更新时间：2026-09-21 02:58:17</div>
+      <div class="download-time">桌面版更新时间：2026-09-21 03:04:46</div>
     </div>
   </div>
 </div>
@@ -1635,6 +1635,49 @@ function setStatsDisplay(cherry, counts) {
   el.textContent = "本赛季斗魂 " + (cherry || 0) + " 场：" + c.join("，") + "。";
 }
 
+/* v129.8.7(网页端同步): 顶部"统计中"占位。顶部整串只由 refreshSeasonStatsFromServer(服务器明细统计)给出，
+   绝不用 last_stats/C# 临时值(如663)直接显示，避免把漏计的旧临时数当成真实数据。 */
+function setStatsPending() {
+  var el = document.getElementById("statsText");
+  if (el) el.textContent = "本赛季斗魂 统计中…";
+}
+
+/* v129.8.7(网页端同步): 把服务器明细统计的真实值更新到 arena_progress.last_stats 前7段(cherry|p1..p6)，
+   保留权威段(第8段)。用于修正 C# 扫描时写入的漏计临时值(如 663)。 */
+function statsUploadToServer(accountId, cherry, pc) {
+  if (!currentUserId || !accountId) return Promise.resolve(false);
+  return ensureAuthToken().then(function (ok) {
+    if (!ok) return false;
+    return fetch(SUPA_URL + "/rest/v1/arena_progress?user_id=eq." + currentUserId + "&select=last_lol_id,last_stats&order=updated_at.desc&limit=50", {
+      headers: { "apikey": SUPA_KEY, "Authorization": "Bearer " + SUPA_KEY }
+    })
+    .then(function (r) { return r.json(); })
+    .then(function (rows) {
+      if (!rows || !rows.length) return false;
+      var rr = null;
+      for (var ri = 0; ri < rows.length; ri++) {
+        var rr2 = rows[ri];
+        if (!rr2) continue;
+        if (String(rr2.last_lol_id || "") === String(accountId)) { rr = rr2; break; }
+      }
+      if (!rr) return false;
+      var old = rr.last_stats ? String(rr.last_stats) : "";
+      var seg = old.split("|");
+      var ns7 = String(cherry || 0);
+      for (var i2 = 0; i2 < 6; i2++) ns7 += "|" + ((pc && pc[i2]) || 0);
+      var authSeg = (seg && seg.length >= 8 && seg[7] !== undefined && seg[7] !== null && String(seg[7]) !== "" && !isNaN(parseInt(seg[7], 10))) ? String(seg[7]) : "";
+      var newStats = authSeg ? (ns7 + "|" + authSeg) : ns7;
+      if (String(old) === String(newStats)) return true;
+      return fetch(SUPA_URL + "/rest/v1/arena_progress?user_id=eq." + currentUserId, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", "apikey": SUPA_KEY, "Authorization": "Bearer " + actTok(), "Prefer": "return=minimal" },
+        body: JSON.stringify({ last_stats: newStats, last_stats_at: new Date().toISOString() })
+      }).then(function (resp) { return (resp && resp.ok) ? true : false; });
+    })
+    .catch(function () { return false; });
+  }).catch(function () { return false; });
+}
+
 /* v129.8.6(网页端同步): 顶部"本赛季斗魂X场 + 六档名次次数"改为从服务器 arena_matches 明细精确统计，
    不再依赖 C# 扫描临时算的 cherry_games/place_counts（C# 曾漏计导致 663 vs 明细 668 不一致）。
    采用与 loadUsageCount 一致的普通 fetch 拉明细 json + offset 分页(按 game_start_timestamp 排序翻页)
@@ -1673,6 +1716,9 @@ function refreshSeasonStatsFromServer(accountId) {
         for (var s2 = 0; s2 < 6; s2++) ss += "|" + (pc[s2] || 0);
         ucSave("stats", { last_lol_id: accountId || "", last_stats: ss });
       } catch (e2) {}
+      /* v129.8.7: 把服务器明细统计的真实值回写 arena_progress.last_stats 前7段，
+         修正 C# 扫描时写错的漏计临时值(如 663)。保留权威段(第8段)不被覆盖。 */
+      try { statsUploadToServer(accountId, total, pc); } catch (e3) {}
     }
   })();
 }
@@ -1689,11 +1735,9 @@ function loadProgress() {
         if (_pid) _pid.textContent = String(localStats.last_lol_id);
       }
       if (localStats.last_stats) {
-        var _ss = String(localStats.last_stats).split("|");
-        var _cherry = parseInt(_ss[0], 10) || 0, _c6 = [];
-        if (_ss.length >= 7) { for (var _i = 1; _i <= 6; _i++) _c6.push(parseInt(_ss[_i], 10) || 0); }
-        else { _c6 = [parseInt(_ss[1], 10) || 0, 0, 0, 0, 0, 0]; }
-        setStatsDisplay(_cherry, _c6);
+        /* v129.8.7: 顶部不再用本地 last_stats(可能是 C# 漏计临时值)直接显示，
+          只显示"统计中"占位，真实数字由 refreshSeasonStatsFromServer 明细统计给出。 */
+        try { setStatsPending(); } catch (e2) {}
       }
     } catch (e) {}
   }
@@ -1733,16 +1777,9 @@ function loadProgress() {
         sortApplied = true;
       }
       if (!statsApplied && rr.last_stats) {
-        var ss = String(rr.last_stats).split("|");
-        var cherry = parseInt(ss[0], 10) || 0;
-        var counts = [];
-        if (ss.length >= 7) {
-          for (var i = 1; i <= 6; i++) counts.push(parseInt(ss[i], 10) || 0);
-        } else {
-          // 旧格式（场数|第一名次数）：其余名次暂时记 0
-          counts = [parseInt(ss[1], 10) || 0, 0, 0, 0, 0, 0];
-        }
-        setStatsDisplay(cherry, counts);
+        /* v129.8.7: 顶部不再用服务器 last_stats(可能是 C# 漏计临时值 663)直接显示，
+          只显示"统计中"占位，真实数字由 refreshSeasonStatsFromServer 明细统计给出。 */
+        try { setStatsPending(); } catch (e2) {}
         statsApplied = true;
       }
       if (syncId && statsApplied && skinApplied && sortApplied) break;
