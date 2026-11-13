@@ -1068,7 +1068,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-09-21 04:23:41</div>
+    <div class="web-update-time">网页版更新时间：2026-11-13 14:52:00</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -1448,25 +1448,9 @@ var currentSortMode = 1;
 /* 各英雄使用场次映射（champion_name小写 -> 场次数），从 arena_matches 统计 */
 var usageCount = {};
 
-// ===== 统一本地缓存兜底层（网页版, v110） =====
-// 与桌面版 BAN 位同模式：先读本地缓存兜底显示，再从服务器覆盖并写回。
-// 网页版（浏览器）用 localStorage 即可，无需 IE userData。
-function ucKey(n) { return "lolArenaUC_" + n + "_" + (currentUserId || "guest"); }
-function ucSave(n, obj) {
-  var k = "lolArenaUC_" + n + "_" + (currentUserId || "guest");
-  var s; try { s = (typeof obj === "string") ? obj : JSON.stringify(obj); } catch (e) { return; }
-  if (!s) return;
-  try { localStorage.setItem(k, s); } catch (e) {}
-}
-function ucLoad(n) {
-  var k = "lolArenaUC_" + n + "_" + (currentUserId || "guest");
-  try { var v = localStorage.getItem(k); if (v) return v; } catch (e) {}
-  return "";
-}
-function ucGet(n) {
-  var s = ucLoad(n); if (!s) return null;
-  try { var o = JSON.parse(s); return o; } catch (e) { return null; }
-}
+/* v136: 本地缓存（ucKey/ucSave/ucLoad/ucGet）已整体删除。
+   页面展示的数据只认服务器：账号/排序/皮肤/头像大小读 arena_progress，
+   场数/名次/冠军集合/使用场次/权威值 由 arena_matches 明细现算。 */
 
 function getImg(id) {
   return "https://ddragon.leagueoflegends.com/cdn/" + DD_VERSION + "/img/champion/" + id + ".png";
@@ -1718,12 +1702,7 @@ function refreshSeasonStatsFromServer(accountId) {
     function finish() {
       if (total === 0) return;                     /* 完全拿不到不进展示(保留现有/兜底) */
       try { setStatsDisplay(total, pc); } catch (e) {}
-      /* 把真实统计写本地 stats 缓存兜底 */
-      try {
-        var ss = String(total);
-        for (var s2 = 0; s2 < 6; s2++) ss += "|" + (pc[s2] || 0);
-        ucSave("stats", { last_lol_id: accountId || "", last_stats: ss });
-      } catch (e2) {}
+      /* v136: 不再写本地 stats 缓存（只认服务器） */
       /* v129.8.8: 从服务器明细全集一次算出权威值(第8段)，与前面七段合并为一次完整 PATCH 上传。
          权威值口径与 loadAuthorityForAccount 一致(全集 champion_name+placement → authorityFromMatches)。
          杜绝"前7段 statsUploadToServer 与权威段 authorityUploadToServer 各自读旧值、互为覆盖"的竞态。
@@ -1758,33 +1737,9 @@ function refreshSeasonStatsFromServer(accountId) {
 
 // ===== Supabase progress =====
 function loadProgress() {
-  /* v110 本地兜底：服务器返回前先用本地缓存的 排序/战绩统计/账号 恢复显示 */
-  var localStats = ucGet("stats");
-  if (localStats && typeof localStats === "object") {
-    try {
-      if (localStats.last_lol_id && !hasScannedId) {
-        hasScannedId = true;
-        var _pid = document.getElementById("playerIdText");
-        if (_pid) _pid.textContent = String(localStats.last_lol_id);
-      }
-      if (localStats.last_stats) {
-        /* v129.8.8: 顶部直接读 last_stats 前7段(快，瞬间显示)，数据正确性由
-           refreshSeasonStatsFromServer 后台统计后覆盖服务器前7段保证。 */
-        try {
-          var _ss = String(localStats.last_stats).split("|");
-          var _cherry = parseInt(_ss[0], 10) || 0, _c6 = [];
-          if (_ss.length >= 7) { for (var _i = 1; _i <= 6; _i++) _c6.push(parseInt(_ss[_i], 10) || 0); }
-          else { _c6 = [parseInt(_ss[1], 10) || 0, 0, 0, 0, 0, 0]; }
-          setStatsDisplay(_cherry, _c6);
-        } catch (e3) {}
-      }
-    } catch (e) {}
-  }
-  var localSort = ucGet("sort");
-  if (localSort !== null && localSort !== undefined && !isNaN(parseInt(localSort, 10))) {
-    currentSortMode = parseInt(localSort, 10) || 1;
-  }
-  if (currentSortMode) updateSortBtn();
+  /* v136: 不读任何本地缓存。账号/排序/皮肤/头像大小来自 arena_progress；
+     场数·名次·冠军集合·使用场次·权威值 全部由 arena_matches 明细现算。 */
+  try { setStatsPending(); } catch (e) {}
 
   fetch(SUPA_URL + "/rest/v1/arena_progress?user_id=eq." + currentUserId, {
     headers: { "apikey": SUPA_KEY, "Authorization": "Bearer " + SUPA_KEY }
@@ -1834,13 +1789,6 @@ function loadProgress() {
       }
       if (syncId && statsApplied && skinApplied && sortApplied) break;
     }
-    /* v110 服务器回填后写回本地缓存：账号 / 战绩统计 / 排序 */
-    try {
-      var statsCached = null;
-      for (var _sv = 0; _sv < rows.length; _sv++) { if (rows[_sv] && rows[_sv].last_stats) { statsCached = String(rows[_sv].last_stats); break; } }
-      ucSave("stats", { last_lol_id: syncId || "", last_stats: statsCached || "" });
-      ucSave("sort", String(currentSortMode));
-    } catch (e) {}
     // hero_ids 已废弃：冠军集合改从对局名次(placement==1)查询推导
     loadFirstPlaceHeroes(syncId);
     loadUsageCount(syncId);
@@ -1883,12 +1831,7 @@ function loadFirstPlaceHeroes(accountId) {
       }
     } catch (e) {}
   };
-  /* v110 本地兜底：先从本地缓存显示，再从服务器覆盖 */
-  var localSet = ucGet("first");
-  if (localSet && typeof localSet === "object") {
-    for (var lk in localSet) { if (Object.prototype.hasOwnProperty.call(localSet, lk) && localSet[lk]) idSet[lk] = true; }
-    applyAndRender();
-  }
+  /* v136: 不读本地缓存，冠军集合只由服务器明细(placement=1)推导 */
   if (!accountId) { applyAndRender(); return; }
   /* v129.8.2: 改用 sbFetch(15s 超时+HTTP状态检查+reject)，与 loadUsageCount 看齐，
      修复扫描后裸 fetch 在 IE11 file:// 下超时/失败时只在 catch 里空跑、冠军集合停留在
@@ -1900,8 +1843,6 @@ function loadFirstPlaceHeroes(accountId) {
       var hn = String(mats[j].champion_name || "").toLowerCase();
       if (hn) idSet[hn] = true;
     }
-    var snap = {}; for (var sk in idSet) { if (Object.prototype.hasOwnProperty.call(idSet, sk)) snap[sk] = true; }
-    ucSave("first", snap);
     applyAndRender();
     revertSkinIfLocked(true);  // 服务器确认后：皮肤已锁回则回退默认
   })
@@ -2086,7 +2027,6 @@ document.addEventListener("click", function(e) {
 var AVATAR_SMALL = "small";
 var AVATAR_LARGE = "large";
 var currentAvatarSize = AVATAR_SMALL;
-function avatarSizeKey() { return "lolArenaAvatarSize_" + (currentUserId || "guest"); }
 function setAvatarSize() {
   var btn = document.getElementById("avatarBtn");
   if (btn) btn.textContent = (currentAvatarSize === AVATAR_LARGE) ? "大头像" : "小头像";
@@ -2103,7 +2043,6 @@ function applyAvatarSize() {
   } else {
     body.className = (body.className.replace(/\bav-small\b|\bav-large\b/g, "") + " av-small").replace(/^\s+|\s+$/g, "");
   }
-  try { window.localStorage.setItem(avatarSizeKey(), currentAvatarSize); } catch (e) {}
   setAvatarSize();
 }
 function saveAvatarSize() {
@@ -2130,9 +2069,8 @@ function toggleAvatarSize() {
 }
 /* 登录后应用上次的头像大小选择 */
 function restoreAvatarSize() {
-  var v = AVATAR_SMALL;
-  try { var ls = window.localStorage.getItem(avatarSizeKey()); if (ls === AVATAR_LARGE || ls === AVATAR_SMALL) v = ls; } catch (e) {}
-  currentAvatarSize = v;
+  /* v136: 不读本地，等服务器 arena_progress.avatar_size 回来再应用 */
+  currentAvatarSize = AVATAR_SMALL;
   applyAvatarSize();
   /* 跨设备：登录后以服务器账号头像大小为最终值覆盖本地 */
   if (currentUserId) {
@@ -2220,12 +2158,7 @@ function sortedChampions() {
 /* 使用场次统计：从 arena_matches 按当前账号统计各英雄出场次数 */
 function loadUsageCount(accountId) {
   usageCount = {};
-  /* v110 本地兜底：先从本地缓存显示，再从服务器覆盖 */
-  var localU = ucGet("usage");
-  if (localU && typeof localU === "object") {
-    for (var lk in localU) { if (Object.prototype.hasOwnProperty.call(localU, lk)) usageCount[lk] = localU[lk] || 0; }
-    renderGrid();
-  }
+  /* v136: 不读本地缓存，使用场次只由服务器明细统计 */
   if (!accountId) { renderGrid(); return; }
   sbFetch("arena_matches?select=champion_name&account=eq." + encodeURIComponent(accountId) + "&is_self=eq.true")
   .then(function(mats) {
@@ -2233,8 +2166,6 @@ function loadUsageCount(accountId) {
       var hn = String(mats[j].champion_name || "").toLowerCase();
       if (hn) usageCount[hn] = (usageCount[hn] || 0) + 1;
     }
-    var snap = {}; for (var sk in usageCount) { if (Object.prototype.hasOwnProperty.call(usageCount, sk)) snap[sk] = usageCount[sk]; }
-    ucSave("usage", snap);
     renderGrid();
   })
   .catch(function() { renderGrid(); });
@@ -2268,8 +2199,7 @@ function setSortMode(mode) {
 }
 
 function saveSortMode(mode) {
-  /* v110 本地缓存兜底：先落本地，即使服务器写入失败也优先显示本地选择 */
-  try { ucSave("sort", String(mode)); } catch (e) {}
+  /* v136: 只写服务器 arena_progress.sort_mode，不再落本地 */
   if (!currentUserId) return;
   var url = SUPA_URL + "/rest/v1/arena_progress?user_id=eq." + currentUserId;
   fetch(url, { headers: { "apikey": SUPA_KEY, "Authorization": "Bearer " + SUPA_KEY } })
@@ -2368,20 +2298,10 @@ function authorityDisplay(score) {
   if (score === null || score === undefined || isNaN(score)) return "";
   return Math.floor(score);
 }
-/* 存储：本地 ucSave("authority", {account, value})；服务器追加上该 user 的 arena_progress.last_stats 第8段。
-   权威值 = authorityFromMatches(该账号 arena_matches 全集)。扫描可能是增量，故权威值必须以服务器全集战绩为准，
+/* 权威值 = authorityFromMatches(该账号 arena_matches 全集)。
+   v136: 不再写/读本地缓存，唯一来源是服务器全集战绩。
+   扫描可能是增量，故权威值必须以服务器全集战绩为准，
    绝不从单次扫描 data 的 heroes/place_counts 直接算。 */
-function authoritySaveLocal(accountId, value) {
-  try {
-    var snap = {};
-    if (accountId) snap.account = String(accountId);
-    snap.value = value;
-    ucSave("authority", snap);
-  } catch (e) {}
-}
-function authorityLoadLocal() {
-  try { var a = ucGet("authority"); return (a && typeof a.value === "number") ? a.value : null; } catch (e) { return null; }
-}
 function authorityUploadToServer(accountId, value) {
   if (!currentUserId || !accountId) return;
   fetch(SUPA_URL + "/rest/v1/arena_progress?user_id=eq." + currentUserId + "&select=last_lol_id,last_stats&order=updated_at.desc&limit=50", {
@@ -2433,19 +2353,25 @@ function loadAuthorityForAccount(accountId) {
     el.innerHTML = " 权威值：<b>" + authorityDisplay(score) + "分</b>";
   };
   if (!accountId) { show(null, false); return; }
-  var local = authorityLoadLocal();
-  var localOk = false;
-  if (local !== null && local !== undefined && !isNaN(local)) {
-    try { var la = ucGet("authority"); if (la && String(la.account || "") === String(accountId)) localOk = true; } catch (e) {}
-  }
-  if (localOk) show(local, true);
   /* v129.8.8: 不再单独 authorityUploadToServer 写第8段 —— 权威值服务器写入统一由
      refreshFromServer→refreshSeasonStatsFromServer 合并上传(前7段+权威段一次PATCH)完成，
      避免两次写互相覆盖竞态。此处只计算/展示/写本地缓存。 */
-  sbFetch("arena_matches?select=champion_name,placement&account=eq." + encodeURIComponent(accountId) + "&is_self=eq.true")
+  /* v133: 分页拉全集战绩再算权威值。PostgREST 单次查询硬限 1000 行，
+     之前不带 limit/offset 一次取，局数过千时会被截断导致权威值偏低。 */
+  var allMats = [], off = 0, PAGE_AUTH = 1000;
+  var fetchPage = function () {
+    return sbFetch("arena_matches?select=champion_name,placement&account=eq." + encodeURIComponent(accountId) +
+                   "&is_self=eq.true&order=game_start_timestamp.desc&limit=" + PAGE_AUTH + "&offset=" + off)
+      .then(function (rows) {
+        var arr = rows || [];
+        for (var i = 0; i < arr.length; i++) allMats.push(arr[i]);
+        if (arr.length >= PAGE_AUTH) { off += arr.length; return fetchPage(); }
+        return allMats;
+      });
+  };
+  fetchPage()
     .then(function (mats) {
       var sc = authorityFromMatches(mats || []);
-      authoritySaveLocal(accountId, sc);
       show(sc, true);
     })
     .catch(function () {});
@@ -2723,13 +2649,8 @@ function loadAllPage() {
   if (!window.allMode) return;
   var list = document.getElementById("hdMatchList");
   var off = (window.allPage || 0) * 10;
-  /* v110 本地兜底：先用缓存的本页显示，再从服务器覆盖 */
-  var cached = ucGet("allM_" + String(hdCtx.account || "") + "_" + off);
-  if (cached && typeof cached === "object" && Object.prototype.toString.call(cached) === "[object Array]" && cached.length > 0) {
-    renderAllMatches(cached);
-  } else {
-    if (list) list.innerHTML = '<div class="hd-match"><div class="hm-date">加载中...</div></div>';
-  }
+  /* v136: 不读本地缓存，直接从服务器拉本页 */
+  if (list) list.innerHTML = '<div class="hd-match"><div class="hm-date">加载中...</div></div>';
   var path = "arena_matches?account=eq." + encodeURIComponent(hdCtx.account) +
     "&is_self=eq.true&game_mode=eq.CHERRY&select=game_id,game_start_timestamp,placement,champion_name" +
     /* v129.8.9: 分页加稳定二级排序键 game_id(唯一)。仅按 game_start_timestamp 排序时同秒对局
@@ -2738,16 +2659,10 @@ function loadAllPage() {
   sbFetch(path)
   .then(function(rows) {
     if (!window.allMode) return;
-    try { ucSave("allM_" + String(hdCtx.account || "") + "_" + off, rows || []); } catch (e) {}
     renderAllMatches(rows || []);
   })
   .catch(function() {
     if (!window.allMode) return;
-    var hasCached = ucGet("allM_" + String(hdCtx.account || "") + "_" + off);
-    if (hasCached && Object.prototype.toString.call(hasCached) === "[object Array]" && hasCached.length > 0) {
-      renderAllMatches(hasCached);
-      return;
-    }
     var l = document.getElementById("hdMatchList"); if (l) l.innerHTML = '<div class="hd-match"><div class="hm-date">加载失败</div></div>';
     setAllPager(false, false);
     showHdToast("全部战绩加载失败，请重试");
@@ -2860,21 +2775,16 @@ function showMatch(el) {
 function loadHeroDetailData() {
   if (!hdCtx.account) return;
   var myHero = hdCtx.heroEn;
-  var cacheKey = "heroM_" + String(hdCtx.account || "") + "_" + String(hdCtx.heroEn || "").toLowerCase();
   var path = "arena_matches?account=eq." + encodeURIComponent(hdCtx.account) +
     "&is_self=eq.true&game_mode=eq.CHERRY&champion_name=ilike." + encodeURIComponent(hdCtx.heroEn) +
     "&select=game_id,game_start_timestamp,placement,kills,deaths,assists,total_damage_dealt_to_champions&order=game_start_timestamp.desc";
-  /* v110 本地兜底：先用本地缓存该英雄的战绩立即填充，再从服务器覆盖 */
-  var cachedRows = ucGet(cacheKey);
-  if (cachedRows && Object.prototype.toString.call(cachedRows) === "[object Array]" && cachedRows.length > 0) {
-    hdCtx.matches = cachedRows;
-    renderHeroSet(cachedRows);
-  }
+  /* v136: 不读本地缓存，直接从服务器拉该英雄战绩 */
+  var list0 = document.getElementById("hdMatchList");
+  if (list0) list0.innerHTML = '<div class="hd-match"><div class="hm-date">加载中...</div></div>';
   sbFetch(path)
   .then(function(rows) {
     if (hdCtx.heroEn !== myHero) return; /* 已切换英雄则丢弃旧请求 */
     hdCtx.matches = rows || [];
-    try { ucSave(cacheKey, hdCtx.matches); } catch (e) {}
     renderHeroSet(hdCtx.matches);
   })
   .catch(function() {
