@@ -1116,7 +1116,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-11-14 04:15:00</div>
+    <div class="web-update-time">网页版更新时间：2026-11-14 04:35:00</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -1137,7 +1137,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
     <div class="login-error" id="loginError"></div>
     <div class="login-download">
       <a class="download-btn" id="dlBtn" href="download/LoLArena.exe" download>下载 Windows 桌面版<span class="dl-fill" id="dlFill"></span></a>
-      <div class="download-time">桌面版更新时间：2026-11-14 04:15:00</div>
+      <div class="download-time">桌面版更新时间：2026-11-14 04:35:00</div>
     </div>
   </div>
 </div>
@@ -1775,6 +1775,7 @@ function refreshSeasonStatsFromServer(accountId) {
   /* v137: 提供"统计完成"信号，登录界面据此决定何时进入主页（不改统计逻辑） */
   var _resDone = null;
   var _done = new Promise(function (res) { _resDone = res; });
+  var _pageRetry = 0;   /* v140: 单页请求失败重试次数（偶发超时不该让场数停在旧值） */
   (function nextPage() {
     var q = "arena_matches?select=placement&account=eq." + encodeURIComponent(accountId) +
             "&is_self=eq.true&game_start_timestamp=gte." + SEASON_START_MS +
@@ -1790,9 +1791,18 @@ function refreshSeasonStatsFromServer(accountId) {
         }
         if (rows.length < PAGE) { finish(); return; }
         offset += rows.length;
+        _pageRetry = 0;   /* 换到下一页才重置重试计数（同一页最多重试 1 次，避免无限循环） */
         try { nextPage(); } catch (e) { finish(); }
       })
-      .catch(function () { finish(); });
+      .catch(function () {
+        /* v140: 先重试一次同一页（偶发超时），仍失败才收尾 */
+        if (_pageRetry < 1) {
+          _pageRetry++;
+          setTimeout(function () { try { nextPage(); } catch (eR) { finish(); } }, 800);
+          return;
+        }
+        finish();
+      });
     function finish() {
       var _fin = _resDone; _resDone = null;        /* 取完即置空，保证只收尾一次 */
       if (total === 0) { if (_fin) _fin(); return; }  /* 完全拿不到不进展示(保留现有/兜底) */
