@@ -245,6 +245,18 @@ body::before {
 .player-id-box b { color: #f0e6d2; font-weight: 600; }
 .player-id-box .authority-hint { margin-left: 10px; color: #e9b949; }
 .player-id-box .authority-hint b { color: #f7d37a; font-weight: 600; }
+/* ===== 权威值悬停说明（与桌面版同一套外观） ===== */
+.ab-tooltip {
+  position: fixed; display: none; padding: 6px 10px; font-size: 11px; line-height: 1.4;
+  color: #f0e6d2; background: rgba(6,14,22,.98); border: 1px solid #785a28; border-radius: 3px;
+  z-index: 9999; pointer-events: none; box-shadow: 0 2px 8px rgba(0,0,0,.5); max-width: 220px;
+}
+.ab-tooltip.auth-tip { max-width: 340px; max-width: min(340px, calc(100vw - 24px)); padding: 9px 12px; font-size: 11px; line-height: 1.65; box-sizing: border-box; }
+.auth-tip .at-title { color: #e9b949; font-weight: 600; margin: 1px 0 3px; }
+.auth-tip .at-row { color: #cfd8e3; }
+.auth-tip .at-sep { height: 1px; background: rgba(120,90,40,.45); margin: 6px 0 5px; }
+.auth-tip b { color: #f7d37a; font-weight: 600; }
+.player-id-box .authority-hint { cursor: help; border-bottom: 1px dotted rgba(233,185,73,.45); }
 .placement-bar {
   margin-top: 8px;
   font-size: 12px;
@@ -1065,10 +1077,12 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
 
 <body class="skin-gold">
 
+<div class="ab-tooltip auth-tip" id="authTip"></div>
+
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-11-13 14:52:00</div>
+    <div class="web-update-time">网页版更新时间：2026-11-13 15:00:00</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -2269,7 +2283,8 @@ function fmtScanTime(v) {
 }
 
 /* ===== 权威值系统（与桌面版对齐。权威值分上传服务器 last_stats 第8段，排行榜直接读服务器分，不实时算） ===== */
-function authorityFromMatches(mats) {
+/* 权威值拆解（唯一口径）：主页显示、悬停说明、排行榜都用这一份结果 */
+function authorityBreakdown(mats) {
   var total = 0, p1 = 0, p2 = 0, p3 = 0;
   var win = {}, played = {};
   if (mats) {
@@ -2292,7 +2307,75 @@ function authorityFromMatches(mats) {
   var base = total * 1 + p3 * 1 + p2 * 3 + p1 * 7;
   var ratio = winCnt / 173;   // 吃鸡英雄数 ÷ 全部英雄数(约173)
   var fixed = playedCnt * 10 + winCnt * 10 + 0;  // 成就点暂为0
-  return base * ratio + fixed;
+  return { total: total, p1: p1, p2: p2, p3: p3, winCnt: winCnt, playedCnt: playedCnt,
+           base: base, ratio: ratio, fixed: fixed, score: base * ratio + fixed };
+}
+var _authBD = null;   // 最近一次算出的权威值明细，供主页悬停说明显示
+function authorityFromMatches(mats) {
+  var bd = authorityBreakdown(mats);
+  _authBD = bd;
+  return bd.score;
+}
+
+/* ===== 主页「权威值」悬停说明：公式 + 当前账号的拆解明细（口径与 authorityBreakdown 同一份） ===== */
+function buildAuthTipHtml() {
+  var head = '<div class="at-title">权威值怎么算</div>'
+    + '<div class="at-row">权威值 = 基础分 × 英雄系数 + 成就分（显示时向下取整）</div>'
+    + '<div class="at-row">· 基础分 = 场次×1 + 第3名×1 + 第2名×3 + 第1名×7</div>'
+    + '<div class="at-row">· 英雄系数 = 拿过第一名的英雄数 ÷ 173</div>'
+    + '<div class="at-row">· 成就分 = 玩过的英雄数×10 + 拿过第一名的英雄数×10</div>'
+    + '<div class="at-row">· 统计范围：本赛季（2026-04-29 起）该账号全部斗魂对局</div>';
+  var bd = _authBD;
+  if (!bd || !bd.total) return head;
+  var r = Math.round(bd.ratio * 10000) / 10000;
+  return head
+    + '<div class="at-sep"></div><div class="at-title">你的明细</div>'
+    + '<div class="at-row">场次 ' + bd.total + ' · 第1名 ' + bd.p1 + ' · 第2名 ' + bd.p2 + ' · 第3名 ' + bd.p3 + '</div>'
+    + '<div class="at-row">基础分 = ' + bd.total + '×1 + ' + bd.p3 + '×1 + ' + bd.p2 + '×3 + ' + bd.p1 + '×7 = <b>' + bd.base + '</b></div>'
+    + '<div class="at-row">英雄系数 = ' + bd.winCnt + ' ÷ 173 ≈ ' + r + '</div>'
+    + '<div class="at-row">成就分 = 玩过 ' + bd.playedCnt + ' 个英雄×10 + 夺冠 ' + bd.winCnt + ' 个英雄×10 = <b>' + bd.fixed + '</b></div>'
+    + '<div class="at-row">权威值 = ' + bd.base + ' × ' + r + ' + ' + bd.fixed + ' ≈ <b>' + Math.floor(bd.score) + '分</b></div>';
+}
+function authTipShow() {
+  var el = document.getElementById("authorityText");
+  var tip = document.getElementById("authTip");
+  if (!el || !tip) return;
+  tip.innerHTML = buildAuthTipHtml();
+  tip.style.left = "0px"; tip.style.top = "0px"; tip.style.display = "block";
+  var r = el.getBoundingClientRect();
+  var w = tip.offsetWidth, h = tip.offsetHeight;
+  var vw = window.innerWidth || document.documentElement.clientWidth;
+  var vh = window.innerHeight || document.documentElement.clientHeight;
+  var left = r.left;
+  if (left + w > vw - 12) left = vw - w - 12;   /* 右侧放不下就往左收 */
+  if (left < 8) left = 8;
+  var top = r.bottom + 8;
+  if (top + h > vh - 8) top = r.top - h - 8;     /* 下方放不下就翻到上方 */
+  if (top < 8) top = 8;
+  tip.style.left = left + "px";
+  tip.style.top = top + "px";
+}
+function authTipHide() {
+  var tip = document.getElementById("authTip");
+  if (tip) tip.style.display = "none";
+}
+function authTipInit() {
+  var el = document.getElementById("authorityText");
+  if (!el) return;
+  el.onmouseover = function () { try { authTipShow(); } catch (e) {} };
+  el.onmouseout = function () { try { authTipHide(); } catch (e) {} };
+  /* 网页版补充：手机/触屏没有 hover，点一下也能看 */
+  el.onclick = function () {
+    try {
+      var tip = document.getElementById("authTip");
+      if (tip && tip.style.display === "block") { authTipHide(); } else { authTipShow(); }
+    } catch (e) {}
+  };
+}
+if (document.readyState === "complete") {
+  try { authTipInit(); } catch (e) {}
+} else {
+  window.addEventListener("load", function () { try { authTipInit(); } catch (e) {} });
 }
 function authorityDisplay(score) {
   if (score === null || score === undefined || isNaN(score)) return "";
