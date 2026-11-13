@@ -49,6 +49,8 @@ body::before {
   z-index: 9999;
 }
 .login-overlay.hidden { display: none; }
+/* 读取数据期间遮罩变全不透明，主页在下面就位但不透出 */
+.login-overlay.loading { background: #010a13; }
 
 .login-box {
   width: 340px;
@@ -157,6 +159,31 @@ body::before {
   opacity: 0.5;
   cursor: default;
 }
+/* 登录后读取数据期间：按钮原地转圈（文字透明，不出进度文案） */
+.login-submit { position: relative; }
+.login-submit.loading,
+.login-submit.loading:disabled {
+  opacity: 1;
+  color: transparent;
+  cursor: default;
+  background: linear-gradient(180deg, #c89b3c 0%, #785a28 100%);
+}
+.login-submit.loading::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  margin: -9px 0 0 -9px;
+  border: 2px solid rgba(1,10,19,0.25);
+  border-top-color: #010a13;
+  border-radius: 50%;
+  -webkit-animation: loginSpin 0.7s linear infinite;
+  animation: loginSpin 0.7s linear infinite;
+}
+@-webkit-keyframes loginSpin { to { -webkit-transform: rotate(360deg); } }
+@keyframes loginSpin { to { transform: rotate(360deg); } }
 .login-error {
   color: #e74c3c;
   font-size: 12px;
@@ -1089,7 +1116,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-11-14 01:09:00</div>
+    <div class="web-update-time">网页版更新时间：2026-11-14 02:02:00</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -1110,7 +1137,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
     <div class="login-error" id="loginError"></div>
     <div class="login-download">
       <a class="download-btn" id="dlBtn" href="download/LoLArena.exe" download>下载 Windows 桌面版<span class="dl-fill" id="dlFill"></span></a>
-      <div class="download-time">桌面版更新时间：2026-11-14 00:11:00</div>
+      <div class="download-time">桌面版更新时间：2026-11-14 02:02:00</div>
     </div>
   </div>
 </div>
@@ -1560,6 +1587,45 @@ function zhAuthError(raw) {
   return String(raw || "") || "操作失败";
 }
 
+/* 登录等待加载用的小工具（v137） */
+/* 手写计数等待（不用 Promise.all —— 桌面版 IE11 的 Promise polyfill 没有 all） */
+function waitAll(list) {
+  return new Promise(function (resolve) {
+    var left = list.length;
+    if (!left) { resolve(); return; }
+    var done = function () { left--; if (left === 0) resolve(); };
+    for (var i = 0; i < list.length; i++) {
+      try {
+        var p = list[i];
+        if (p && typeof p.then === "function") p.then(done, done);
+        else done();
+      } catch (e) { done(); }
+    }
+  });
+}
+function withTimeout(p, ms) {
+  return new Promise(function (resolve) {
+    var done = false;
+    var fin = function () { if (!done) { done = true; resolve(); } };
+    setTimeout(fin, ms);
+    if (p && typeof p.then === "function") p.then(fin, fin);
+    else fin();
+  });
+}
+function runLoad(fn, arg) {
+  var r = null;
+  try { r = fn(arg); } catch (e) { r = null; }
+  if (r && typeof r.then === "function") return r;
+  return Promise.resolve();
+}
+function setLoginLoading(on) {
+  var b = document.getElementById("loginSubmit");
+  if (b) {
+    b.disabled = !!on;
+    b.className = on ? "login-submit loading" : "login-submit";
+  }
+}
+
 function submitAuth() {
   var user = document.getElementById("loginUser").value.trim();
   var pass = document.getElementById("loginPass").value;
@@ -1567,7 +1633,7 @@ function submitAuth() {
   if (!user || !pass) { errEl.textContent = "请输入用户名和密码"; return; }
   if (pass.length < 6) { errEl.textContent = "密码至少6位"; return; }
 
-  document.getElementById("loginSubmit").disabled = true;
+  setLoginLoading(true);   /* 点下去就转圈：认证 + 读取数据全程都在登录界面完成 */
   errEl.textContent = "";
 
   var email = user + "@lolarena.app";
@@ -1588,22 +1654,31 @@ function submitAuth() {
   })
   .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, data: d }; }); })
   .then(function(res) {
-    document.getElementById("loginSubmit").disabled = false;
     if (!res.ok) {
+      setLoginLoading(false);
       errEl.textContent = zhAuthError(res.data.error_description || res.data.msg || "");
       return;
     }
     currentUserId = res.data.user.id;
     _authTok = res.data.access_token || "";
     saveRemember(user, pass);
-    document.getElementById("loginOverlay").classList.add("hidden");
+    /* v137: 主页先在遮罩下面就位（避免 display:none 下做布局/尺寸计算），
+       按钮继续转圈等数据全部读完，再揭开遮罩 —— 用户看到的第一眼就是完整页面 */
     document.getElementById("appContainer").style.display = "";
+    var _ov = document.getElementById("loginOverlay");
+    if (_ov) _ov.className = "login-overlay loading";
     leaveHeroDetail();  /* 登录后默认显示英雄界面，复位可能残留的详情视图 */
     restoreAvatarSize();  /* 登录后应用到上次选择的头像大小 */
-    loadProgress();
+    var enterHome = function () {
+      if (_ov) _ov.className = "login-overlay hidden";   /* 先揭开，再恢复按钮，避免中间态可见 */
+      setLoginLoading(false);
+    };
+    try {
+      loadProgress().then(enterHome, enterHome);
+    } catch (eP) { enterHome(); }
   })
   .catch(function(e) {
-    document.getElementById("loginSubmit").disabled = false;
+    setLoginLoading(false);
     errEl.textContent = "网络错误";
   });
 }
@@ -1697,11 +1772,14 @@ function statsUploadToServer(accountId, cherry, pc, authorityVal) {
    本地计数，兼容 IE11 fetch polyfill(不读响应头)。 */
 var SEASON_START_MS = 1777395600000; /* 与 C# Program.cs 一致：万魔殿S2 2026-04-29 01:00 北京时间 */
 function refreshSeasonStatsFromServer(accountId) {
-  if (!accountId || !window.fetch) return;
+  if (!accountId || !window.fetch) return Promise.resolve();
   var total = 0;
   var pc = [0, 0, 0, 0, 0, 0];
   var offset = 0;
   var PAGE = 1000;
+  /* v137: 提供"统计完成"信号，登录界面据此决定何时进入主页（不改统计逻辑） */
+  var _resDone = null;
+  var _done = new Promise(function (res) { _resDone = res; });
   (function nextPage() {
     var q = "arena_matches?select=placement&account=eq." + encodeURIComponent(accountId) +
             "&is_self=eq.true&game_start_timestamp=gte." + SEASON_START_MS +
@@ -1721,8 +1799,10 @@ function refreshSeasonStatsFromServer(accountId) {
       })
       .catch(function () { finish(); });
     function finish() {
-      if (total === 0) return;                     /* 完全拿不到不进展示(保留现有/兜底) */
+      var _fin = _resDone; _resDone = null;        /* 取完即置空，保证只收尾一次 */
+      if (total === 0) { if (_fin) _fin(); return; }  /* 完全拿不到不进展示(保留现有/兜底) */
       try { setStatsDisplay(total, pc); } catch (e) {}
+      if (_fin) _fin();
       /* v136: 不再写本地 stats 缓存（只认服务器） */
       /* v129.8.8: 从服务器明细全集一次算出权威值(第8段)，与前面七段合并为一次完整 PATCH 上传。
          权威值口径与 loadAuthorityForAccount 一致(全集 champion_name+placement → authorityFromMatches)。
@@ -1754,15 +1834,18 @@ function refreshSeasonStatsFromServer(accountId) {
       try { statsUploadToServer(accountId, total, pc, av); } catch (e3) {}
     }
   })();
+  return _done;
 }
 
 // ===== Supabase progress =====
 function loadProgress() {
   /* v136: 不读任何本地缓存。账号/排序/皮肤/头像大小来自 arena_progress；
      场数·名次·冠军集合·使用场次·权威值 全部由 arena_matches 明细现算。 */
+  /* v137: 返回 Promise —— 登录时在登录界面等这些数据全部到位，进主页即完整；
+     10s 兜底超时，任何请求卡住也不会把用户堵在登录界面。 */
   try { setStatsPending(); } catch (e) {}
 
-  fetch(SUPA_URL + "/rest/v1/arena_progress?user_id=eq." + currentUserId, {
+  var _p = fetch(SUPA_URL + "/rest/v1/arena_progress?user_id=eq." + currentUserId, {
     headers: { "apikey": SUPA_KEY, "Authorization": "Bearer " + SUPA_KEY }
   })
   .then(function(r) { return r.json(); })
@@ -1811,14 +1894,17 @@ function loadProgress() {
       if (syncId && statsApplied && skinApplied && sortApplied) break;
     }
     // hero_ids 已废弃：冠军集合改从对局名次(placement==1)查询推导
-    loadFirstPlaceHeroes(syncId);
-    loadUsageCount(syncId);
-    if (typeof loadAuthorityForAccount === "function") { try { loadAuthorityForAccount(syncId); } catch (e) {} }
+    var tasks = [];
+    tasks.push(runLoad(loadFirstPlaceHeroes, syncId));
+    tasks.push(runLoad(loadUsageCount, syncId));
+    if (typeof loadAuthorityForAccount === "function") tasks.push(runLoad(loadAuthorityForAccount, syncId));
     /* v129.8.6: 顶部整串(场数+六档名次)以服务器明细精确统计为准(同步桌面端) */
-    if (syncId) { setTimeout(function () { try { refreshSeasonStatsFromServer(syncId); } catch (e) {} }, 400); }
+    if (syncId) tasks.push(runLoad(refreshSeasonStatsFromServer, syncId));
     updateSortBtn();
+    return waitAll(tasks);
   })
   .catch(function() {});
+  return withTimeout(_p, 10000);
 }
 
 // 冠军集合（拿过第一名的英雄）改从战绩表按名次推导，不再依赖 hero_ids 冗余字段
@@ -1853,12 +1939,12 @@ function loadFirstPlaceHeroes(accountId) {
     } catch (e) {}
   };
   /* v136: 不读本地缓存，冠军集合只由服务器明细(placement=1)推导 */
-  if (!accountId) { applyAndRender(); return; }
+  if (!accountId) { applyAndRender(); return Promise.resolve(); }
   /* v129.8.2: 改用 sbFetch(15s 超时+HTTP状态检查+reject)，与 loadUsageCount 看齐，
      修复扫描后裸 fetch 在 IE11 file:// 下超时/失败时只在 catch 里空跑、冠军集合停留在
      本地旧缓存、导致新第一名英雄不被标记 completed 的时序隐患 */
   var q = "arena_matches?select=champion_name&account=eq." + encodeURIComponent(accountId) + "&is_self=eq.true&placement=eq.1";
-  sbFetch(q)
+  return sbFetch(q)
   .then(function(mats) {
     for (var j = 0; j < mats.length; j++) {
       var hn = String(mats[j].champion_name || "").toLowerCase();
@@ -2180,8 +2266,8 @@ function sortedChampions() {
 function loadUsageCount(accountId) {
   usageCount = {};
   /* v136: 不读本地缓存，使用场次只由服务器明细统计 */
-  if (!accountId) { renderGrid(); return; }
-  sbFetch("arena_matches?select=champion_name&account=eq." + encodeURIComponent(accountId) + "&is_self=eq.true")
+  if (!accountId) { renderGrid(); return Promise.resolve(); }
+  return sbFetch("arena_matches?select=champion_name&account=eq." + encodeURIComponent(accountId) + "&is_self=eq.true")
   .then(function(mats) {
     for (var j = 0; j < mats.length; j++) {
       var hn = String(mats[j].champion_name || "").toLowerCase();
@@ -2442,7 +2528,7 @@ function loadAuthorityForAccount(accountId) {
     }
     el.innerHTML = " 权威值：<b>" + authorityDisplay(score) + "分</b>";
   };
-  if (!accountId) { show(null, false); return; }
+  if (!accountId) { show(null, false); return Promise.resolve(); }
   /* v129.8.8: 不再单独 authorityUploadToServer 写第8段 —— 权威值服务器写入统一由
      refreshFromServer→refreshSeasonStatsFromServer 合并上传(前7段+权威段一次PATCH)完成，
      避免两次写互相覆盖竞态。此处只计算/展示/写本地缓存。 */
@@ -2459,7 +2545,7 @@ function loadAuthorityForAccount(accountId) {
         return allMats;
       });
   };
-  fetchPage()
+  return fetchPage()
     .then(function (mats) {
       var sc = authorityFromMatches(mats || []);
       show(sc, true);
