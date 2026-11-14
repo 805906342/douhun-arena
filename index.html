@@ -216,11 +216,6 @@ body::before {
 }
 /* 下载按钮整体变成进度条：运行时文字透明，金色块从左往右填充 */
 .download-btn { position: relative; overflow: hidden; transition: color 0.18s linear, background 0.18s linear, border-color 0.18s linear; }
-.dl-fill { display: none; position: absolute; left: 0; top: 0; bottom: 0; width: 0%; background: linear-gradient(90deg, #e0c070 0%, #c89b3c 100%); transition: width 0.18s linear; }
-.download-btn.dl-running { color: transparent; background: #16283c; border-color: rgba(224,199,138,0.55); cursor: default; }
-.download-btn.dl-running .dl-fill { display: block; }
-.download-btn.dl-unknown .dl-fill { width: 35%; animation: dlSlide 1.1s ease-in-out infinite; }
-@keyframes dlSlide { 0% { left: -35%; } 100% { left: 100%; } }
 .web-update-time {
   text-align: center;
   font-size: 11px;
@@ -1116,7 +1111,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-title">斗魂竞技场</div>
-    <div class="web-update-time">网页版更新时间：2026-11-14 06:10:00</div>
+    <div class="web-update-time">网页版更新时间：2026-11-14 15:48:00</div>
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" type="button" onclick="switchTab('login')">登录</button>
       <button class="login-tab" id="tabRegister" type="button" onclick="switchTab('register')">注册</button>
@@ -1136,7 +1131,7 @@ body.skin-king   .hd-avatar .cp-ov::after { background-image: radial-gradient(el
     <button class="login-submit" id="loginSubmit" type="button" onclick="submitAuth()">登录</button>
     <div class="login-error" id="loginError"></div>
     <div class="login-download">
-      <a class="download-btn" id="dlBtn" href="download/LoLArena.exe" download>下载 Windows 桌面版<span class="dl-fill" id="dlFill"></span></a>
+      <a class="download-btn" id="dlBtn" href="download/LoLArena.exe" download>下载 Windows 桌面版</a>
       <div class="download-time">桌面版更新时间：2026-11-14 06:10:00</div>
     </div>
   </div>
@@ -3123,97 +3118,6 @@ if (document.readyState === "loading") {
   boot();
 }
 
-// ===== 桌面版下载：按钮本身变成进度条 =====
-// GitHub Pages 会给 exe 做 gzip 压缩，响应头里的总大小不可信，浏览器自带的
-// 下载条因此只显示速度。所以这里自己下载：点下去按钮整体变成填充式进度条
-// （不显示任何文字），下完交给浏览器保存（弹出系统下载条），按钮随即恢复原样。
-(function () {
-  var btn = document.getElementById("dlBtn");
-  if (!btn) return;
-  var fill = document.getElementById("dlFill");
-  var URL_BIN = "download/LoLArena.exe";
-  var URL_META = "download/size.json";
-  var BASE = btn.className;
-  var busy = false;
-
-  function setPct(p) {
-    if (p < 0) p = 0;
-    if (p > 1) p = 1;
-    fill.style.width = (p * 100).toFixed(1) + "%";
-  }
-  function canCustom() {
-    return !!(window.XMLHttpRequest && window.Blob && window.URL && window.URL.createObjectURL &&
-              "download" in document.createElement("a"));
-  }
-  function resetBar() {
-    busy = false;
-    btn.className = BASE;
-    fill.style.width = "0%";
-  }
-  function nativeDownload() {
-    resetBar();
-    window.location.href = URL_BIN;
-  }
-
-  btn.addEventListener("click", function (ev) {
-    if (busy) { ev.preventDefault(); return; }
-    if (!canCustom()) return;
-    ev.preventDefault();
-    busy = true;
-    btn.className = BASE + " dl-running";
-    setPct(0);
-
-    var total = 0;
-
-    function startDownload() {
-      var xhr = new XMLHttpRequest();
-      xhr.open("GET", URL_BIN, true);
-      xhr.responseType = "blob";
-      xhr.onprogress = function (e) {
-        if (total > 0) setPct(Math.min(e.loaded / total, 0.99));
-      };
-      xhr.onload = function () {
-        if (xhr.status !== 200 && xhr.status !== 206) { nativeDownload(); return; }
-        setPct(1);
-        setTimeout(function () {
-          var blob = xhr.response;
-          if (!blob) { nativeDownload(); return; }
-          var u = URL.createObjectURL(blob);
-          var a = document.createElement("a");
-          a.href = u;
-          a.download = "LoLArena.exe";
-          document.body.appendChild(a);
-          a.click();
-          setTimeout(function () {
-            URL.revokeObjectURL(u);
-            if (a.parentNode) a.parentNode.removeChild(a);
-          }, 5000);
-          resetBar();
-        }, 180);
-      };
-      xhr.onerror = function () { nativeDownload(); };
-      xhr.onabort = function () { resetBar(); };
-      xhr.send();
-    }
-
-    var m = new XMLHttpRequest();
-    m.open("GET", URL_META + "?v=" + Date.now(), true);
-    m.onload = function () {
-      try {
-        var j = JSON.parse(m.responseText);
-        if (j && j.size > 0) total = j.size;
-      } catch (err) {}
-      if (total > 0) btn.className = BASE + " dl-running";
-      else btn.className = BASE + " dl-running dl-unknown";
-      startDownload();
-    };
-    m.onerror = function () {
-      btn.className = BASE + " dl-running dl-unknown";
-      startDownload();
-    };
-    m.send();
-  });
-})();
 
 </script>
 </script>
